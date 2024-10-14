@@ -8,7 +8,7 @@ import static jakarta.persistence.FetchType.LAZY;
 public class UserFcmToken extends BaseEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userFcmTokenId;
 
     @ManyToOne(fetch = LAZY)

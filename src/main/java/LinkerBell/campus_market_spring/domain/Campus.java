@@ -7,7 +7,7 @@ import static jakarta.persistence.FetchType.*;
 @Entity
 public class Campus extends BaseEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long campusId;
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "university_id")

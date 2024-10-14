@@ -7,7 +7,7 @@ import static jakarta.persistence.FetchType.*;
 @Entity
 public class ChatRoom extends BaseEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chatRoomId;
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")

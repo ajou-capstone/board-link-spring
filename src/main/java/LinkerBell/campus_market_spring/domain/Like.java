@@ -9,7 +9,7 @@ import static jakarta.persistence.FetchType.LAZY;
 public class Like extends BaseEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long likeId;
 
     @ManyToOne(fetch = LAZY)

@@ -8,7 +8,7 @@ import static jakarta.persistence.FetchType.LAZY;
 public class NotificationHistory extends BaseEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long notificationHistoryId;
 
     @ManyToOne(fetch = LAZY)

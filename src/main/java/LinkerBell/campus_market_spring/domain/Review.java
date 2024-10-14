@@ -8,7 +8,7 @@ import static jakarta.persistence.FetchType.LAZY;
 public class Review extends BaseEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reviewId;
 
     @ManyToOne(fetch = LAZY)

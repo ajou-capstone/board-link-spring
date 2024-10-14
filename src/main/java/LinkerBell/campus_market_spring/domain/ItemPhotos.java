@@ -7,7 +7,7 @@ import static jakarta.persistence.FetchType.*;
 @Entity
 public class ItemPhotos extends BaseEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long itemPhotosId;
 
     @ManyToOne(fetch = LAZY)

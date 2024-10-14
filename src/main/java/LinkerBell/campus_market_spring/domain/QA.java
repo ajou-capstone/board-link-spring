@@ -8,7 +8,7 @@ import static jakarta.persistence.FetchType.LAZY;
 public class QA extends BaseEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long qa_id;
 
     @ManyToOne(fetch = LAZY)

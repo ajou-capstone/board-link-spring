@@ -12,7 +12,7 @@ import static jakarta.persistence.FetchType.*;
 @Table(name = "Users")
 public class User extends BaseEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "campus_id")

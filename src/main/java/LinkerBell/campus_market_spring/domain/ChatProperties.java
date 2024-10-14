@@ -8,7 +8,7 @@ import static jakarta.persistence.FetchType.*;
 public class ChatProperties extends BaseEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chatPropertiesId;
 
     @ManyToOne(fetch = LAZY)

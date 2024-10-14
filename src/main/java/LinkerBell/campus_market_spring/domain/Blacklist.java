@@ -10,7 +10,7 @@ import static jakarta.persistence.FetchType.*;
 public class Blacklist extends BaseEntity{
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long blacklistId;
 
     @OneToOne(fetch = LAZY)

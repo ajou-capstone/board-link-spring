@@ -8,7 +8,7 @@ import static jakarta.persistence.FetchType.*;
 public class Keyword extends BaseEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long keywordId;
 
     @ManyToOne(fetch = LAZY)
