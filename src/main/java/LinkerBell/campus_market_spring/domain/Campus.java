@@ -9,10 +9,11 @@ public class Campus extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long campusId;
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "university_id")
-    private University university;
 
-    private String name;
+    private String universityName;
+
+    private String region;
+
+    private String email;
 
 }
