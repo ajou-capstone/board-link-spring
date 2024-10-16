@@ -14,7 +14,7 @@ public class Terms extends BaseEntity {
 
     private String title;
 
-    private String description;
+    private String termsUrl;
 
     private boolean isRequired;
 }
