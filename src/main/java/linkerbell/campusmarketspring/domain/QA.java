@@ -1,25 +1,19 @@
-package LinkerBell.campus_market_spring.domain;
+package linkerbell.campusmarketspring.domain;
 
 import jakarta.persistence.*;
 
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
-public class Review extends BaseEntity {
+public class QA extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reviewId;
+    private Long qa_id;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "item_id")
-    private Item item;
-
     private String description;
-
-    private int rating;
 }

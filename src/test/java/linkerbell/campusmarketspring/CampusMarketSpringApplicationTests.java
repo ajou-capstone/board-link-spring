@@ -1,4 +1,4 @@
-package LinkerBell.campus_market_spring;
+package linkerbell.campusmarketspring;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

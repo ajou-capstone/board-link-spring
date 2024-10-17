@@ -1,4 +1,4 @@
-package LinkerBell.campus_market_spring.domain;
+package linkerbell.campusmarketspring.domain;
 
 public enum ItemStatus {
     FORSALE,SOLDOUT

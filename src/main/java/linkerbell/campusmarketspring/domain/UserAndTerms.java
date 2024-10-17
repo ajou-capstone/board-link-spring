@@ -1,19 +1,23 @@
-package LinkerBell.campus_market_spring.domain;
+package linkerbell.campusmarketspring.domain;
 
 import jakarta.persistence.*;
 
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
-public class UserFcmToken extends BaseEntity {
+public class UserAndTerms extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userFcmTokenId;
+    private Long userAndTermsId;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    private String fcmToken;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "terms_id")
+    private Terms terms;
+
+    private boolean isAgree;
 }

@@ -1,8 +1,6 @@
-package LinkerBell.campus_market_spring.domain;
+package linkerbell.campusmarketspring.domain;
 
 import jakarta.persistence.*;
-
-import static jakarta.persistence.FetchType.*;
 
 @Entity
 public class Campus extends BaseEntity {

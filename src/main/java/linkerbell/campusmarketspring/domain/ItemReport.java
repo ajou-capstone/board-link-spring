@@ -1,15 +1,15 @@
-package LinkerBell.campus_market_spring.domain;
+package linkerbell.campusmarketspring.domain;
 
 import jakarta.persistence.*;
 
-import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.FetchType.*;
 
 @Entity
-public class NotificationHistory extends BaseEntity {
+public class ItemReport extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long notificationHistoryId;
+    private Long itemReportId;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")
@@ -19,10 +19,5 @@ public class NotificationHistory extends BaseEntity {
     @JoinColumn(name = "item_id")
     private Item item;
 
-    private String title;
-
     private String description;
-
-    private String deeplink;
 }
-

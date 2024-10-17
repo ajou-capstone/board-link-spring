@@ -1,21 +1,25 @@
-package LinkerBell.campus_market_spring.domain;
+package linkerbell.campusmarketspring.domain;
 
 import jakarta.persistence.*;
 
-import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
-public class ChatRoom extends BaseEntity {
+public class Review extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long chatRoomId;
+    private Long reviewId;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")
-    private User user; // 구매자 아이디
+    private User user;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "item_id")
     private Item item;
 
-    private int userCount;
+    private String description;
+
+    private int rating;
 }

@@ -1,4 +1,4 @@
-package LinkerBell.campus_market_spring;
+package linkerbell.campusmarketspring;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

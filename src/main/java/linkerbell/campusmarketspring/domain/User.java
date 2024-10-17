@@ -1,10 +1,6 @@
-package LinkerBell.campus_market_spring.domain;
+package linkerbell.campusmarketspring.domain;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Type;
-
-import java.util.List;
-import java.util.Map;
 
 import static jakarta.persistence.FetchType.*;
 
