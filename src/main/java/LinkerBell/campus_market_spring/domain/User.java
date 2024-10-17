@@ -1,6 +1,8 @@
 package LinkerBell.campus_market_spring.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
 import org.hibernate.annotations.Type;
 
 import java.util.List;
@@ -10,6 +12,8 @@ import static jakarta.persistence.FetchType.*;
 
 @Entity
 @Table(name = "Users")
+@Builder
+@Getter
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,5 +41,8 @@ public class User extends BaseEntity {
 
     private boolean idDeleted;
 
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 
 }
