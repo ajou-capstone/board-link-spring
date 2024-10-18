@@ -1,8 +1,10 @@
 package LinkerBell.campus_market_spring.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 
 import java.util.List;
@@ -12,8 +14,10 @@ import static jakarta.persistence.FetchType.*;
 
 @Entity
 @Table(name = "Users")
-@Builder
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

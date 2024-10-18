@@ -1,6 +1,8 @@
 package LinkerBell.campus_market_spring.global.jwt;
 
 import LinkerBell.campus_market_spring.domain.Role;
+import LinkerBell.campus_market_spring.global.error.ErrorCode;
+import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -41,12 +44,12 @@ public class JwtUtils {
         claims.put("role", role.getKey());
 
         return Jwts.builder()
-                .setSubject(email)
-                .setClaims(claims)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + accessExpiredTime))
-                .signWith(getKey(), SignatureAlgorithm.HS256)
-                .compact();
+            .setSubject(email)
+            .setClaims(claims)
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(System.currentTimeMillis() + accessExpiredTime))
+            .signWith(getKey(), SignatureAlgorithm.HS256)
+            .compact();
     }
 
     public String generateRefreshToken(String email, Role role) {
@@ -55,24 +58,24 @@ public class JwtUtils {
         claims.put("role", role.getKey());
 
         return Jwts.builder()
-                .setSubject(email)
-                .setClaims(claims)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + refreshExpiredTime))
-                .signWith(getKey(), SignatureAlgorithm.HS256)
-                .compact();
+            .setSubject(email)
+            .setClaims(claims)
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(System.currentTimeMillis() + refreshExpiredTime))
+            .signWith(getKey(), SignatureAlgorithm.HS256)
+            .compact();
     }
 
     public boolean validateToken(String token) {
         if (token == null) {
-            throw new RuntimeException("token is null");
+            throw new CustomException(ErrorCode.JWT_IS_NULL);
         }
         try {
             return !isExpired(token);
         } catch (MalformedJwtException e) {
-            throw new RuntimeException("invalid jwt");
+            throw new CustomException(ErrorCode.INVALID_JWT);
         } catch (ExpiredJwtException e) {
-            throw new RuntimeException("expired jwt");
+            throw new CustomException(ErrorCode.EXPIRED_JWT);
         } catch (RuntimeException e) {
             return false;
         }
@@ -80,7 +83,8 @@ public class JwtUtils {
 
     public String resolveToken(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
-        if (token.startsWith("Bearer ") && StringUtils.hasText(token)) {
+        log.info("Authorization header token is : " + token);
+        if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
             return token.substring(7);
         }
         return null;
@@ -94,6 +98,7 @@ public class JwtUtils {
         authorities.add(new SimpleGrantedAuthority(role));
 
         UserDetails principal = new User(claims.get("email").toString(), "", authorities);
+
         return UsernamePasswordAuthenticationToken.authenticated(principal, null, authorities);
     }
 
@@ -103,10 +108,10 @@ public class JwtUtils {
 
     private Claims getClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(getKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+            .setSigningKey(getKey())
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
     }
 
     private Key getKey() {
