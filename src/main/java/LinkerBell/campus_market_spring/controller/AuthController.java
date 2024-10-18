@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
+
     private final AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody AuthRequestDto authRequestDto) {
-        return authService.googleLogin(authRequestDto.getIdToken());
+        AuthResponseDto authResponseDto = authService.googleLogin(authRequestDto.getIdToken());
+        return ResponseEntity.ok(authResponseDto);
     }
 }
