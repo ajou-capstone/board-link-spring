@@ -3,6 +3,8 @@ package LinkerBell.campus_market_spring.service;
 import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.dto.AuthResponseDto;
+import LinkerBell.campus_market_spring.global.error.ErrorCode;
+import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -26,70 +28,61 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
     @Value("${google.client}")
     private String GOOGLE_CLIENT_ID;
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
 
     @Transactional
-    public ResponseEntity<AuthResponseDto> googleLogin(String googleToken) {
+    public AuthResponseDto googleLogin(String googleToken) {
         GoogleIdToken idToken = null;
         log.info("google Token: " + googleToken);
         try {
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
-                    GoogleNetHttpTransport.newTrustedTransport(),
-                    GsonFactory.getDefaultInstance())
-                    .setAudience(Collections.singletonList(GOOGLE_CLIENT_ID))
-                    .build();
+                GoogleNetHttpTransport.newTrustedTransport(),
+                GsonFactory.getDefaultInstance())
+                .setAudience(Collections.singletonList(GOOGLE_CLIENT_ID))
+                .build();
             idToken = verifier.verify(googleToken);
 
         } catch (GeneralSecurityException | IOException e) {
-            log.error("token verify error");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new CustomException(ErrorCode.UNVERIFIED_GOOGLE_TOKEN);
         } catch (IllegalArgumentException e) {
-            log.error("token is bad");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            log.error("IllegalArgumentException");
+            throw new CustomException(ErrorCode.INVALID_GOOGLE_TOKEN);
         }
 
         if (idToken == null) {
-            log.error("token is null");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            log.error("idToken is null");
+            throw new CustomException(ErrorCode.INVALID_GOOGLE_TOKEN);
         }
 
         GoogleIdToken.Payload payload = idToken.getPayload();
 
         String email = payload.getEmail();
-        boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
+        boolean emailVerified = payload.getEmailVerified();
         if (!emailVerified) {
-            log.info("email is not verified");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new CustomException(ErrorCode.NOT_VERIFIED_EMAIL);
         }
-        // idToken is verified
-        Optional<User> userOpt = userRepository.findByLoginEmail(email);
-        userOpt.ifPresentOrElse(
-                user -> {},
-                () -> {
-                    userRepository.save(User.builder()
-                            .loginEmail(email)
-                            .role(Role.GUEST)
-                            .build()
-                    );
-                }
-        );
-        User user = userRepository.findByLoginEmail(email).orElseThrow(
-                () -> new RuntimeException("User not found")
-        );
+
+        User user = userRepository.findByLoginEmail(email)
+            .orElseGet(() -> User.builder()
+                .loginEmail(email)
+                .role(Role.GUEST)
+                .build());
 
         String accessToken = jwtUtils.generateAccessToken(user.getLoginEmail(), user.getRole());
         String refreshToken = jwtUtils.generateRefreshToken(user.getLoginEmail(), user.getRole());
 
         user.setRefreshToken(refreshToken);
+        userRepository.save(user);
 
         AuthResponseDto authResponseDto = AuthResponseDto.builder()
-                                            .accessToken(accessToken)
-                                            .refreshToken(refreshToken)
-                                            .build();
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .build();
 
-        return ResponseEntity.ok(authResponseDto);
+        return authResponseDto;
     }
 }
