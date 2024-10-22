@@ -12,6 +12,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.Optional;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
@@ -96,5 +98,35 @@ public class AuthService {
             .loginEmail(user.getLoginEmail())
             .role(user.getRole())
             .build();
+    }
+
+    @Transactional
+    public AuthResponseDto reissueJwt(HttpServletRequest request) {
+        String refreshToken = jwtUtils.resolveRefreshToken(request);
+
+        if (!jwtUtils.validateToken(refreshToken)) {
+            throw new CustomException(ErrorCode.INVALID_JWT);
+        }
+
+        String email = jwtUtils.getEmail(refreshToken);
+
+        User user = userRepository.findByLoginEmail(email)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if (!refreshToken.equals(user.getRefreshToken())) {
+            log.error("Not matched with db");
+            throw new CustomException(ErrorCode.INVALID_JWT);
+        }
+
+        String reissuedAccessToken = jwtUtils.generateAccessToken(user.getLoginEmail(),
+            user.getRole());
+        String reissuedRefreshToken = jwtUtils.generateRefreshToken(user.getLoginEmail(),
+            user.getRole());
+
+        user.setRefreshToken(reissuedRefreshToken);
+
+        return AuthResponseDto.builder()
+            .accessToken(reissuedAccessToken)
+            .refreshToken(reissuedRefreshToken).build();
     }
 }

@@ -2,7 +2,9 @@ package LinkerBell.campus_market_spring.controller;
 
 import LinkerBell.campus_market_spring.dto.AuthRequestDto;
 import LinkerBell.campus_market_spring.dto.AuthResponseDto;
+import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
 import LinkerBell.campus_market_spring.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody AuthRequestDto authRequestDto) {
         AuthResponseDto authResponseDto = authService.googleLogin(authRequestDto.getIdToken());
+        return ResponseEntity.ok(authResponseDto);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponseDto> reissueJwt(HttpServletRequest request) {
+        AuthResponseDto authResponseDto = authService.reissueJwt(request);
         return ResponseEntity.ok(authResponseDto);
     }
 }

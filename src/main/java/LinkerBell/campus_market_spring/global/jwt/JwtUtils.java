@@ -121,4 +121,13 @@ public class JwtUtils {
     public String getEmail(String token) {
         return getClaims(token).get("email", String.class);
     }
+
+    public String resolveRefreshToken(HttpServletRequest request) {
+        String token = request.getHeader("refresh");
+        log.info("refresh header token is : " + token);
+        if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
+            return token.substring(7);
+        }
+        return null;
+    }
 }
