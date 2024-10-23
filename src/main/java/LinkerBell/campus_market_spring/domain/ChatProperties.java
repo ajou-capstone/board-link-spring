@@ -1,10 +1,18 @@
 package LinkerBell.campus_market_spring.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import static jakarta.persistence.FetchType.*;
 
 @Entity
+@Builder
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ChatProperties extends BaseEntity {
 
     @Id
