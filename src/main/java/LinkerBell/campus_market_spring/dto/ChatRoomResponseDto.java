@@ -7,4 +7,8 @@ import lombok.Getter;
 @Builder
 public class ChatRoomResponseDto {
     private Long chatRoomId;
+    private Long userId;
+    private Long itemId;
+    private String title;
+    private boolean isAlarm;
 }
