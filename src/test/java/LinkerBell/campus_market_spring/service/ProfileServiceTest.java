@@ -143,7 +143,7 @@ class ProfileServiceTest {
         Campus campus = createCampus();
         given(userRepository.findById(Mockito.anyLong())).willReturn(Optional.ofNullable(user));
         given(campusRepository.findByEmail(Mockito.anyString())).willReturn(Lists.newArrayList(campus));
-        given(campusRepository.findById(Mockito.anyLong())).willReturn(Optional.ofNullable(campus));
+        
         // when
         ProfileResponseDto profileResponseDto = profileService.saveCampus(user.getUserId(), campus.getCampusId());
 
