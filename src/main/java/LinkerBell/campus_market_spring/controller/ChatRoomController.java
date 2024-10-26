@@ -9,10 +9,7 @@ import LinkerBell.campus_market_spring.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,5 +31,12 @@ public class ChatRoomController {
     public ResponseEntity<List<ChatRoomDataResponseDto>> getChatRooms(@Login AuthUserDto user) {
         List<ChatRoomDataResponseDto> chatRoomDataResponseDtoList = chatRoomService.getChatRooms(user);
         return ResponseEntity.ok(chatRoomDataResponseDtoList);
+    }
+
+    // 채팅방 나가기
+    @PatchMapping("api/v1/chat/{chatRoomId}")
+    public ResponseEntity<Void> leaveChatRoom(@PathVariable Long chatRoomId, @Login AuthUserDto user) {
+        chatRoomService.leaveChatRoom(chatRoomId, user);
+        return ResponseEntity.noContent().build();
     }
 }

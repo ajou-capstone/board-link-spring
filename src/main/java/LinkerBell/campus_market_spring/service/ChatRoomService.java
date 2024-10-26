@@ -107,4 +107,17 @@ public class ChatRoomService {
 
         return chatRoomDataResponseDtoList;
     }
+
+    // 채팅방 나가기
+    @Transactional
+    public void leaveChatRoom(Long chatRoomId, AuthUserDto authUserDto) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow();
+        User user = userRepository.findById(authUserDto.getUserId()).orElseThrow();
+
+        // isExited = true로 바꾸기
+        chatPropertiesRepository.updateIsExitedTrueByUserAndChatRoom(user, chatRoom);
+
+        // 채팅방에서 userCount - 1 하기
+        chatRoomRepository.decrementUserCountByChatRoomId(chatRoomId);
+    }
 }
