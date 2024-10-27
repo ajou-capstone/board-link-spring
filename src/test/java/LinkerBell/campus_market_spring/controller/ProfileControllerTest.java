@@ -3,16 +3,22 @@ package LinkerBell.campus_market_spring.controller;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
+import LinkerBell.campus_market_spring.dto.CampusRequestDto;
+import LinkerBell.campus_market_spring.dto.CampusResponseDto;
 import LinkerBell.campus_market_spring.dto.ProfileRequestDto;
 import LinkerBell.campus_market_spring.dto.ProfileResponseDto;
 import LinkerBell.campus_market_spring.global.error.GlobalExceptionHandler;
 import LinkerBell.campus_market_spring.service.ProfileService;
 import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.List;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -87,9 +93,49 @@ class ProfileControllerTest {
         // then
         MvcResult mvcResult = resultActions.andExpect(status().isOk())
             .andExpect(jsonPath("$.nickname").value("new_nickname"))
-            .andExpect(jsonPath("$.profileImage").value("test_imageUrl")).andDo(print())
-            .andReturn();
+            .andExpect(jsonPath("$.profileImage").value("test_imageUrl"))
+            .andDo(print()).andReturn();
+    }
 
+    @Test
+    @DisplayName("캠퍼스 정보 가져오기 테스트")
+    public void getCampusTest() throws Exception {
+        // given
+        List<CampusResponseDto> campusResponseDtoList = createCampusList();
+        given(profileService.getCampusList(Mockito.anyLong()))
+            .willReturn(Lists.newArrayList(campusResponseDtoList));
+        // when
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/profile/campus"));
+        // then
+        MvcResult mvcResult = resultActions.andExpect(status().isOk())
+            .andExpect(jsonPath("$").isArray()).andExpect(jsonPath("$[0].region")
+                .value("수원")).andDo(print()).andReturn();
+    }
+
+    @Test
+    @DisplayName("캠퍼스 정보 저장하기 테스트")
+    public void saveCampusTest() throws Exception {
+        // given
+        ProfileResponseDto profileResponseDto = ProfileResponseDto.builder().userId(1L).campusId(1L)
+            .build();
+        CampusRequestDto campusRequestDto = CampusRequestDto.builder().campusId(1L).build();
+        given(profileService.saveCampus(Mockito.anyLong(), Mockito.anyLong()))
+            .willReturn(profileResponseDto);
+        // when
+        ResultActions resultActions = mockMvc.perform(
+            post("/api/v1/profile/campus").contentType(MediaType.APPLICATION_JSON)
+                .content(new Gson().toJson(campusRequestDto)));
+
+        // then
+        MvcResult mvcResult = resultActions.andExpect(status().isNoContent()).andDo(print())
+            .andReturn();
+    }
+
+    private List<CampusResponseDto> createCampusList() {
+        List<CampusResponseDto> campusResponseDtoList = new ArrayList<>();
+        campusResponseDtoList.add(new CampusResponseDto(1L, "수원"));
+        campusResponseDtoList.add(new CampusResponseDto(2L, "서울"));
+        return campusResponseDtoList;
     }
 
     static class MockLoginArgumentResolver implements HandlerMethodArgumentResolver {
