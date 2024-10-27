@@ -16,9 +16,10 @@ public enum ErrorCode {
     JWT_IS_NULL(HttpStatus.UNAUTHORIZED, 4007, "jwt의 값이 null입니다."),
 
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, 4011, "사용자가 존재하지 않습니다."),
-    SCHOOL_EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, 4012, "학교 이메일이 등록되지 않았습니다."),
-    CAMPUS_NOT_FOUND(HttpStatus.NOT_FOUND, 4013, "캠퍼스가 존재하지 않습니다."),
-    INVALID_SCHOOL_EMAIL(HttpStatus.NOT_FOUND, 4014, "이메일에 해당하는 캠퍼스가 존재하지 않습니다.");
+    ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, 4012, "아이템이 존재하지 않습니다."),
+    SCHOOL_EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, 4013, "학교 이메일이 등록되지 않았습니다."),
+    CAMPUS_NOT_FOUND(HttpStatus.NOT_FOUND, 4014, "캠퍼스가 존재하지 않습니다."),
+    INVALID_SCHOOL_EMAIL(HttpStatus.NOT_FOUND, 4015, "이메일에 해당하는 캠퍼스가 존재하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final int code;

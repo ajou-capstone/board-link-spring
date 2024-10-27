@@ -1,10 +1,16 @@
 package LinkerBell.campus_market_spring.domain;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import static jakarta.persistence.FetchType.*;
 
 @Entity
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ChatRoom extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
