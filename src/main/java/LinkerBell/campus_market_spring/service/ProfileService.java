@@ -2,10 +2,13 @@ package LinkerBell.campus_market_spring.service;
 
 import LinkerBell.campus_market_spring.domain.Campus;
 import LinkerBell.campus_market_spring.domain.User;
+import LinkerBell.campus_market_spring.dto.CampusResponseDto;
 import LinkerBell.campus_market_spring.dto.ProfileResponseDto;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
+import LinkerBell.campus_market_spring.repository.CampusRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProfileService {
 
     private final UserRepository userRepository;
+    private final CampusRepository campusRepository;
 
     public ProfileResponseDto getMyProfile(Long userId) {
         User user = userRepository.findById(userId)
@@ -53,5 +57,50 @@ public class ProfileService {
             .nickname(user.getNickname())
             .profileImage(user.getProfileImage())
             .rating(user.getRating()).build();
+    }
+
+    public List<CampusResponseDto> getCampusList(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return findCampusList(user.getSchoolEmail()).stream()
+            .map(campus -> new CampusResponseDto(campus.getCampusId(), campus.getRegion()))
+            .toList();
+    }
+
+    @Transactional
+    public ProfileResponseDto saveCampus(Long userId, Long campusId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        List<Campus> campusList = findCampusList(user.getSchoolEmail());
+
+        Campus findCampus = campusList.stream()
+            .filter(campus -> campus.getCampusId().equals(campusId))
+            .findFirst().orElseThrow(() -> new CustomException(ErrorCode.CAMPUS_NOT_FOUND));
+
+        user.setCampus(findCampus);
+
+        return createMyProfileResponseDto(user);
+    }
+
+    private List<Campus> findCampusList(String schoolEmail) {
+        String email = extractEmail(schoolEmail);
+
+        List<Campus> campusList = campusRepository.findByEmail(email);
+
+        if (campusList.isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_SCHOOL_EMAIL);
+        }
+
+        return campusList;
+    }
+
+    private String extractEmail(String schoolEmail) {
+        if (schoolEmail == null) {
+            throw new CustomException(ErrorCode.SCHOOL_EMAIL_NOT_FOUND);
+        }
+
+        return schoolEmail.substring(schoolEmail.indexOf("@") + 1);
     }
 }
