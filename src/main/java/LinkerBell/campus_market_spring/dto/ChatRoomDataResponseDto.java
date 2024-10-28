@@ -5,10 +5,11 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ChatRoomResponseDto {
+public class ChatRoomDataResponseDto {
     private Long chatRoomId;
     private Long userId;
     private Long itemId;
     private String title;
     private boolean isAlarm;
+    private Long messageId;
 }
