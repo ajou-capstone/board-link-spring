@@ -3,9 +3,11 @@ package LinkerBell.campus_market_spring.dto;
 import LinkerBell.campus_market_spring.domain.Role;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 
 @Getter
+@Setter
 public class AuthUserDto {
 
     private Long userId;
