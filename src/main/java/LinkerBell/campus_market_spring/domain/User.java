@@ -1,17 +1,9 @@
 package LinkerBell.campus_market_spring.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.Type;
+import lombok.*;
 
-import java.util.List;
-import java.util.Map;
-
-import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Table(name = "Users")
@@ -25,7 +17,7 @@ public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
-    @OneToOne(fetch = LAZY)
+    @ManyToOne (fetch = LAZY)
     @JoinColumn(name = "campus_id")
     private Campus campus;
 
@@ -46,6 +38,6 @@ public class User extends BaseEntity {
     @Column(columnDefinition = "json")
     private String timetable;
 
-    private boolean idDeleted;
+    private boolean isDeleted = false;
 
 }

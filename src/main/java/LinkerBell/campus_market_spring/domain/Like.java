@@ -1,11 +1,17 @@
 package LinkerBell.campus_market_spring.domain;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Table(name = "Likes")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Like extends BaseEntity {
 
     @Id
