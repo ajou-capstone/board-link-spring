@@ -1,10 +1,13 @@
 package LinkerBell.campus_market_spring.controller;
 
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
+import LinkerBell.campus_market_spring.dto.CampusRequestDto;
+import LinkerBell.campus_market_spring.dto.CampusResponseDto;
 import LinkerBell.campus_market_spring.dto.ProfileRequestDto;
 import LinkerBell.campus_market_spring.dto.ProfileResponseDto;
 import LinkerBell.campus_market_spring.global.auth.Login;
 import LinkerBell.campus_market_spring.service.ProfileService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -36,4 +39,18 @@ public class ProfileController {
         return ResponseEntity.ok(profileResponseDto);
     }
 
+    @GetMapping("/campus")
+    public ResponseEntity<List<CampusResponseDto>> getCampus(@Login AuthUserDto user) {
+        List<CampusResponseDto> campusResponseDtoList =
+            profileService.getCampusList(user.getUserId());
+        return ResponseEntity.ok(campusResponseDtoList);
+    }
+
+    @PostMapping("/campus")
+    public ResponseEntity<ProfileResponseDto> saveCampus(@Login AuthUserDto user,
+        @RequestBody CampusRequestDto campusRequestDto) {
+        ProfileResponseDto profileResponseDto = profileService.saveCampus(user.getUserId(),
+            campusRequestDto.getCampusId());
+        return ResponseEntity.noContent().build();
+    }
 }
