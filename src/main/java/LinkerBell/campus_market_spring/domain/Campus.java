@@ -1,12 +1,17 @@
 package LinkerBell.campus_market_spring.domain;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-
-import static jakarta.persistence.FetchType.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.*;
 
 @Entity
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Campus extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

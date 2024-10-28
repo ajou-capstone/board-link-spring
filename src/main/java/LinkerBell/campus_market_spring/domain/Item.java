@@ -1,10 +1,16 @@
 package LinkerBell.campus_market_spring.domain;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Item extends BaseEntity {
 
     @Id
