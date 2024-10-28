@@ -16,6 +16,7 @@ public class ChatPropertiesService {
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
 
+    // 알람 설정하기
     @Transactional
     public void patchAlarm(Long chatRoomId, boolean isAlarm, Long userId) {
         User user = userRepository.findById(userId).orElse(null);
