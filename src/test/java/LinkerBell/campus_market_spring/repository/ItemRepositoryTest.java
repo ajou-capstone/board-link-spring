@@ -125,7 +125,7 @@ class ItemRepositoryTest {
     }
 
     @Test
-    @DisplayName("모든 값이 null일 때, test")
+    @DisplayName("모든 값이 null이고 최신순 정렬일 떄, test")
     public void defaultTest() throws Exception {
         //given
         Long userId = 1L;

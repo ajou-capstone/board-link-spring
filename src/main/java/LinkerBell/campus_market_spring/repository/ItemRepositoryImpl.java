@@ -4,6 +4,8 @@ import LinkerBell.campus_market_spring.domain.*;
 import LinkerBell.campus_market_spring.dto.ItemSearchResponseDto;
 import LinkerBell.campus_market_spring.dto.QItemSearchResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
+import LinkerBell.campus_market_spring.global.error.ErrorCode;
+import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -39,7 +41,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                 .where(user.userId.eq(userId))
                 .fetchOne();
         if (userCampusId == null) {
-            //campus not fount exception 발생
+            throw new CustomException(ErrorCode.CAMPUS_NOT_FOUND);
         }
 
         // Item 검색 쿼리 생성
@@ -113,19 +115,16 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                     orderSpecifiers.add(order.isAscending() ? item.createdDate.asc() : item.createdDate.desc());
                     break;
                 default:
-                    // 잘못된 값이 들어오거나 정렬 조건이 없을 때 최신순으로 정렬
-                    orderSpecifiers.add(item.createdDate.desc());
-                    break;
+                    throw new CustomException(ErrorCode.INVALID_SORT);
             }
         }
 
         // 정렬이 비어 있을 경우 최신순으로 정렬
         if (orderSpecifiers.isEmpty()) {
-            orderSpecifiers.add(item.createdDate.desc());
+            throw new CustomException(ErrorCode.INVALID_SORT);
         }
 
         return orderSpecifiers.toArray(new OrderSpecifier<?>[0]);
-
 
         }
 
