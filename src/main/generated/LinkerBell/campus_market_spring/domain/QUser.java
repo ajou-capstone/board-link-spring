@@ -70,7 +70,7 @@ public class QUser extends EntityPathBase<User> {
 
     public QUser(Class<? extends User> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.campus = inits.isInitialized("campus") ? new QCampus(forProperty("campus"), inits.get("campus")) : null;
+        this.campus = inits.isInitialized("campus") ? new QCampus(forProperty("campus")) : null;
     }
 
 }

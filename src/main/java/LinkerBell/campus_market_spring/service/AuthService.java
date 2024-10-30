@@ -16,16 +16,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
-import java.util.Optional;
-import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
@@ -128,5 +124,13 @@ public class AuthService {
         return AuthResponseDto.builder()
             .accessToken(reissuedAccessToken)
             .refreshToken(reissuedRefreshToken).build();
+    }
+
+    @Transactional
+    public void saveSchoolEmail(Long userId, String schoolEmail) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        user.setSchoolEmail(schoolEmail);
     }
 }
