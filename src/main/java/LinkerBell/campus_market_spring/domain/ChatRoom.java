@@ -3,7 +3,7 @@ package LinkerBell.campus_market_spring.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Builder

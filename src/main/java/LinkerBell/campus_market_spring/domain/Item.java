@@ -1,14 +1,16 @@
 package LinkerBell.campus_market_spring.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Item extends BaseEntity {
 
     @Id
@@ -34,10 +36,10 @@ public class Item extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    private ItemStatus itemStatus;
+    private ItemStatus itemStatus = ItemStatus.FORSALE;
 
     private String thumbnail;
 
-    private boolean isDeleted;
+    private boolean isDeleted = false;
 
 }

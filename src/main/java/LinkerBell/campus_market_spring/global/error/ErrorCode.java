@@ -19,7 +19,11 @@ public enum ErrorCode {
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, 4012, "아이템이 존재하지 않습니다."),
     SCHOOL_EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, 4013, "학교 이메일이 등록되지 않았습니다."),
     CAMPUS_NOT_FOUND(HttpStatus.NOT_FOUND, 4014, "캠퍼스가 존재하지 않습니다."),
-    INVALID_SCHOOL_EMAIL(HttpStatus.NOT_FOUND, 4015, "이메일에 해당하는 캠퍼스가 존재하지 않습니다.");
+    INVALID_SCHOOL_EMAIL(HttpStatus.NOT_FOUND, 4015, "이메일에 해당하는 캠퍼스가 존재하지 않습니다."),
+
+    INVALID_CATEGORY(HttpStatus.BAD_REQUEST,4016,"잘못된 카테고리 값입니다."),
+    INVALID_PRICE(HttpStatus.BAD_REQUEST,4017,"잘못된 가격입니다."),
+    INVALID_SORT(HttpStatus.BAD_REQUEST, 4018, "잘못된 sorting 입니다.");
 
     private final HttpStatus httpStatus;
     private final int code;
