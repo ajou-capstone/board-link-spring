@@ -3,10 +3,13 @@ package LinkerBell.campus_market_spring.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import LinkerBell.campus_market_spring.domain.Campus;
 import LinkerBell.campus_market_spring.dto.MailResponseDto;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.repository.CampusRepository;
 import com.google.common.cache.LoadingCache;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
@@ -45,17 +48,19 @@ class SesServiceTest {
         // given
         String email = "abc@gmail.com";
         String messageId = "1234";
+        List<Campus> campuses = new ArrayList<>();
+        campuses.add(Campus.builder().campusId(1L).email("gmail.com").universityName("test").build());
 
         SendEmailResponse response = SendEmailResponse.builder()
             .messageId(messageId).build();
-
+        given(campusRepository.findByEmail(anyString())).willReturn(campuses);
         given(sesV2AsyncClient.sendEmail(any(SendEmailRequest.class)))
             .willReturn(CompletableFuture.completedFuture(response));
         given(springTemplateEngine.process(anyString(), any(IContext.class)))
             .willReturn(anyString());
 
         // when
-        MailResponseDto mailResponseDto = sesService.processEmail(eq(email));
+        MailResponseDto mailResponseDto = sesService.processEmail(email);
         // then
         assertThat(mailResponseDto.getToken()).isEqualTo(messageId);
     }
@@ -68,13 +73,14 @@ class SesServiceTest {
         CompletableFuture<SendEmailResponse> futureException = new CompletableFuture<>();
         futureException.completeExceptionally(new RuntimeException("Email sending failed",
             SdkClientException.create("Email sending failed")));
-
+        given(campusRepository.findByEmail(anyString())).willReturn(Lists.newArrayList(
+            Campus.builder().build()));
         given(sesV2AsyncClient.sendEmail(any(SendEmailRequest.class))).willReturn(futureException);
 
         // when & then
         assertThatThrownBy(() -> sesService.processEmail(email))
             .isInstanceOf(RuntimeException.class)
-            .hasMessageContaining("Email sending failed");
+            .hasMessageContaining("서버 내부 오류입니다.");
     }
 
     @Test
@@ -101,8 +107,6 @@ class SesServiceTest {
         sendEmailSuccessTest();
         String validCode = "1234";
         String token = "1234";
-
-        given(stores.getIfPresent(token)).willReturn(any(EmailAndCode.class));
 
         // when & then
         assertThatThrownBy(() -> sesService.verifyTokenAndCode(token, validCode))
