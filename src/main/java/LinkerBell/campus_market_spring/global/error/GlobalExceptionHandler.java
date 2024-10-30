@@ -24,12 +24,11 @@ public class GlobalExceptionHandler {
         if (ex.getName().equals("minPrice") || ex.getName().equals("maxPrice")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_PRICE);
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
-        } else if(ex.getName().equals("category")) {
+        } else if (ex.getName().equals("category")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_CATEGORY);
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
         }
 
         throw ex;
     }
-
 }

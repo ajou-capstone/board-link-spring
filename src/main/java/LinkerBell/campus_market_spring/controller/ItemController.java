@@ -35,9 +35,7 @@ public class ItemController {
                                                                            @RequestParam(required = false) Category category,
                                                                            @RequestParam(required = false) Integer minPrice,
                                                                            @RequestParam(required = false) Integer maxPrice,
-                                                                           @PageableDefault(page = 0, size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable)
-
-    {
+                                                                           @PageableDefault(page = 0, size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
 
         ItemSearchRequestDto itemSearchRequestDto = new ItemSearchRequestDto();
         itemSearchRequestDto.setName(name);
@@ -57,7 +55,7 @@ public class ItemController {
     }
 
     private void pageableValidate(Pageable pageable) {
-        if(pageable.getSort().stream().count() != 1) {
+        if (pageable.getSort().stream().count() != 1) {
             throw new CustomException(ErrorCode.INVALID_SORT);
         }
         String[] properties = {"price", "createdDate"};
@@ -69,18 +67,18 @@ public class ItemController {
     }
 
     private void priceValidate(Integer minPrice, Integer maxPrice) {
-        if(minPrice != null && maxPrice != null) {
-            if(minPrice < 0 || maxPrice < 0) {
+        if (minPrice != null && maxPrice != null) {
+            if (minPrice < 0 || maxPrice < 0) {
                 throw new CustomException(ErrorCode.INVALID_PRICE);
-            } else if(minPrice > maxPrice) {
-                throw new CustomException(ErrorCode.INVALID_PRICE);
-            }
-        } else if(minPrice != null) {
-            if(minPrice < 0) {
+            } else if (minPrice > maxPrice) {
                 throw new CustomException(ErrorCode.INVALID_PRICE);
             }
-        } else if(maxPrice != null) {
-            if(maxPrice < 0) {
+        } else if (minPrice != null) {
+            if (minPrice < 0) {
+                throw new CustomException(ErrorCode.INVALID_PRICE);
+            }
+        } else if (maxPrice != null) {
+            if (maxPrice < 0) {
                 throw new CustomException(ErrorCode.INVALID_PRICE);
             }
         }

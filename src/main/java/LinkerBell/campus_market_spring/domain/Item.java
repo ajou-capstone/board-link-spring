@@ -36,10 +36,10 @@ public class Item extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    private ItemStatus itemStatus;
+    private ItemStatus itemStatus = ItemStatus.FORSALE;
 
     private String thumbnail;
 
-    private boolean isDeleted;
+    private boolean isDeleted = false;
 
 }

@@ -197,7 +197,7 @@ class ItemControllerTest {
     @DisplayName("category에 category해당하지 않는 값이 들어 올때")
     public void invalidCategoryTest() throws Exception {
         mockMvc.perform(get("/api/v1/items")
-                        .param("category","sss")
+                        .param("category", "sss")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(MethodArgumentTypeMismatchException.class))
@@ -211,7 +211,7 @@ class ItemControllerTest {
     @DisplayName("최신순으로 정렬하는 테스트")
     public void createdDateSortingTest() throws Exception {
         mockMvc.perform(get("/api/v1/items")
-                        .param("sort","createdDate,desc")
+                        .param("sort", "createdDate,desc")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -232,7 +232,7 @@ class ItemControllerTest {
     @DisplayName("가격 오름차순으로 정렬하는 테스트")
     public void PriceAscSortingTest() throws Exception {
         mockMvc.perform(get("/api/v1/items")
-                        .param("sort","price")
+                        .param("sort", "price")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -253,7 +253,7 @@ class ItemControllerTest {
     @DisplayName("가격 내림차순으로 정렬하는 테스트")
     public void PriceDescSortingTest() throws Exception {
         mockMvc.perform(get("/api/v1/items")
-                        .param("sort","price,desc")
+                        .param("sort", "price,desc")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -289,7 +289,7 @@ class ItemControllerTest {
     @DisplayName("sort 2개 넣었을 때")
     public void SortCountTwoValue() throws Exception {
         mockMvc.perform(get("/api/v1/items")
-                        .param("sort", "xxxxx","basd")
+                        .param("sort", "xxxxx", "basd")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(CustomException.class))

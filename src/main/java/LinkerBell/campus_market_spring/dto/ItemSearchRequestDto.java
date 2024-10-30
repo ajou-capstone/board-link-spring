@@ -6,11 +6,9 @@ import org.springframework.data.domain.Pageable;
 
 @Data
 public class ItemSearchRequestDto {
-
     private String name;
     private Category category;
-    private Integer minPrice = 0;
-    private Integer maxPrice = Integer.MAX_VALUE;
+    private Integer minPrice;
+    private Integer maxPrice;
     private Pageable pageable;
-
 }

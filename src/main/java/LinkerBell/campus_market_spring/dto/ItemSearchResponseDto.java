@@ -17,6 +17,7 @@ public class ItemSearchResponseDto {
     private Integer chatCount;
     private Integer likeCount;
     private ItemStatus itemStatus;
+
     @QueryProjection
     public ItemSearchResponseDto(Long itemId, Long userId, String nickname, String thumbnail, String title, Integer price, Integer chatCount, Integer likeCount, ItemStatus itemStatus) {
         this.itemId = itemId;

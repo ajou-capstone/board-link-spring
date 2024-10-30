@@ -23,6 +23,7 @@ import static LinkerBell.campus_market_spring.domain.QItem.item;
 public class ItemRepositoryImpl implements ItemRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+
     public ItemRepositoryImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
     }
@@ -40,11 +41,11 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                 .from(user)
                 .where(user.userId.eq(userId))
                 .fetchOne();
+
         if (userCampusId == null) {
             throw new CustomException(ErrorCode.CAMPUS_NOT_FOUND);
         }
 
-        // Item 검색 쿼리 생성
         JPAQuery<ItemSearchResponseDto> query = queryFactory
                 .select(new QItemSearchResponseDto(
                         item.itemId,
@@ -65,20 +66,19 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                         itemNameContains(name),
                         itemCategoryEq(category),
                         itemPriceBetween(minPrice, maxPrice),
-                        item.campus.campusId.eq(userCampusId), // 사용자의 campus와 item의 campus가 같은지 확인
-                        item.isDeleted.eq(false) // 삭제되지 않은 항목만 조회
+                        item.campus.campusId.eq(userCampusId),
+                        item.isDeleted.eq(false)
                 )
                 .groupBy(item.itemId)
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize() + 1) // 다음 페이지 여부를 확인하기 위해 +1 추가
+                .limit(pageable.getPageSize() + 1)
                 .orderBy(itemSearchSort(pageable));
-         //정렬 적용
+
         List<ItemSearchResponseDto> content = query.fetch();
 
-        // Slice 형태로 반환 처리
         boolean hasNext = false;
         if (content.size() > pageable.getPageSize()) {
-            content.remove(content.size() - 1); // 다음 페이지 확인 후 마지막 요소 제거
+            content.remove(content.size() - 1);
             hasNext = true;
         }
         return new SliceResponse<ItemSearchResponseDto>(new SliceImpl<>(content, pageable, hasNext));
@@ -110,6 +110,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
             switch (order.getProperty()) {
                 case "price":
                     orderSpecifiers.add(order.isAscending() ? item.price.asc() : item.price.desc());
+                    orderSpecifiers.add(item.createdDate.desc());
                     break;
                 case "createdDate":
                     orderSpecifiers.add(order.isAscending() ? item.createdDate.asc() : item.createdDate.desc());
@@ -119,16 +120,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
             }
         }
 
-        // 정렬이 비어 있을 경우 최신순으로 정렬
-        if (orderSpecifiers.isEmpty()) {
-            throw new CustomException(ErrorCode.INVALID_SORT);
-        }
-
-        return orderSpecifiers.toArray(new OrderSpecifier<?>[0]);
-
-        }
-
-
-
+        return orderSpecifiers.toArray(new OrderSpecifier<?>[orderSpecifiers.size()]);
     }
+}
 
