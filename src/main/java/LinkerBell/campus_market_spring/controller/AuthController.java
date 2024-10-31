@@ -48,7 +48,7 @@ public class AuthController {
     @PostMapping("/emails/verify")
     public ResponseEntity<?> verifyCode(@Login AuthUserDto user,
         @RequestBody VerificationCodeRequestDto requestDto) {
-        String email = sesService.verifyTokenAndCode(requestDto.getToken(), requestDto.getCode());
+        String email = sesService.verifyTokenAndCode(requestDto.getToken(), requestDto.getVerifyCode());
         authService.saveSchoolEmail(user.getUserId(), email);
         return ResponseEntity.noContent().build();
     }

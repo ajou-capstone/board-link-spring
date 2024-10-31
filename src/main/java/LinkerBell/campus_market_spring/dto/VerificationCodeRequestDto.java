@@ -6,5 +6,5 @@ import lombok.Getter;
 public class VerificationCodeRequestDto {
 
     private String token;
-    private String code;
+    private String verifyCode;
 }
