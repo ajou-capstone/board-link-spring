@@ -6,7 +6,6 @@ import LinkerBell.campus_market_spring.dto.SenderEmailDto;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.repository.CampusRepository;
-import com.google.api.services.storage.model.StorageObject.CustomerEncryption;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -71,7 +70,7 @@ public class SesService {
     }
 
     private boolean compareCode(EmailAndCode storedData, String receivedCode) {
-        return storedData != null && storedData.code().equals(receivedCode);
+        return storedData != null && storedData.code().trim().equals(receivedCode.trim());
     }
 
     private CompletableFuture<String> sendEmailAndGetId(SendEmailRequest emailRequest) {
@@ -79,7 +78,7 @@ public class SesService {
             if (sendEmailResponse != null) {
                 return sendEmailResponse.messageId();
             } else {
-                throw new CustomException(ErrorCode.INTERNAL_SEVER_ERROR);
+                throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
             }
         }));
     }
@@ -94,7 +93,7 @@ public class SesService {
             }
             return builder.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new CustomException(ErrorCode.INTERNAL_SEVER_ERROR);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
