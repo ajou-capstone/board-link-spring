@@ -1,6 +1,7 @@
 package LinkerBell.campus_market_spring.controller;
 
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
+import LinkerBell.campus_market_spring.dto.CampusCollectionResponseDto;
 import LinkerBell.campus_market_spring.dto.CampusRequestDto;
 import LinkerBell.campus_market_spring.dto.CampusResponseDto;
 import LinkerBell.campus_market_spring.dto.ProfileRequestDto;
@@ -40,10 +41,10 @@ public class ProfileController {
     }
 
     @GetMapping("/campus")
-    public ResponseEntity<List<CampusResponseDto>> getCampus(@Login AuthUserDto user) {
+    public ResponseEntity<CampusCollectionResponseDto> getCampus(@Login AuthUserDto user) {
         List<CampusResponseDto> campusResponseDtoList =
             profileService.getCampusList(user.getUserId());
-        return ResponseEntity.ok(campusResponseDtoList);
+        return ResponseEntity.ok(CampusCollectionResponseDto.from(campusResponseDtoList));
     }
 
     @PostMapping("/campus")
