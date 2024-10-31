@@ -108,7 +108,7 @@ class ProfileControllerTest {
         ResultActions resultActions = mockMvc.perform(get("/api/v1/profile/campus"));
         // then
         MvcResult mvcResult = resultActions.andExpect(status().isOk())
-            .andExpect(jsonPath("$").isArray()).andExpect(jsonPath("$[0].region")
+            .andExpect(jsonPath("$.campuses").isArray()).andExpect(jsonPath("$.campuses[0].region")
                 .value("수원")).andDo(print()).andReturn();
     }
 
