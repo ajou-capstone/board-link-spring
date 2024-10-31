@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+    .email-container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .email-content {
+        padding: 20px;
+        color: #333;
+    }
+    .verification-code {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 24px;
+        background-color: #eee;
+        border-radius: 5px;
+        letter-spacing: 2px;
+        margin: 20px 0;
+        color: #333;
+    }
+  </style>
+</head>
+<body>
+<div class="email-container">
+  <!-- Content -->
+  <div class="email-content">
+    <p>안녕하세요?</p>
+    <p>아래 인증 코드를 사용하여 이메일을 인증해 주세요:</p>
+
+    <!-- Verification Code -->
+    <div class="verification-code" th:text="${verificationCode}">123456</div>
+  </div>
+</div>
+</body>
+</html>

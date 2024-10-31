@@ -24,14 +24,14 @@ public class QTerms extends EntityPathBase<Terms> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
 
-    public final StringPath description = createString("description");
-
     public final BooleanPath isRequired = createBoolean("isRequired");
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> lastModifiedDate = _super.lastModifiedDate;
 
     public final NumberPath<Long> termsId = createNumber("termsId", Long.class);
+
+    public final StringPath termsUrl = createString("termsUrl");
 
     public final StringPath title = createString("title");
 
