@@ -19,9 +19,10 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Set up campus_dataset.csv file
+      - name: Set up .csv files
         run: |
           echo "${{ secrets.CAMPUS_DATASET }}" | base64 --decode > ./campus_dataset.csv
+          echo "${{ secrets.TERMS_INFO }}" | base64 --decode > ./terms_dataset.csv
         shell: bash
 
       - name: Set up AWS Credentials
