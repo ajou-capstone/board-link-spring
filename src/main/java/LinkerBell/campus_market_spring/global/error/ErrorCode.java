@@ -23,9 +23,9 @@ public enum ErrorCode {
     INVALID_CATEGORY(HttpStatus.BAD_REQUEST,4016,"잘못된 카테고리 값입니다."),
     INVALID_PRICE(HttpStatus.BAD_REQUEST,4017,"잘못된 가격입니다."),
     INVALID_SORT(HttpStatus.BAD_REQUEST, 4018, "잘못된 sorting 입니다."),
-    INVALID_VERIFICATION_CODE(HttpStatus.UNAUTHORIZED, 4019, "인증 코드가 일치하지 않습니다."),
+    INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, 4019, "인증 코드가 일치하지 않습니다."),
 
-    INTERNAL_SEVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다.");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다.");
 
     private final HttpStatus httpStatus;
     private final int code;
