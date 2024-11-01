@@ -1,7 +1,7 @@
 package LinkerBell.campus_market_spring.controller;
 
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
-import LinkerBell.campus_market_spring.dto.CampusCollectionResponseDto;
+import LinkerBell.campus_market_spring.dto.CollectionResponse.CampusCollectionResponseDto;
 import LinkerBell.campus_market_spring.dto.CampusRequestDto;
 import LinkerBell.campus_market_spring.dto.CampusResponseDto;
 import LinkerBell.campus_market_spring.dto.ProfileRequestDto;
