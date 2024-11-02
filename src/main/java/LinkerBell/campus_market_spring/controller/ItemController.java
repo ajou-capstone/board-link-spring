@@ -73,7 +73,7 @@ public class ItemController {
     private void validItemPhotos(ItemRegisterRequestDto itemRegisterRequestDto) {
         if (itemRegisterRequestDto.getImages() != null) {
             if (itemRegisterRequestDto.getImages().size() > 5) {
-                throw new CustomException(ErrorCode.INVALID_ITEM_PHOTOS_SIZE);
+                throw new CustomException(ErrorCode.INVALID_ITEM_PHOTOS_COUNT);
             } else if (itemRegisterRequestDto.getImages().size() !=
                     itemRegisterRequestDto.getImages().stream().distinct().count()) {
                 throw new CustomException(ErrorCode.DUPLICATE_ITEM_PHOTOS);
