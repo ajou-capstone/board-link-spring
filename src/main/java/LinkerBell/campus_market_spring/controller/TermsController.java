@@ -1,7 +1,7 @@
 package LinkerBell.campus_market_spring.controller;
 
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
-import LinkerBell.campus_market_spring.dto.CollectionResponseDto;
+import LinkerBell.campus_market_spring.dto.CollectionResponse.TermsCollectionResponseDto;
 import LinkerBell.campus_market_spring.dto.TermsResponseDto;
 import LinkerBell.campus_market_spring.global.auth.Login;
 import LinkerBell.campus_market_spring.service.TermsService;
@@ -22,9 +22,9 @@ public class TermsController {
     private final TermsService termsService;
 
     @GetMapping
-    public ResponseEntity<CollectionResponseDto> getTermsAndUserInfo(@Login AuthUserDto user) {
+    public ResponseEntity<TermsCollectionResponseDto> getTermsAndUserInfo(@Login AuthUserDto user) {
         List<TermsResponseDto> termsResponseDtoList =
             termsService.getTermsAndUserAgreementInfo(user.getUserId());
-        return ResponseEntity.ok(CollectionResponseDto.from(termsResponseDtoList));
+        return ResponseEntity.ok(TermsCollectionResponseDto.from(termsResponseDtoList));
     }
 }
