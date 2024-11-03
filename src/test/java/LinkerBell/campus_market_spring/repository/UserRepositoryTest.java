@@ -2,18 +2,17 @@ package LinkerBell.campus_market_spring.repository;
 
 import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
-import java.util.Optional;
+import LinkerBell.campus_market_spring.global.error.ErrorCode;
+import LinkerBell.campus_market_spring.global.error.exception.CustomException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.internal.util.MockUtil;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.assertj.core.api.Assertions.*;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 class UserRepositoryTest {
@@ -34,7 +33,7 @@ class UserRepositoryTest {
         });
 
         User user2 = userRepository.findByLoginEmail("tbc@gmail.com")
-            .orElseThrow(() -> new RuntimeException("User Not Found"));
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
 
         user2.setRefreshToken("test124");
 
@@ -50,30 +49,57 @@ class UserRepositoryTest {
         userRepository.save(user);
         // when
         User user1 = userRepository.findByLoginEmail("tbc@gmail.com")
-            .orElseGet(() -> createUser2());
+                .orElseGet(() -> createUser2());
 
         user1.setRefreshToken("test124");
 
         userRepository.save(user1);
 
         User user2 = userRepository.findByLoginEmail("tbc@gmail.com")
-            .orElseThrow(() -> new RuntimeException("User Not Found"));
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
         // then
         assertThat(user2.getRole()).isEqualTo(Role.USER);
         assertThat(user2.getRefreshToken()).isEqualTo("test124");
     }
 
+    @Test
+    @DisplayName("없는 유저 아이디 값으로 유저 찾을 때 에러나는 test 진행")
+    public void findByIdTest() throws Exception {
+        assertThatThrownBy(() -> {
+            userRepository.findById(999999L)
+                    .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        }).isInstanceOf(CustomException.class)
+                .hasMessageContaining("사용자가 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("캠퍼스가 없는 유저를 찾았을 때 에러 테스트")
+    public void UserHasNotCampusTest() throws Exception {
+        // given
+        User savedUser = userRepository.save(createUser());
+
+        User findUser = userRepository.findById(savedUser.getUserId())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        assertThatThrownBy(() -> {
+            if (findUser.getCampus() == null) {
+                throw new CustomException(ErrorCode.CAMPUS_NOT_FOUND);
+            }
+        }).isInstanceOf(CustomException.class)
+                .hasMessageContaining("캠퍼스가 존재하지 않습니다.");
+    }
+
     private User createUser() {
         return User.builder()
-            .loginEmail("abc@gmail.com")
-            .role(Role.GUEST)
-            .build();
+                .loginEmail("abc@gmail.com")
+                .role(Role.GUEST)
+                .build();
     }
 
     private User createUser2() {
         return User.builder()
-            .loginEmail("tbc@gmail.com")
-            .role(Role.USER)
-            .build();
+                .loginEmail("tbc@gmail.com")
+                .role(Role.USER)
+                .build();
     }
 }

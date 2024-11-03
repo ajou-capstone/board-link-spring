@@ -1,24 +1,19 @@
 package LinkerBell.campus_market_spring.controller;
 
 import LinkerBell.campus_market_spring.domain.Category;
-import LinkerBell.campus_market_spring.dto.AuthUserDto;
-import LinkerBell.campus_market_spring.dto.ItemSearchRequestDto;
-import LinkerBell.campus_market_spring.dto.ItemSearchResponseDto;
-import LinkerBell.campus_market_spring.dto.SliceResponse;
+import LinkerBell.campus_market_spring.dto.*;
 import LinkerBell.campus_market_spring.global.auth.Login;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.service.ItemService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 
@@ -54,6 +49,39 @@ public class ItemController {
         return ResponseEntity.ok(sliceResponse);
     }
 
+    @PostMapping
+    public ResponseEntity<ItemRegisterResponseDto> itemRegister(@Login AuthUserDto authUserDto,
+                                                                @Valid @RequestBody ItemRegisterRequestDto itemRegisterRequestDto) {
+        validThumbnail(itemRegisterRequestDto);
+        validItemPhotos(itemRegisterRequestDto);
+
+        ItemRegisterResponseDto itemRegisterResponseDto = itemService.itemRegister(authUserDto.getUserId(), itemRegisterRequestDto);
+        return ResponseEntity.ok(itemRegisterResponseDto);
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<ItemCategoryResponseDto> itemCategoriesReturn() {
+        return ResponseEntity.ok(new ItemCategoryResponseDto(Category.values()));
+    }
+
+    private void validThumbnail(ItemRegisterRequestDto itemRegisterRequestDto) {
+        if (itemRegisterRequestDto.getThumbnail() == null) {
+            itemRegisterRequestDto.setThumbnail("https://www.default.com");
+        }
+    }
+
+    private void validItemPhotos(ItemRegisterRequestDto itemRegisterRequestDto) {
+        if (itemRegisterRequestDto.getImages() != null) {
+            if (itemRegisterRequestDto.getImages().size() > 5) {
+                throw new CustomException(ErrorCode.INVALID_ITEM_PHOTOS_COUNT);
+            } else if (itemRegisterRequestDto.getImages().size() !=
+                    itemRegisterRequestDto.getImages().stream().distinct().count()) {
+                throw new CustomException(ErrorCode.DUPLICATE_ITEM_PHOTOS);
+            }
+        }
+    }
+
+
     private void pageableValidate(Pageable pageable) {
         if (pageable.getSort().stream().count() != 1) {
             throw new CustomException(ErrorCode.INVALID_SORT);
@@ -83,4 +111,5 @@ public class ItemController {
             }
         }
     }
+
 }

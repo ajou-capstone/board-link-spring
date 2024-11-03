@@ -30,21 +30,11 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
 
 
     @Override
-    public SliceResponse<ItemSearchResponseDto> itemSearch(Long userId, String name, Category category, Integer minPrice, Integer maxPrice, Pageable pageable) {
+    public SliceResponse<ItemSearchResponseDto> itemSearch(Long campusId, String name, Category category, Integer minPrice, Integer maxPrice, Pageable pageable) {
         QItem item = QItem.item;
         QUser user = QUser.user;
         QChatRoom chatRoom = QChatRoom.chatRoom;
         QLike like = QLike.like;
-
-        Long userCampusId = queryFactory
-                .select(user.campus.campusId)
-                .from(user)
-                .where(user.userId.eq(userId))
-                .fetchOne();
-
-        if (userCampusId == null) {
-            throw new CustomException(ErrorCode.CAMPUS_NOT_FOUND);
-        }
 
         JPAQuery<ItemSearchResponseDto> query = queryFactory
                 .select(new QItemSearchResponseDto(
@@ -66,7 +56,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                         itemNameContains(name),
                         itemCategoryEq(category),
                         itemPriceBetween(minPrice, maxPrice),
-                        item.campus.campusId.eq(userCampusId),
+                        item.campus.campusId.eq(campusId),
                         item.isDeleted.eq(false)
                 )
                 .groupBy(item.itemId)

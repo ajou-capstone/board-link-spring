@@ -24,6 +24,7 @@ public class Item extends BaseEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "campus_id")
     private Campus campus;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_buyer_id", nullable = true)
     private User userBuyer;
@@ -36,10 +37,12 @@ public class Item extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Category category;
 
+    @Builder.Default
     private ItemStatus itemStatus = ItemStatus.FORSALE;
 
     private String thumbnail;
 
+    @Builder.Default
     private boolean isDeleted = false;
 
 }
