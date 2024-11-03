@@ -29,7 +29,7 @@ public class QUser extends EntityPathBase<User> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
 
-    public final BooleanPath idDeleted = createBoolean("idDeleted");
+    public final BooleanPath isDeleted = createBoolean("isDeleted");
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> lastModifiedDate = _super.lastModifiedDate;

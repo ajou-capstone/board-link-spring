@@ -13,13 +13,20 @@ import java.util.List;
 
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
+
     ChatMessage findTopByIsReadTrueOrderByCreatedDateDesc();
 
     @Query("SELECT cm.messageId FROM ChatMessage cm WHERE cm.chatRoom = :chatRoom AND cm.createdDate >= :sevenDaysAgo ORDER BY cm.createdDate DESC")
-    List<Long> findMessageIdsByChatRoomAndRecentDays(@Param("chatRoom") ChatRoom chatRoom, @Param("sevenDaysAgo") LocalDateTime sevenDaysAgo);
+    List<Long> findMessageIdsByChatRoomAndRecentDays(@Param("chatRoom") ChatRoom chatRoom,
+        @Param("sevenDaysAgo") LocalDateTime sevenDaysAgo);
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE ChatMessage cm SET cm.isRead = true WHERE cm.messageId = :messageId")
     void updateByIsReadTrueByMessageId(@Param("messageId") Long messageId);
 
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE ChatMessage cm SET cm.createdDate = :newCreatedDate WHERE cm.messageId = :messageId")
+    void updateCreatedDateByMessageId(@Param("messageId") Long messageId,
+        @Param("newCreatedDate") LocalDateTime newCreatedDate);
 }
+

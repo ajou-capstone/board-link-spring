@@ -1,6 +1,7 @@
 package LinkerBell.campus_market_spring.domain;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.*;
 
 import static jakarta.persistence.FetchType.LAZY;
@@ -12,6 +13,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatMessage extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long messageId;

@@ -149,8 +149,10 @@ class ChatRoomServiceTest {
         // given
         when(userRepository.findById(buyer.getUserId())).thenReturn(Optional.of(buyer));
         when(chatRoomRepository.findAll()).thenReturn(List.of(chatRoom));
-        when(chatPropertiesRepository.findByUserAndChatRoom(buyer, chatRoom)).thenReturn(chatProperties);
-        when(chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc()).thenReturn(chatMessage);
+        when(chatPropertiesRepository.findByUserAndChatRoom(buyer, chatRoom)).thenReturn(
+            chatProperties);
+        when(chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc()).thenReturn(
+            chatMessage);
 
         // when
         List<ChatRoomDataResponseDto> chatRooms = chatRoomService.getChatRooms(authUserDto);
@@ -162,7 +164,7 @@ class ChatRoomServiceTest {
         assertEquals(seller.getUserId(), responseDto.getUserId());
         assertEquals(item.getItemId(), responseDto.getItemId());
         assertEquals(seller.getNickname(), responseDto.getTitle());
-        assertEquals(chatProperties.isAlarm(), responseDto.isAlarm());
+        assertEquals(chatProperties.isAlarm(), responseDto.getIsAlarm());
         assertEquals(chatMessage.getMessageId(), responseDto.getMessageId());
     }
 
@@ -173,8 +175,10 @@ class ChatRoomServiceTest {
         authUserDto.setUserId(seller.getUserId()); // 판매자로 설정
         when(userRepository.findById(seller.getUserId())).thenReturn(Optional.of(seller));
         when(chatRoomRepository.findAll()).thenReturn(List.of(chatRoom));
-        when(chatPropertiesRepository.findByUserAndChatRoom(seller, chatRoom)).thenReturn(chatProperties);
-        when(chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc()).thenReturn(chatMessage);
+        when(chatPropertiesRepository.findByUserAndChatRoom(seller, chatRoom)).thenReturn(
+            chatProperties);
+        when(chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc()).thenReturn(
+            chatMessage);
 
         // when
         List<ChatRoomDataResponseDto> chatRooms = chatRoomService.getChatRooms(authUserDto);
@@ -186,7 +190,7 @@ class ChatRoomServiceTest {
         assertEquals(buyer.getUserId(), responseDto.getUserId());
         assertEquals(item.getItemId(), responseDto.getItemId());
         assertEquals(buyer.getNickname(), responseDto.getTitle());
-        assertEquals(chatProperties.isAlarm(), responseDto.isAlarm());
+        assertEquals(chatProperties.isAlarm(), responseDto.getIsAlarm());
         assertEquals(chatMessage.getMessageId(), responseDto.getMessageId());
     }
 }
