@@ -14,12 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class ChatPropertiesController {
+
     private final ChatPropertiesService chatPropertiesService;
 
     // 채팅방 알람 설정하기
     @PatchMapping("api/v1/chat/{chatRoomId}/alarm")
-    public ResponseEntity<Void> patchAlarm(@PathVariable("chatRoomId") Long chatRoomId, @RequestBody ChatAlarmRequestDto chatAlarmRequestDto, @Login AuthUserDto authUserDto) {
-        chatPropertiesService.patchAlarm(chatRoomId, chatAlarmRequestDto.isAlarm(), authUserDto.getUserId());
+    public ResponseEntity<Void> patchAlarm(@PathVariable("chatRoomId") Long chatRoomId,
+        @RequestBody ChatAlarmRequestDto chatAlarmRequestDto, @Login AuthUserDto authUserDto) {
+        chatPropertiesService.patchAlarm(chatRoomId, chatAlarmRequestDto.getIsAlarm(),
+            authUserDto.getUserId());
         return ResponseEntity.noContent().build();
     }
 }

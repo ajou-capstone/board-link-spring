@@ -1,8 +1,11 @@
 package LinkerBell.campus_market_spring.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 @Getter
 public class ChatAlarmRequestDto {
-    private boolean isAlarm;
+
+    @JsonProperty(value = "isAlarm")
+    private Boolean isAlarm;
 }

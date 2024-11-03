@@ -5,6 +5,8 @@ import LinkerBell.campus_market_spring.domain.ChatRoom;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.dto.ChatMessageResponseDto;
 import LinkerBell.campus_market_spring.dto.RecentChatMessageResponseDto;
+import LinkerBell.campus_market_spring.global.error.ErrorCode;
+import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.repository.ChatMessageRepository;
 import LinkerBell.campus_market_spring.repository.ChatRoomRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -56,8 +59,9 @@ class ChatMessageServiceTest {
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(chatRoomRepository.findByUser(user)).thenReturn(Collections.singletonList(chatRoom));
-        when(chatMessageRepository.findMessageIdsByChatRoomAndRecentDays(eq(chatRoom), any(LocalDateTime.class)))
-                .thenReturn(Arrays.asList(messageId1, messageId2));
+        when(chatMessageRepository.findMessageIdsByChatRoomAndRecentDays(eq(chatRoom),
+            any(LocalDateTime.class)))
+            .thenReturn(Arrays.asList(messageId1, messageId2));
 
         // when
         List<RecentChatMessageResponseDto> result = chatMessageService.getRecentMessageList(userId);
@@ -75,14 +79,13 @@ class ChatMessageServiceTest {
         // given
         Long userId = 1L;
 
-        // Mock userRepository to return empty (user not found)
+        // userRepository가 userId로 조회 시 empty를 반환하도록 설정 (사용자 없음)
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-        // when
-        List<RecentChatMessageResponseDto> result = chatMessageService.getRecentMessageList(userId);
-
-        // then
-        assertThat(result).isEmpty(); // 사용자 없으면 빈 리스트 반환
+        // when & then
+        assertThatThrownBy(() -> chatMessageService.getRecentMessageList(userId))
+            .isInstanceOf(CustomException.class)
+            .hasMessageContaining(ErrorCode.USER_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -102,8 +105,9 @@ class ChatMessageServiceTest {
         // Mocking repositories
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(chatRoomRepository.findByUser(user)).thenReturn(Collections.singletonList(chatRoom));
-        when(chatMessageRepository.findMessageIdsByChatRoomAndRecentDays(eq(chatRoom), any(LocalDateTime.class)))
-                .thenReturn(Collections.emptyList());
+        when(chatMessageRepository.findMessageIdsByChatRoomAndRecentDays(eq(chatRoom),
+            any(LocalDateTime.class)))
+            .thenReturn(Collections.emptyList());
 
         // when
         List<RecentChatMessageResponseDto> result = chatMessageService.getRecentMessageList(userId);

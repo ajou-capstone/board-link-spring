@@ -2,8 +2,10 @@ package LinkerBell.campus_market_spring.repository;
 
 import LinkerBell.campus_market_spring.domain.ChatMessage;
 import LinkerBell.campus_market_spring.domain.ChatRoom;
+import LinkerBell.campus_market_spring.domain.ContentType;
 import LinkerBell.campus_market_spring.domain.User;
-import org.junit.jupiter.api.DisplayName;
+import jakarta.persistence.EntityManager;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-//@AutoConfigureTestDatabase(replace = Replace.NONE) // 실제 DB 사용 시 추가
 class ChatMessageRepositoryTest {
 
     @Autowired
@@ -29,55 +30,54 @@ class ChatMessageRepositoryTest {
     private UserRepository userRepository;
 
     @Test
-    @DisplayName("findLastReadMessage()로 가장 최근의 읽음 처리된 메시지를 조회")
-    void findLastReadMessage_ShouldReturnMostRecentReadMessage() {
+    void findMessageIdsByChatRoomAndRecentDays_ShouldReturnMessagesInLastSevenDays() {
         // given
-        // 1. 테스트용 User와 ChatRoom 생성 및 저장
-        User user = new User();
-        user.setNickname("testUser");
-        userRepository.save(user);
+        ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom());
+        User user = userRepository.save(new User());
 
-        ChatRoom chatRoom = ChatRoom.builder()
-                .user(user)
-                .build();
-        chatRoomRepository.save(chatRoom);
+        // Save default messages
+        ChatMessage recentMessage = ChatMessage.builder()
+            .chatRoom(chatRoom)
+            .user(user)
+            .content("Recent message")
+            .contentType(ContentType.TEXT)
+            .isRead(true)
+            .build();
 
-        // 2. 여러 개의 ChatMessage 객체 생성 및 저장
-        ChatMessage message1 = ChatMessage.builder()
-                .chatRoom(chatRoom)
-                .user(user)
-                .content("First message")
-                .isRead(true)
-                .build();
-        message1.setCreatedDate(LocalDateTime.now().minusMinutes(10)); // 10분 전 생성
-        chatMessageRepository.save(message1);
+        ChatMessage oldMessage = ChatMessage.builder()
+            .chatRoom(chatRoom)
+            .user(user)
+            .content("Old message")
+            .contentType(ContentType.TEXT)
+            .isRead(true)
+            .build();
 
-        ChatMessage message2 = ChatMessage.builder()
-                .chatRoom(chatRoom)
-                .user(user)
-                .content("Second message")
-                .isRead(false)
-                .build();
-        message2.setCreatedDate(LocalDateTime.now().minusMinutes(5)); // 5분 전 생성
-        chatMessageRepository.save(message2);
+        chatMessageRepository.save(recentMessage);
+        chatMessageRepository.save(oldMessage);
 
-        ChatMessage message3 = ChatMessage.builder()
-                .chatRoom(chatRoom)
-                .user(user)
-                .content("Most recent read message")
-                .isRead(true)
-                .build();
-        message3.setCreatedDate(LocalDateTime.now()); // 가장 최근에 생성
-        chatMessageRepository.save(message3);
+        // Update createdDate explicitly for testing
+        chatMessageRepository.updateCreatedDateByMessageId(recentMessage.getMessageId(),
+            LocalDateTime.now().minusDays(1)); // 1 day ago
+        chatMessageRepository.updateCreatedDateByMessageId(oldMessage.getMessageId(),
+            LocalDateTime.now().minusDays(10)); // 10 days ago
 
         // when
-        ChatMessage lastReadMessage = chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc();
+        LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
+        List<Long> messageIds = chatMessageRepository.findMessageIdsByChatRoomAndRecentDays(
+            chatRoom, sevenDaysAgo);
+
+        // print for debugging
+        System.out.println("seven days ago : " + sevenDaysAgo);
+        for (Long id : messageIds) {
+            System.out.println(
+                "Message ID: " + id + ", Created Date: " + chatMessageRepository.findById(id).get()
+                    .getCreatedDate());
+        }
 
         // then
-        assertThat(lastReadMessage).isNotNull(); // 결과가 null이 아닌지 확인
-        assertThat(lastReadMessage.getContent()).isEqualTo("Most recent read message"); // 내용이 예상과 일치하는지 확인
-        assertThat(lastReadMessage.getCreatedDate()).isEqualTo(message3.getCreatedDate()); // 생성 날짜 확인
-        assertThat(lastReadMessage.isRead()).isTrue(); // isRead가 true인지 확인
+        assertThat(messageIds).containsExactly(
+            recentMessage.getMessageId()); // Should only contain recentMessage
+        assertThat(messageIds).doesNotContain(
+            oldMessage.getMessageId()); // Should not contain oldMessage
     }
 }
-
