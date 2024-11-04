@@ -21,20 +21,24 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class ItemService {
+
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final ItemPhotosRepository itemPhotosRepository;
 
     @Transactional(readOnly = true)
-    public SliceResponse<ItemSearchResponseDto> itemSearch(Long userId, ItemSearchRequestDto itemSearchRequestDto) {
+    public SliceResponse<ItemSearchResponseDto> itemSearch(Long userId,
+        ItemSearchRequestDto itemSearchRequestDto) {
         User user = getUserWithCampus(userId);
 
-        return itemRepository.itemSearch(user.getCampus().getCampusId(), itemSearchRequestDto.getName(),
-                itemSearchRequestDto.getCategory(), itemSearchRequestDto.getMinPrice(),
-                itemSearchRequestDto.getMaxPrice(), itemSearchRequestDto.getPageable());
+        return itemRepository.itemSearch(user.getCampus().getCampusId(),
+            itemSearchRequestDto.getName(),
+            itemSearchRequestDto.getCategory(), itemSearchRequestDto.getMinPrice(),
+            itemSearchRequestDto.getMaxPrice(), itemSearchRequestDto.getPageable());
     }
 
-    public ItemRegisterResponseDto itemRegister(Long userId, ItemRegisterRequestDto itemRegisterRequestDto) {
+    public ItemRegisterResponseDto itemRegister(Long userId,
+        ItemRegisterRequestDto itemRegisterRequestDto) {
         User user = getUserWithCampus(userId);
 
         Item savedItem = itemRegisterDtoToItem(itemRegisterRequestDto, user);
@@ -54,7 +58,7 @@ public class ItemService {
 
         Item item = getItem(itemId);
 
-        if(item.isDeleted()) {
+        if (item.isDeleted()) {
             throw new CustomException(ErrorCode.DELETED_ITEM_ID);
         }
 
@@ -72,12 +76,12 @@ public class ItemService {
 
     private Item getItem(Long itemId) {
         return itemRepository.findById(itemId)
-                .orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
+            .orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
     }
 
     private User getUserWithCampus(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if (user.getCampus() == null) {
             throw new CustomException(ErrorCode.CAMPUS_NOT_FOUND);
@@ -85,26 +89,27 @@ public class ItemService {
         return user;
     }
 
-    private List<ItemPhotos> imagesToItemPhotos(ItemRegisterRequestDto itemRegisterRequestDto, Item savedItem) {
+    private List<ItemPhotos> imagesToItemPhotos(ItemRegisterRequestDto itemRegisterRequestDto,
+        Item savedItem) {
         return itemRegisterRequestDto
-                .getImages()
-                .stream()
-                .map(photo -> {
-                    ItemPhotos itemPhoto = new ItemPhotos();
-                    itemPhoto.registerItemPhotos(savedItem, photo);
-                    return itemPhoto;
-                }).toList();
+            .getImages()
+            .stream()
+            .map(photo -> {
+                ItemPhotos itemPhoto = new ItemPhotos();
+                itemPhoto.registerItemPhotos(savedItem, photo);
+                return itemPhoto;
+            }).toList();
     }
 
     private Item itemRegisterDtoToItem(ItemRegisterRequestDto itemRegisterRequestDto, User user) {
         return Item.builder()
-                .user(user)
-                .campus(user.getCampus())
-                .title(itemRegisterRequestDto.getTitle())
-                .category(itemRegisterRequestDto.getCategory())
-                .description(itemRegisterRequestDto.getDescription())
-                .price(itemRegisterRequestDto.getPrice())
-                .thumbnail(itemRegisterRequestDto.getThumbnail())
-                .build();
+            .user(user)
+            .campus(user.getCampus())
+            .title(itemRegisterRequestDto.getTitle())
+            .category(itemRegisterRequestDto.getCategory())
+            .description(itemRegisterRequestDto.getDescription())
+            .price(itemRegisterRequestDto.getPrice())
+            .thumbnail(itemRegisterRequestDto.getThumbnail())
+            .build();
     }
 }

@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 @Builder
 public class ItemSearchResponseDto {
+
     private Long itemId;
     private Long userId;
     private String nickname;
@@ -20,8 +21,8 @@ public class ItemSearchResponseDto {
 
     @QueryProjection
     public ItemSearchResponseDto(Long itemId, Long userId, String nickname, String thumbnail,
-                                 String title, Integer price, Integer chatCount, Integer likeCount,
-                                 ItemStatus itemStatus) {
+        String title, Integer price, Integer chatCount, Integer likeCount,
+        ItemStatus itemStatus) {
         this.itemId = itemId;
         this.userId = userId;
         this.nickname = nickname;

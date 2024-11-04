@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemDetailsViewResponseDto {
+
     private Long itemId;
     private Long userId;
     private Long campusId;

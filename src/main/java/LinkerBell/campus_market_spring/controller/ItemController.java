@@ -22,15 +22,16 @@ import java.util.Arrays;
 @RestController
 @RequestMapping("/api/v1/items")
 public class ItemController {
+
     private final ItemService itemService;
 
     @GetMapping
     public ResponseEntity<SliceResponse<ItemSearchResponseDto>> itemSearch(@Login AuthUserDto user,
-                                                                           @RequestParam(required = false) String name,
-                                                                           @RequestParam(required = false) Category category,
-                                                                           @RequestParam(required = false) Integer minPrice,
-                                                                           @RequestParam(required = false) Integer maxPrice,
-                                                                           @PageableDefault(page = 0, size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) Category category,
+        @RequestParam(required = false) Integer minPrice,
+        @RequestParam(required = false) Integer maxPrice,
+        @PageableDefault(page = 0, size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
 
         ItemSearchRequestDto itemSearchRequestDto = new ItemSearchRequestDto();
         itemSearchRequestDto.setName(name);
@@ -45,18 +46,20 @@ public class ItemController {
 
         itemSearchRequestDto.setPageable(pageable);
 
-        SliceResponse<ItemSearchResponseDto> sliceResponse = itemService.itemSearch(user.getUserId(), itemSearchRequestDto);
+        SliceResponse<ItemSearchResponseDto> sliceResponse = itemService.itemSearch(
+            user.getUserId(), itemSearchRequestDto);
         return ResponseEntity.ok(sliceResponse);
     }
 
     @PostMapping
     public ResponseEntity<ItemRegisterResponseDto> itemRegister(@Login AuthUserDto authUserDto,
-                                                                @Valid @RequestBody ItemRegisterRequestDto itemRegisterRequestDto) {
+        @Valid @RequestBody ItemRegisterRequestDto itemRegisterRequestDto) {
         validThumbnail(itemRegisterRequestDto);
         validItemPhotos(itemRegisterRequestDto);
         validCategory(itemRegisterRequestDto);
 
-        ItemRegisterResponseDto itemRegisterResponseDto = itemService.itemRegister(authUserDto.getUserId(), itemRegisterRequestDto);
+        ItemRegisterResponseDto itemRegisterResponseDto = itemService.itemRegister(
+            authUserDto.getUserId(), itemRegisterRequestDto);
         return ResponseEntity.ok(itemRegisterResponseDto);
     }
 
@@ -67,22 +70,24 @@ public class ItemController {
     }
 
     @GetMapping("/categories")
-    public ResponseEntity<ItemCategoryResponseDto> itemCategoriesReturn(@Login AuthUserDto authUserDto) {
+    public ResponseEntity<ItemCategoryResponseDto> itemCategoriesReturn(
+        @Login AuthUserDto authUserDto) {
         return ResponseEntity.ok(new ItemCategoryResponseDto(Category.values()));
     }
 
     @GetMapping("/{itemId}")
-    public ResponseEntity<ItemDetailsViewResponseDto> viewItemDetails(@Login AuthUserDto authUserDto,
-                                                                      @PathVariable("itemId") Long itemId) {
+    public ResponseEntity<ItemDetailsViewResponseDto> viewItemDetails(
+        @Login AuthUserDto authUserDto,
+        @PathVariable("itemId") Long itemId) {
         validItemId(itemId);
         return ResponseEntity.ok(itemService.viewItemDetails(authUserDto.getUserId(), itemId));
     }
 
     private void validItemId(Long itemId) {
-        if(itemId == null) {
+        if (itemId == null) {
             throw new CustomException(ErrorCode.INVALID_ITEM_ID);
         }
-        if(itemId < 1) {
+        if (itemId < 1) {
             throw new CustomException(ErrorCode.INVALID_ITEM_ID);
         }
     }
@@ -98,7 +103,7 @@ public class ItemController {
             if (itemRegisterRequestDto.getImages().size() > 5) {
                 throw new CustomException(ErrorCode.INVALID_ITEM_PHOTOS_COUNT);
             } else if (itemRegisterRequestDto.getImages().size() !=
-                    itemRegisterRequestDto.getImages().stream().distinct().count()) {
+                itemRegisterRequestDto.getImages().stream().distinct().count()) {
                 throw new CustomException(ErrorCode.DUPLICATE_ITEM_PHOTOS);
             }
         }
