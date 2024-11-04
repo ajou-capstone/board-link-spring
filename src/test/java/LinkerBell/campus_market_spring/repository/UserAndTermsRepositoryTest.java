@@ -9,6 +9,7 @@ import java.util.List;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -54,6 +55,7 @@ class UserAndTermsRepositoryTest {
     }
 
     @Test
+    @DisplayName("사용자 약관 동의 정보 가져오기 테스트")
     public void findByUserIdTest() {
         // given
 
@@ -65,17 +67,7 @@ class UserAndTermsRepositoryTest {
     }
 
     @Test
-    public void findAllByUserTest() {
-        // given
-
-        // when
-        List<UserAndTerms> userAndTerms = userAndTermsRepository.findAllByUser(user);
-        // then
-
-        assertThat(userAndTerms.size()).isEqualTo(2);
-    }
-
-    @Test
+    @DisplayName("약관 동의 테스트")
     public void updateUTTest() {
         // given
         List<UserAndTerms> userAndTerms = Lists.newArrayList(userAndTerms1, userAndTerms2);

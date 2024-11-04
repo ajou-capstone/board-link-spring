@@ -73,7 +73,7 @@ class TermsServiceTest {
         // given
         given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(user));
         given(termsRepository.findAll()).willReturn(Lists.newArrayList(terms1, terms2));
-        given(userAndTermsRepository.findAllByUser(any(User.class)))
+        given(userAndTermsRepository.findAllByUserId(anyLong()))
             .willReturn(Lists.newArrayList(userAndTerms1, userAndTerms2));
         // when
         List<TermsResponseDto> termsResponseDtoList =
@@ -90,7 +90,7 @@ class TermsServiceTest {
     public void getTermsAndUserInfoForNewUserTest() {
         // given
         given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(user));
-        given(userAndTermsRepository.findAllByUser(any(User.class)))
+        given(userAndTermsRepository.findAllByUserId(anyLong()))
             .willReturn(Lists.newArrayList());
         given(termsRepository.findAll()).willReturn(Lists.newArrayList(terms1, terms2));
 
@@ -116,7 +116,7 @@ class TermsServiceTest {
         terms2.setLastModifiedDate(LocalDateTime.MAX);
 
         given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(user));
-        given(userAndTermsRepository.findAllByUser(any(User.class))).willReturn(
+        given(userAndTermsRepository.findAllByUserId(anyLong())).willReturn(
             Lists.newArrayList(userAndTerms1, userAndTerms2));
         given(termsRepository.findAll()).willReturn(Lists.newArrayList(terms1, terms2, terms3));
         // when
@@ -128,9 +128,6 @@ class TermsServiceTest {
         assertThat(termsResponseDtoList.get(0).isAgree()).isTrue();
         assertThat(termsResponseDtoList.get(1).isAgree()).isFalse();
         assertThat(termsResponseDtoList.get(2).isAgree()).isFalse();
-
-        // after
-        terms2.setLastModifiedDate(LocalDateTime.now());
     }
 
     @Test

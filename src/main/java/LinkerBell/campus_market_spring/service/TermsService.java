@@ -40,7 +40,7 @@ public class TermsService {
             log.error("empty terms array");
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
-        List<UserAndTerms> userAndTerms = userAndTermsRepository.findAllByUser(user);
+        List<UserAndTerms> userAndTerms = userAndTermsRepository.findAllByUserId(userId);
 
         if (CollectionUtils.isEmpty(userAndTerms)) {
             userAndTerms.addAll(createUserAndNotAgreementTerms(terms, user));
