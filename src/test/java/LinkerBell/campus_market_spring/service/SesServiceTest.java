@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import org.assertj.core.util.Lists;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -49,6 +50,7 @@ class SesServiceTest {
     UserRepository userRepository;
 
     @Test
+    @DisplayName("이메일 전송 성공 테스트")
     public void sendEmailSuccessTest() {
         // given
         String email = "abc@gmail.com";
@@ -72,6 +74,7 @@ class SesServiceTest {
     }
 
     @Test
+    @DisplayName("이메일 전송 실패 테스트")
     public void sendEmailFailureTest() {
         // given
         String email = "abc@gmail.com";
@@ -91,6 +94,7 @@ class SesServiceTest {
     }
 
     @Test
+    @DisplayName("허용하지 않는 이메일 형식 에러 테스트")
     public void emailNotValidatedTest() {
         // given
         String email1 = "";
@@ -109,6 +113,7 @@ class SesServiceTest {
     }
 
     @Test
+    @DisplayName("인증 코드 불일치 에러 테스트")
     public void verifyCodeFailureTest() {
         // given
         sendEmailSuccessTest();
@@ -122,6 +127,7 @@ class SesServiceTest {
     }
 
     @Test
+    @DisplayName("학교 이메일 중복 에러 테스트")
     public void duplicateSchoolEmailTest() {
         // given
         Campus campus = Campus.builder().email("school.com").universityName("test").region("수원")
