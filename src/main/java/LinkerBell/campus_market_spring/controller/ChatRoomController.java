@@ -30,6 +30,16 @@ public class ChatRoomController {
         return ResponseEntity.ok(chatRoomResponseDto);
     }
 
+    // 채팅방 1개 정보 가져오기
+    @GetMapping("api/v1/chat/room/{chatRoomId}")
+    public ResponseEntity<ChatRoomDataResponseDto> getChatRoom(@Login AuthUserDto authUserDto,
+        @PathVariable Long chatRoomId) {
+        ChatRoomDataResponseDto chatRoomDataResponseDto = chatRoomService.getChatRoom(
+            authUserDto.getUserId(), chatRoomId);
+
+        return ResponseEntity.ok(chatRoomDataResponseDto);
+    }
+
     // 채팅방 목록 가져오기
     @GetMapping("api/v1/chat/rooms")
     public ResponseEntity<ChatRoomDataCollectionResponseDto> getChatRooms(@Login AuthUserDto user) {
@@ -38,6 +48,7 @@ public class ChatRoomController {
         return ResponseEntity.ok(
             ChatRoomDataCollectionResponseDto.from(chatRoomDataResponseDtoList));
     }
+
 
     // 채팅방 나가기
     @PatchMapping("api/v1/chat/{chatRoomId}")

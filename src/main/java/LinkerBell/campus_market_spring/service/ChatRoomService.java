@@ -109,4 +109,40 @@ public class ChatRoomService {
         // 채팅방에서 userCount - 1 하기
         chatRoomRepository.decrementUserCountByChatRoomId(chatRoomId);
     }
+
+    // 채팅방 1개 정보 가져오기
+    @Transactional(readOnly = true)
+    public ChatRoomDataResponseDto getChatRoom(Long userId, Long chatRoomId) {
+        ChatRoomDataResponseDto chatRoomDataResponseDto;
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+            .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
+
+        // 내가 구매자인 경우
+        if (chatRoom.getUser().getUserId().equals(user.getUserId())) {
+            chatRoomDataResponseDto = ChatRoomDataResponseDto.builder()
+                .chatRoomId(chatRoom.getChatRoomId())
+                .userId(chatRoom.getItem().getUser().getUserId())
+                .itemId(chatRoom.getItem().getItemId())
+                .title(chatRoom.getItem().getUser().getNickname()) // 판매자의 닉네임이 제목에 보이게
+                .isAlarm(
+                    chatPropertiesRepository.findByUserAndChatRoom(user, chatRoom).isAlarm())
+                .messageId(chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc()
+                    .getMessageId()).build();
+        } else { // 내가 판매자인 경우
+            chatRoomDataResponseDto = ChatRoomDataResponseDto.builder()
+                .chatRoomId(chatRoom.getChatRoomId()).userId(chatRoom.getUser().getUserId())
+                .itemId(chatRoom.getItem().getItemId())
+                .title(chatRoom.getUser().getNickname()) // 구매자의 닉네임이 제목에 보이게
+                .isAlarm(
+                    chatPropertiesRepository.findByUserAndChatRoom(user, chatRoom).isAlarm())
+                .messageId(chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc()
+                    .getMessageId()).build();
+        }
+
+        return chatRoomDataResponseDto;
+    }
 }
