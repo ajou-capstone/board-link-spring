@@ -23,10 +23,5 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE ChatMessage cm SET cm.isRead = true WHERE cm.messageId = :messageId")
     void updateByIsReadTrueByMessageId(@Param("messageId") Long messageId);
-
-    @Modifying(clearAutomatically = true)
-    @Query("UPDATE ChatMessage cm SET cm.createdDate = :newCreatedDate WHERE cm.messageId = :messageId")
-    void updateCreatedDateByMessageId(@Param("messageId") Long messageId,
-        @Param("newCreatedDate") LocalDateTime newCreatedDate);
 }
 
