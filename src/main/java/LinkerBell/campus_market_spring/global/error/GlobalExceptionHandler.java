@@ -29,6 +29,9 @@ public class GlobalExceptionHandler {
         } else if (ex.getName().equals("category")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_CATEGORY);
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
+        } else if (ex.getName().equals("itemId")) {
+            ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_ID);
+            return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
         }
 
         throw ex;

@@ -49,6 +49,32 @@ public class ItemService {
 
     }
 
+    public ItemDetailsViewResponseDto viewItemDetails(Long userId, Long itemId) {
+        User user = getUserWithCampus(userId);
+
+        Item item = getItem(itemId);
+
+        if(item.isDeleted()) {
+            throw new CustomException(ErrorCode.DELETED_ITEM_ID);
+        }
+
+        if (UserCampusIsMatchedByItemCampus(user, item)) {
+            throw new CustomException(ErrorCode.NOT_MATCH_USER_CAMPUS_WITH_ITEM_CAMPUS);
+        }
+
+        return itemRepository.findByItemDetails(userId, itemId);
+
+    }
+
+    private boolean UserCampusIsMatchedByItemCampus(User user, Item item) {
+        return user.getCampus().getCampusId() != item.getCampus().getCampusId();
+    }
+
+    private Item getItem(Long itemId) {
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
+    }
+
     private User getUserWithCampus(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));

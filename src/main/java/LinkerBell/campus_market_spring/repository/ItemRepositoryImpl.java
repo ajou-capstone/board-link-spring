@@ -1,6 +1,7 @@
 package LinkerBell.campus_market_spring.repository;
 
 import LinkerBell.campus_market_spring.domain.*;
+import LinkerBell.campus_market_spring.dto.ItemDetailsViewResponseDto;
 import LinkerBell.campus_market_spring.dto.ItemSearchResponseDto;
 import LinkerBell.campus_market_spring.dto.QItemSearchResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
@@ -73,6 +74,68 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
         }
         return new SliceResponse<ItemSearchResponseDto>(new SliceImpl<>(content, pageable, hasNext));
     }
+
+    @Override
+    public ItemDetailsViewResponseDto findByItemDetails(Long userId, Long itemId) {
+        QItem item = QItem.item;
+        QUser user = QUser.user;
+        QCampus campus = QCampus.campus;
+        QLike like = QLike.like;
+        QItemPhotos itemPhotos = QItemPhotos.itemPhotos;
+        QChatRoom chatRoom = QChatRoom.chatRoom;
+
+        Item itemEntity = queryFactory
+                .selectFrom(item)
+                .join(item.user, user).fetchJoin()
+                .join(item.campus, campus).fetchJoin()
+                .where(item.itemId.eq(itemId))
+                .fetchOne();
+
+        List<String> images = queryFactory
+                .select(itemPhotos.imageAddress)
+                .from(itemPhotos)
+                .where(itemPhotos.item.itemId.eq(itemId))
+                .fetch();
+
+        Integer chatCount = queryFactory
+                .select(chatRoom.countDistinct().intValue())
+                .from(chatRoom)
+                .where(chatRoom.item.itemId.eq(itemId))
+                .fetchOne();
+        if (chatCount == null) chatCount = 0;
+
+
+        List<Like> likeEntity = queryFactory
+                .selectFrom(like)
+                .join(like.user, user).fetchJoin()
+                .where(like.item.itemId.eq(itemId))
+                .fetch();
+
+        int likeCount = likeEntity.size();
+        boolean isLiked = likeEntity.stream().anyMatch(injectLike -> injectLike.getUser().getUserId().equals(userId));
+
+        return itemDetailsToItemDetailsViewResponseDto(itemEntity, images, chatCount, likeCount, isLiked);
+    }
+
+    private ItemDetailsViewResponseDto itemDetailsToItemDetailsViewResponseDto(Item itemEntity, List<String> images, Integer chatCount, Integer likeCount, boolean isLiked) {
+        return ItemDetailsViewResponseDto.builder()
+                .itemId(itemEntity.getItemId())
+                .userId(itemEntity.getUser().getUserId())
+                .campusId(itemEntity.getCampus().getCampusId())
+                .nickname(itemEntity.getUser().getNickname())
+                .title(itemEntity.getTitle())
+                .description(itemEntity.getDescription())
+                .price(itemEntity.getPrice())
+                .category(itemEntity.getCategory())
+                .thumbnail(itemEntity.getThumbnail())
+                .images(images)
+                .chatCount(chatCount)
+                .likeCount(likeCount)
+                .isLiked(isLiked)
+                .itemStatus(itemEntity.getItemStatus())
+                .build();
+    }
+
 
     private BooleanExpression itemNameContains(String name) {
         return name != null ? item.title.containsIgnoreCase(name) : null;

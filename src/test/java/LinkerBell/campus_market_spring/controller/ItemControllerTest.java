@@ -536,6 +536,34 @@ class ItemControllerTest {
 
     }
 
+    @Test
+    @DisplayName("itemId에 null이 들어올 때")
+    public void NullItemIdTest() throws Exception {
+        Long itemId = null;
+        mockMvc.perform(get("/api/v1/items/" + itemId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(MethodArgumentTypeMismatchException.class))
+                .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
+                .andExpect(jsonPath("$.code").value(4026));
+
+        verify(itemService, times(0)).itemSearch(any(Long.class), any());
+    }
+
+    @Test
+    @DisplayName("itemId에 음수값 들어올 때")
+    public void MInusItemIdTest() throws Exception {
+        long itemId = -1L;
+        mockMvc.perform(get("/api/v1/items/" + itemId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(CustomException.class))
+                .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
+                .andExpect(jsonPath("$.code").value(4026));
+
+        verify(itemService, times(0)).itemSearch(any(Long.class), any());
+    }
+
 
     static class MockLoginArgumentResolver implements HandlerMethodArgumentResolver {
 

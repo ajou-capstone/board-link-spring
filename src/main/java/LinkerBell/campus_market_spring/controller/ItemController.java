@@ -54,14 +54,37 @@ public class ItemController {
                                                                 @Valid @RequestBody ItemRegisterRequestDto itemRegisterRequestDto) {
         validThumbnail(itemRegisterRequestDto);
         validItemPhotos(itemRegisterRequestDto);
+        validCategory(itemRegisterRequestDto);
 
         ItemRegisterResponseDto itemRegisterResponseDto = itemService.itemRegister(authUserDto.getUserId(), itemRegisterRequestDto);
         return ResponseEntity.ok(itemRegisterResponseDto);
     }
 
+    private void validCategory(ItemRegisterRequestDto itemRegisterRequestDto) {
+        if (itemRegisterRequestDto.getCategory() == null) {
+            itemRegisterRequestDto.setCategory(Category.OTHER);
+        }
+    }
+
     @GetMapping("/categories")
-    public ResponseEntity<ItemCategoryResponseDto> itemCategoriesReturn() {
+    public ResponseEntity<ItemCategoryResponseDto> itemCategoriesReturn(@Login AuthUserDto authUserDto) {
         return ResponseEntity.ok(new ItemCategoryResponseDto(Category.values()));
+    }
+
+    @GetMapping("/{itemId}")
+    public ResponseEntity<ItemDetailsViewResponseDto> viewItemDetails(@Login AuthUserDto authUserDto,
+                                                                      @PathVariable("itemId") Long itemId) {
+        validItemId(itemId);
+        return ResponseEntity.ok(itemService.viewItemDetails(authUserDto.getUserId(), itemId));
+    }
+
+    private void validItemId(Long itemId) {
+        if(itemId == null) {
+            throw new CustomException(ErrorCode.INVALID_ITEM_ID);
+        }
+        if(itemId < 1) {
+            throw new CustomException(ErrorCode.INVALID_ITEM_ID);
+        }
     }
 
     private void validThumbnail(ItemRegisterRequestDto itemRegisterRequestDto) {

@@ -1,8 +1,11 @@
 package LinkerBell.campus_market_spring.repository;
 
 import LinkerBell.campus_market_spring.domain.*;
+import LinkerBell.campus_market_spring.dto.ItemDetailsViewResponseDto;
 import LinkerBell.campus_market_spring.dto.ItemSearchResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
+import LinkerBell.campus_market_spring.global.error.ErrorCode;
+import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -14,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 @Transactional
@@ -41,6 +45,7 @@ class ItemRepositoryTest {
     List<Campus> campuses;
     List<Like> likes;
     List<ChatRoom> chatRooms;
+    List<ItemPhotos> itemPhotos;
 
     @BeforeEach
     void beforeEach() {
@@ -49,6 +54,7 @@ class ItemRepositoryTest {
         campuses = new ArrayList<>();
         likes = new ArrayList<>();
         chatRooms = new ArrayList<>();
+        itemPhotos = new ArrayList<>();
 
         for (int i = 0; i < 2; i++) {
             Campus campus = Campus.builder()
@@ -68,13 +74,6 @@ class ItemRepositoryTest {
             userRepository.save(user);
             users.add(user);
         }
-
-        User noCampusUser = User.builder()
-                .nickname("user5")
-                .role(Role.USER)
-                .build();
-        userRepository.save(noCampusUser);
-        users.add(noCampusUser);
 
         for (int i = 0; i < 25; i++) {
             Item item;
@@ -105,6 +104,18 @@ class ItemRepositoryTest {
             }
             itemRepository.save(item);
             items.add(item);
+        }
+        int j = 0;
+        for (int i = 0; i < 32; i++) {
+            ItemPhotos itemPhoto = ItemPhotos.builder()
+                    .imageAddress("https://testImage" + i)
+                    .item(items.get(j))
+                    .build();
+            if ((i + 1) % 2 == 0) {
+                j++;
+            }
+            itemPhotosRepository.save(itemPhoto);
+            itemPhotos.add(itemPhoto);
         }
 
         for (int i = 2; i < 5; i++) {
@@ -402,4 +413,136 @@ class ItemRepositoryTest {
             assertThat(savedItemPhotos.get(i).getImageAddress()).isEqualTo(itemPhotos.get(i).getImageAddress());
         }
     }
+
+    @Test
+    @DisplayName("기본적인 아이템 디테일 보기 테스트")
+    public void DefaultItemDetailsTest() throws Exception {
+        //given
+        Long userId = users.get(0).getUserId();
+        Long itemId = items.get(0).getItemId();
+        //when
+        ItemDetailsViewResponseDto itemDetails = itemRepository.findByItemDetails(userId, itemId);
+        //then
+        assertThat(itemDetails.getItemId()).isEqualTo(items.get(0).getItemId());
+        assertThat(itemDetails.getUserId()).isEqualTo(items.get(0).getUser().getUserId());
+        assertThat(itemDetails.getCampusId()).isEqualTo(items.get(0).getCampus().getCampusId());
+        assertThat(itemDetails.getNickname()).isEqualTo(items.get(0).getUser().getNickname());
+        assertThat(itemDetails.getTitle()).isEqualTo(items.get(0).getTitle());
+        assertThat(itemDetails.getDescription()).isEqualTo(items.get(0).getDescription());
+        assertThat(itemDetails.getPrice()).isEqualTo(items.get(0).getPrice());
+        assertThat(itemDetails.getCategory()).isEqualTo(items.get(0).getCategory());
+        assertThat(itemDetails.getThumbnail()).isEqualTo(items.get(0).getThumbnail());
+        assertThat(itemDetails.getImages().size()).isEqualTo(2);
+        assertThat(itemDetails.getChatCount()).isEqualTo(0);
+        assertThat(itemDetails.getLikeCount()).isEqualTo(2);
+        assertThat(itemDetails.isLiked()).isFalse();
+        assertThat(itemDetails.getItemStatus()).isEqualTo(items.get(0).getItemStatus());
+    }
+
+    @Test
+    @DisplayName("내가 좋아요 누른 상품 체크 여부 테스트")
+    public void ItemDetailsIsLikedTrueTest() throws Exception {
+        //given
+        Long userId = users.get(2).getUserId();
+        Long itemId = items.get(0).getItemId();
+        //when
+        ItemDetailsViewResponseDto itemDetails = itemRepository.findByItemDetails(userId, itemId);
+        //then
+        assertThat(itemDetails.getItemId()).isEqualTo(items.get(0).getItemId());
+        assertThat(itemDetails.getUserId()).isEqualTo(items.get(0).getUser().getUserId());
+        assertThat(itemDetails.getCampusId()).isEqualTo(items.get(0).getCampus().getCampusId());
+        assertThat(itemDetails.getNickname()).isEqualTo(items.get(0).getUser().getNickname());
+        assertThat(itemDetails.getTitle()).isEqualTo(items.get(0).getTitle());
+        assertThat(itemDetails.getDescription()).isEqualTo(items.get(0).getDescription());
+        assertThat(itemDetails.getPrice()).isEqualTo(items.get(0).getPrice());
+        assertThat(itemDetails.getCategory()).isEqualTo(items.get(0).getCategory());
+        assertThat(itemDetails.getThumbnail()).isEqualTo(items.get(0).getThumbnail());
+        assertThat(itemDetails.getImages().size()).isEqualTo(2);
+        assertThat(itemDetails.getChatCount()).isEqualTo(0);
+        assertThat(itemDetails.getLikeCount()).isEqualTo(2);
+        assertThat(itemDetails.isLiked()).isTrue();
+        assertThat(itemDetails.getItemStatus()).isEqualTo(items.get(0).getItemStatus());
+    }
+
+    @Test
+    @DisplayName("image count,chatCount,likeCount 0값 들어와지는지 테스트")
+    public void ItemDetailsLikeCountChatCountImagesZeroTest() throws Exception {
+        //given
+        Long userId = users.get(4).getUserId();
+        Long itemId = items.get(23).getItemId();
+        //when
+        ItemDetailsViewResponseDto itemDetails = itemRepository.findByItemDetails(userId, itemId);
+        //then
+        assertThat(itemDetails.getItemId()).isEqualTo(items.get(23).getItemId());
+        assertThat(itemDetails.getUserId()).isEqualTo(items.get(23).getUser().getUserId());
+        assertThat(itemDetails.getCampusId()).isEqualTo(items.get(23).getCampus().getCampusId());
+        assertThat(itemDetails.getNickname()).isEqualTo(items.get(23).getUser().getNickname());
+        assertThat(itemDetails.getTitle()).isEqualTo(items.get(23).getTitle());
+        assertThat(itemDetails.getDescription()).isEqualTo(items.get(23).getDescription());
+        assertThat(itemDetails.getPrice()).isEqualTo(items.get(23).getPrice());
+        assertThat(itemDetails.getCategory()).isEqualTo(items.get(23).getCategory());
+        assertThat(itemDetails.getThumbnail()).isEqualTo(items.get(23).getThumbnail());
+        assertThat(itemDetails.getImages().size()).isEqualTo(0);
+        assertThat(itemDetails.getChatCount()).isEqualTo(0);
+        assertThat(itemDetails.getLikeCount()).isEqualTo(0);
+        assertThat(itemDetails.isLiked()).isFalse();
+        assertThat(itemDetails.getItemStatus()).isEqualTo(items.get(23).getItemStatus());
+    }
+
+    @Test
+    @DisplayName("없는 아이템 아이디로 검색시 에러 테스트")
+    public void itemNotFoundTest() throws Exception {
+        //given
+        Long itemId = 9999999L;
+        //when
+        //then
+        assertThatThrownBy(() -> {
+            itemRepository.findById(itemId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
+        })
+                .isInstanceOf(CustomException.class)
+                .hasMessageContaining("아이템이 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("삭제된 아이템의 경우에 대한 에러 테스트")
+    public void deletedItemTest() throws Exception {
+        //given
+        Item deletedItem = Item.builder()
+                .user(users.get(2))
+                .campus(campuses.get(1))
+                .category(Category.FASHION_ACCESSORIES)
+                .title("deletedItem")
+                .price(10000)
+                .isDeleted(true)
+                .build();
+        Item savedDeletedItem = itemRepository.save(deletedItem);
+
+        //when
+        //then
+        assertThatThrownBy(() -> {
+            if(savedDeletedItem.isDeleted()) {
+                throw new CustomException(ErrorCode.DELETED_ITEM_ID);
+            }
+        })
+                .isInstanceOf(CustomException.class)
+                .hasMessageContaining("삭제된 아이템입니다.");
+    }
+
+    @Test
+    @DisplayName("유저와 아이템의 캠퍼스가 다를 경우에 대한 에러 테스트")
+    public void UserCampusIsMatchedByItemCampusTest() throws Exception {
+        User user = users.get(0);
+        Item item = items.get(5);
+
+        assertThatThrownBy(() -> {
+            if (user.getCampus().getCampusId() != item.getCampus().getCampusId()) {
+                throw new CustomException(ErrorCode.NOT_MATCH_USER_CAMPUS_WITH_ITEM_CAMPUS);
+            }
+        })
+                .isInstanceOf(CustomException.class)
+                .hasMessageContaining("아이템의 캠퍼스와 일치하지 않는 캠퍼스입니다.");
+        //then
+    }
+
 }
