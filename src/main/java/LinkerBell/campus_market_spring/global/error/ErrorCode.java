@@ -30,6 +30,7 @@ public enum ErrorCode {
     INVALID_THUMBNAIL(HttpStatus.BAD_REQUEST, 4023, "잘못된 썸네일 입니다."),
     INVALID_ITEM_PHOTOS(HttpStatus.BAD_REQUEST, 4024, "잘못된 이미지 입니다."),
     DUPLICATE_ITEM_PHOTOS(HttpStatus.BAD_REQUEST, 4025, "중복된 이미지가 있습니다."),
+    USER_TERMS_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, 4026, "사용자 약관 동의 정보가 없습니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다.");
 
