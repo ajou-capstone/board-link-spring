@@ -6,6 +6,7 @@ import LinkerBell.campus_market_spring.dto.SenderEmailDto;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.repository.CampusRepository;
+import LinkerBell.campus_market_spring.repository.UserRepository;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -30,6 +31,7 @@ public class SesService {
     private final SesV2AsyncClient sesV2AsyncClient;
     private final SpringTemplateEngine templateEngine;
     private final CampusRepository campusRepository;
+    private final UserRepository userRepository;
 
     private final LoadingCache<String, EmailAndCode> stores = CacheBuilder.newBuilder().maximumSize(100)
         .expireAfterWrite(5, TimeUnit.MINUTES).build(new CacheLoader<String, EmailAndCode>() {
@@ -43,6 +45,9 @@ public class SesService {
         if (!validateEmail(email)) {
             throw new CustomException(ErrorCode.INVALID_SCHOOL_EMAIL);
         }
+        if (isDuplicateSchoolEmail(email)) {
+            throw new CustomException(ErrorCode.DUPLICATE_SCHOOL_EMAIL);
+        }
         String code = createCode();
         SendEmailRequest emailRequest = createSendEmailRequest(email, code);
         String messageId = sendEmailAndGetId(emailRequest).join();
@@ -52,11 +57,15 @@ public class SesService {
 
     public String verifyTokenAndCode(String token, String receivedCode) {
         EmailAndCode storedData = stores.getIfPresent(token);
-        if (!compareCode(storedData, receivedCode)) {
+        if (!isEqualCode(storedData, receivedCode)) {
             throw new CustomException(ErrorCode.INVALID_VERIFICATION_CODE);
         }
 
         return storedData.email();
+    }
+
+    private boolean isDuplicateSchoolEmail(String email) {
+        return userRepository.findBySchoolEmail(email).isPresent();
     }
 
     private boolean validateEmail(String email) {
@@ -69,7 +78,7 @@ public class SesService {
         return !campuses.isEmpty();
     }
 
-    private boolean compareCode(EmailAndCode storedData, String receivedCode) {
+    private boolean isEqualCode(EmailAndCode storedData, String receivedCode) {
         return storedData != null && storedData.code().trim().equals(receivedCode.trim());
     }
 

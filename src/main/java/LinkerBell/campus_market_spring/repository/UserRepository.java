@@ -16,4 +16,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "join fetch u.campus " +
             "where u.userId = :userId")
     Optional<User> findUserWithCampus(@Param("userId") Long userId);
+
+    Optional<User> findBySchoolEmail(String schoolEmail);
 }
