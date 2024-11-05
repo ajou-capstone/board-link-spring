@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemSearchRequestDto {
+
     private String name;
     private Category category;
     private Integer minPrice;

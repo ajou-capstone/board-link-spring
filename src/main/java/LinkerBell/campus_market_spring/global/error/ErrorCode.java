@@ -30,7 +30,10 @@ public enum ErrorCode {
     INVALID_THUMBNAIL(HttpStatus.BAD_REQUEST, 4023, "잘못된 썸네일 입니다."),
     INVALID_ITEM_PHOTOS(HttpStatus.BAD_REQUEST, 4024, "잘못된 이미지 입니다."),
     DUPLICATE_ITEM_PHOTOS(HttpStatus.BAD_REQUEST, 4025, "중복된 이미지가 있습니다."),
-    USER_TERMS_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, 4026, "사용자 약관 동의 정보가 없습니다."),
+    INVALID_ITEM_ID(HttpStatus.BAD_REQUEST, 4026, "잘못된 아이템 값입니다."),
+    DELETED_ITEM_ID(HttpStatus.FORBIDDEN, 4027, "삭제된 아이템입니다."),
+    NOT_MATCH_USER_CAMPUS_WITH_ITEM_CAMPUS(HttpStatus.FORBIDDEN, 4028, "아이템의 캠퍼스와 일치하지 않는 캠퍼스입니다."),
+    USER_TERMS_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, 4029, "사용자 약관 동의 정보가 없습니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다.");
 
