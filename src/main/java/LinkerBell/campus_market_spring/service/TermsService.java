@@ -64,7 +64,7 @@ public class TermsService {
 
         for (TermsRequestDto term : terms) {
             for (UserAndTerms ut : userAndTerms) {
-                if (Objects.equals(term.getId(), ut.getTerms().getTermsId())) {
+                if (term.getId() == ut.getTerms().getTermsId()) {
                     ut.setAgree(term.isAgree());
                 }
             }
