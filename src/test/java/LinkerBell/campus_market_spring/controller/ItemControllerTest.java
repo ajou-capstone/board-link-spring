@@ -1,5 +1,15 @@
 package LinkerBell.campus_market_spring.controller;
 
+import static LinkerBell.campus_market_spring.global.error.ErrorCode.DUPLICATE_ITEM_PHOTOS;
+import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_CATEGORY;
+import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_DESCRIPTION;
+import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_ITEM_ID;
+import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_ITEM_PHOTOS;
+import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_ITEM_PHOTOS_COUNT;
+import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_PRICE;
+import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_SORT;
+import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_THUMBNAIL;
+import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_TITLE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.verify;
@@ -124,7 +134,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     MethodArgumentTypeMismatchException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4017));
+            .andExpect(jsonPath("$.code").value(INVALID_PRICE.getCode()));
 
         verify(itemService, times(0)).itemSearch(any(Long.class), any());
     }
@@ -141,7 +151,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     CustomException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4017));
+            .andExpect(jsonPath("$.code").value(INVALID_PRICE.getCode()));
 
         verify(itemService, times(0)).itemSearch(any(Long.class), any());
     }
@@ -158,7 +168,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     CustomException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4017));
+            .andExpect(jsonPath("$.code").value(INVALID_PRICE.getCode()));
 
         verify(itemService, times(0)).itemSearch(any(Long.class), any());
     }
@@ -175,7 +185,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     CustomException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4017));
+            .andExpect(jsonPath("$.code").value(INVALID_PRICE.getCode()));
 
         verify(itemService, times(0)).itemSearch(any(Long.class), any());
     }
@@ -192,7 +202,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     CustomException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4017));
+            .andExpect(jsonPath("$.code").value(INVALID_PRICE.getCode()));
 
         verify(itemService, times(0)).itemSearch(any(Long.class), any());
     }
@@ -209,7 +219,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     CustomException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4017));
+            .andExpect(jsonPath("$.code").value(INVALID_PRICE.getCode()));
 
         verify(itemService, times(0)).itemSearch(any(Long.class), any());
     }
@@ -225,7 +235,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     MethodArgumentTypeMismatchException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4016));
+            .andExpect(jsonPath("$.code").value(INVALID_CATEGORY.getCode()));
 
         verify(itemService, times(0)).itemSearch(any(Long.class), any());
     }
@@ -304,7 +314,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     CustomException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4018));
+            .andExpect(jsonPath("$.code").value(INVALID_SORT.getCode()));
 
         verify(itemService, times(0)).itemSearch(any(Long.class), any());
     }
@@ -320,7 +330,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     CustomException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4018));
+            .andExpect(jsonPath("$.code").value(INVALID_SORT.getCode()));
 
         verify(itemService, times(0)).itemSearch(any(Long.class), any());
     }
@@ -382,7 +392,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     MethodArgumentNotValidException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4021));
+            .andExpect(jsonPath("$.code").value(INVALID_TITLE.getCode()));
 
     }
 
@@ -407,7 +417,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     MethodArgumentNotValidException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4017));
+            .andExpect(jsonPath("$.code").value(INVALID_PRICE.getCode()));
 
     }
 
@@ -432,7 +442,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     MethodArgumentNotValidException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4022));
+            .andExpect(jsonPath("$.code").value(INVALID_DESCRIPTION.getCode()));
 
     }
 
@@ -457,7 +467,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     HttpMessageNotReadableException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4016));
+            .andExpect(jsonPath("$.code").value(INVALID_CATEGORY.getCode()));
     }
 
     @Test
@@ -481,7 +491,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     MethodArgumentNotValidException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4023));
+            .andExpect(jsonPath("$.code").value(INVALID_THUMBNAIL.getCode()));
     }
 
     @Test
@@ -506,7 +516,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     MethodArgumentNotValidException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4024));
+            .andExpect(jsonPath("$.code").value(INVALID_ITEM_PHOTOS.getCode()));
     }
 
     @Test
@@ -533,7 +543,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     CustomException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4020));
+            .andExpect(jsonPath("$.code").value(INVALID_ITEM_PHOTOS_COUNT.getCode()));
     }
 
     @Test
@@ -559,7 +569,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     CustomException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4025));
+            .andExpect(jsonPath("$.code").value(DUPLICATE_ITEM_PHOTOS.getCode()));
     }
 
     @Test
@@ -583,7 +593,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     MethodArgumentTypeMismatchException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4026));
+            .andExpect(jsonPath("$.code").value(INVALID_ITEM_ID.getCode()));
 
         verify(itemService, times(0)).itemSearch(any(Long.class), any());
     }
@@ -599,7 +609,7 @@ class ItemControllerTest {
                 result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
                     CustomException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.code").value(4026));
+            .andExpect(jsonPath("$.code").value(INVALID_ITEM_ID.getCode()));
 
         verify(itemService, times(0)).itemSearch(any(Long.class), any());
     }

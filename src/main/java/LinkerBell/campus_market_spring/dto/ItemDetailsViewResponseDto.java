@@ -2,6 +2,7 @@ package LinkerBell.campus_market_spring.dto;
 
 import LinkerBell.campus_market_spring.domain.Category;
 import LinkerBell.campus_market_spring.domain.ItemStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class ItemDetailsViewResponseDto {
     private List<String> images;
     private Integer chatCount;
     private Integer likeCount;
+    @JsonProperty(value = "isLiked")
     private boolean isLiked;
     private ItemStatus itemStatus;
 
