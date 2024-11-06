@@ -7,5 +7,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ItemCategoryResponseDto {
+
     private Category[] categories;
 }

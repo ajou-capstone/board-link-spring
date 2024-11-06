@@ -21,7 +21,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> typeMisMatchException(MethodArgumentTypeMismatchException ex) {
+    public ResponseEntity<ErrorResponse> typeMisMatchException(
+        MethodArgumentTypeMismatchException ex) {
 
         if (ex.getName().equals("minPrice") || ex.getName().equals("maxPrice")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_PRICE);
@@ -29,13 +30,17 @@ public class GlobalExceptionHandler {
         } else if (ex.getName().equals("category")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_CATEGORY);
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
+        } else if (ex.getName().equals("itemId")) {
+            ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_ID);
+            return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
         }
 
         throw ex;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> validException(MethodArgumentNotValidException ex) throws MethodArgumentNotValidException {
+    public ResponseEntity<ErrorResponse> validException(MethodArgumentNotValidException ex)
+        throws MethodArgumentNotValidException {
 
         if (ex.getFieldError().getField().equals("title")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_TITLE);
@@ -54,17 +59,16 @@ public class GlobalExceptionHandler {
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
         }
 
-
         throw ex;
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> notReadableException(HttpMessageNotReadableException ex) {
-        if (ex.getCause().getMessage().contains("LinkerBell.campus_market_spring.domain.Category")) {
+        if (ex.getCause().getMessage()
+            .contains("LinkerBell.campus_market_spring.domain.Category")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_CATEGORY);
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
         }
-
 
         throw ex;
     }

@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemRegisterRequestDto {
+
     @NotBlank
     @Size(min = 2, max = 100)
     private String title;
@@ -30,11 +31,11 @@ public class ItemRegisterRequestDto {
     private Category category;
 
     @Pattern(regexp = "^(https?|ftp):\\/\\/([\\w\\-]+\\.)+[\\w\\-]+(\\/[-a-zA-Z0-9@:%._\\+~#=]*)?$",
-            message = "Must be a valid URL."
+        message = "Must be a valid URL."
     )
     private String thumbnail;
 
     private List<@Pattern(regexp = "^(https?|ftp):\\/\\/([\\w\\-]+\\.)+[\\w\\-]+(\\/[-a-zA-Z0-9@:%._\\+~#=]*)?$",
-            message = "Must be a valid URL.") String> images;
+        message = "Must be a valid URL.") String> images;
 
 }
