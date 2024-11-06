@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
+import LinkerBell.campus_market_spring.dto.TermsRequestDto;
 import LinkerBell.campus_market_spring.dto.TermsResponseDto;
 import LinkerBell.campus_market_spring.global.error.GlobalExceptionHandler;
 import LinkerBell.campus_market_spring.service.TermsService;
@@ -77,8 +78,12 @@ class TermsControllerTest {
             {
                 "terms" : [
                     {
-                        "id" : 1,
+                        "termId" : 1,
                         "isAgree" : true
+                    },
+                    {
+                        "termId" : 2,
+                        "isAgree" : false
                     }
                 ]
             }
@@ -93,7 +98,13 @@ class TermsControllerTest {
         // then
         resultActions.andDo(print()).andReturn();
 
-        then(termsService).should(times(1)).agreeTerms(anyLong(), anyList());
+        then(termsService).should(times(1)).agreeTerms(anyLong(), argThat(dto -> {
+            TermsRequestDto termsRequestDto = dto.get(0);
+            assertThat(dto.size()).isEqualTo(2);
+            assertThat(termsRequestDto.isAgree()).isTrue();
+            assertThat(termsRequestDto.getTermId()).isEqualTo(1);
+            return true;
+        }));
     }
 
 
