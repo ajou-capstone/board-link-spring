@@ -34,6 +34,7 @@ public enum ErrorCode {
     DELETED_ITEM_ID(HttpStatus.FORBIDDEN, 4027, "삭제된 아이템입니다."),
     NOT_MATCH_USER_CAMPUS_WITH_ITEM_CAMPUS(HttpStatus.FORBIDDEN, 4028, "아이템의 캠퍼스와 일치하지 않는 캠퍼스입니다."),
     USER_TERMS_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, 4029, "사용자 약관 동의 정보가 없습니다."),
+    NOT_MATCH_USER_ID_WITH_ITEM_USER_ID(HttpStatus.FORBIDDEN, 4030, "해당 아이템 게시글의 작성자가 아닙니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다.");
 

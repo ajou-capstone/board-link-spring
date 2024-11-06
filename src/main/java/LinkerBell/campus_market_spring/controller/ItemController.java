@@ -63,6 +63,7 @@ public class ItemController {
         return ResponseEntity.ok(itemRegisterResponseDto);
     }
 
+
     private void validCategory(ItemRegisterRequestDto itemRegisterRequestDto) {
         if (itemRegisterRequestDto.getCategory() == null) {
             itemRegisterRequestDto.setCategory(Category.OTHER);
@@ -83,7 +84,33 @@ public class ItemController {
         return ResponseEntity.ok(itemService.viewItemDetails(authUserDto.getUserId(), itemId));
     }
 
+    @PatchMapping("/{itemId}")
+    public ResponseEntity<?> itemUpdate(
+        @Login AuthUserDto authUserDto,
+        @PathVariable("itemId") Long itemId,
+        @Valid @RequestBody ItemRegisterRequestDto itemRegisterRequestDto) {
+        validItemId(itemId);
+        validThumbnail(itemRegisterRequestDto);
+        validItemPhotos(itemRegisterRequestDto);
+        validCategory(itemRegisterRequestDto);
+
+        itemService.updateItem(authUserDto.getUserId(), itemId, itemRegisterRequestDto);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{itemId}")
+    public ResponseEntity<?> itemDelete(
+        @Login AuthUserDto authUserDto,
+        @PathVariable("itemId") Long itemId
+    ) {
+        validItemId(itemId);
+        itemService.deleteItem(authUserDto.getUserId(), itemId);
+        return ResponseEntity.noContent().build();
+    }
+
+
     private void validItemId(Long itemId) {
+
         if (itemId == null) {
             throw new CustomException(ErrorCode.INVALID_ITEM_ID);
         }
@@ -99,7 +126,8 @@ public class ItemController {
     }
 
     private void validItemPhotos(ItemRegisterRequestDto itemRegisterRequestDto) {
-        if (itemRegisterRequestDto.getImages() != null) {
+        if (itemRegisterRequestDto.getImages() != null && !itemRegisterRequestDto.getImages()
+            .isEmpty()) {
             if (itemRegisterRequestDto.getImages().size() > 5) {
                 throw new CustomException(ErrorCode.INVALID_ITEM_PHOTOS_COUNT);
             } else if (itemRegisterRequestDto.getImages().size() !=
