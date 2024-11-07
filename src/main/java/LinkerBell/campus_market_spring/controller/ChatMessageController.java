@@ -7,6 +7,7 @@ import LinkerBell.campus_market_spring.dto.CollectionResponse.RecentChatMessageC
 import LinkerBell.campus_market_spring.dto.RecentChatMessageResponseDto;
 import LinkerBell.campus_market_spring.global.auth.Login;
 import LinkerBell.campus_market_spring.service.ChatMessageService;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,15 +35,16 @@ public class ChatMessageController {
 
     // 메시지 읽음 표시하기
     @PatchMapping("api/v1/chat/read-message")
-    public ResponseEntity<Void> readMessage(@RequestBody Long messageId) {
-        chatMessageService.readMessage(messageId);
+    public ResponseEntity<Void> readMessage(@RequestBody Map<String, Object> requestBody) {
+        chatMessageService.readMessage((Long) requestBody.get("messageId"));
         return ResponseEntity.noContent().build();
     }
 
     // 메시지 내용들 가져오기
     @GetMapping("api/v1/chat/message")
     public ResponseEntity<ChatMessageCollectionResponseDto> getMessageContents(
-        @RequestBody List<Long> messageIdList) {
+        @RequestBody Map<String, Object> requestBody) {
+        List<Long> messageIdList = (List<Long>) requestBody.get("messageIdList");
         List<ChatMessageResponseDto> chatMessageResponseDtoList = chatMessageService.getMessageContents(
             messageIdList);
         return ResponseEntity.ok(ChatMessageCollectionResponseDto.from(chatMessageResponseDtoList));

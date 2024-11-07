@@ -70,6 +70,13 @@ public class ChatRoomService {
         User user = userRepository.findById(authUserDto.getUserId())
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         chatRoomRepository.findAll().forEach(chatRoom -> {
+            // 나간 채팅방인 경우
+            ChatProperties chatProperties = chatPropertiesRepository.findByUserAndChatRoom(user,
+                chatRoom);
+            if (chatProperties.isExited()) {
+                return;
+            }
+
             // 내가 구매자인 경우
             if (chatRoom.getUser().getUserId().equals(user.getUserId())) {
                 ChatRoomDataResponseDto tempChatRoomDataResponseDto = ChatRoomDataResponseDto.builder()

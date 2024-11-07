@@ -72,7 +72,7 @@ public class ChatMessageService {
                 .chatRoomId(chatMessage.getChatRoom().getChatRoomId())
                 .userId(chatMessage.getUser().getUserId())
                 .content(chatMessage.getContent())
-                .contentType(String.valueOf(chatMessage.getContentType()))
+                .contentType((chatMessage.getContentType()))
                 .createdAt(chatMessage.getCreatedDate())
                 .build();
             chatMessageResponseDtoList.add(chatMessageResponseDto);

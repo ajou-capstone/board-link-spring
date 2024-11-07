@@ -10,8 +10,10 @@ import LinkerBell.campus_market_spring.repository.ChatRoomRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatPropertiesService {
@@ -31,6 +33,11 @@ public class ChatPropertiesService {
 
         ChatProperties chatProperties = chatPropertiesRepository.findByUserAndChatRoom(user,
             chatRoom);
+
+        if (chatProperties == null) {
+            log.error("chatProperties must not be null");
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
 
         chatProperties.setAlarm(isAlarm);
     }
