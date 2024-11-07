@@ -89,6 +89,19 @@ class UserRepositoryTest {
                 .hasMessageContaining("캠퍼스가 존재하지 않습니다.");
     }
 
+    @Test
+    @DisplayName("학교 이메일 중복 테스트")
+    public void duplicateSchoolEmailTest() {
+        // given
+        User user = createSchoolUser();
+        userRepository.save(user);
+
+        // when
+        boolean isPresent = userRepository.findBySchoolEmail(user.getSchoolEmail()).isPresent();
+        // then
+        assertThat(isPresent).isTrue();
+    }
+
     private User createUser() {
         return User.builder()
                 .loginEmail("abc@gmail.com")
@@ -101,5 +114,13 @@ class UserRepositoryTest {
                 .loginEmail("tbc@gmail.com")
                 .role(Role.USER)
                 .build();
+    }
+
+    private User createSchoolUser() {
+        return User.builder()
+            .loginEmail("abc@gmail.com")
+            .role(Role.GUEST)
+            .schoolEmail("test@school.com")
+            .build();
     }
 }

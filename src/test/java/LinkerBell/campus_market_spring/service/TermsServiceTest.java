@@ -151,6 +151,27 @@ class TermsServiceTest {
             .isInstanceOf(CustomException.class).hasMessageContaining("사용자 약관 동의 정보가 없습니다.");
     }
 
+    @Test
+    @DisplayName("사용자 약관 동의 테스트")
+    public void agreeTermsTest() {
+        // given
+        userAndTerms1.setAgree(false);
+        TermsRequestDto termsRequestDto = new TermsRequestDto(1L, true);
+
+        given(userAndTermsRepository.findAllByUserId(anyLong())).willReturn(Lists.newArrayList(userAndTerms1));
+
+        // when
+        termsService.agreeTerms(1L, Lists.newArrayList(termsRequestDto));
+
+        // then
+        then(userAndTermsRepository).should(times(1)).saveAll(argThat(dto -> {
+            List<UserAndTerms> lists = Lists.newArrayList(dto);
+            UserAndTerms ut = lists.get(0);
+            assertThat(ut.isAgree()).isTrue();
+            return true;
+        }));
+    }
+
     private User createUser() {
         return User.builder()
             .userId(1L)
@@ -159,9 +180,9 @@ class TermsServiceTest {
     }
 
     private List<Terms> createTerms() {
-        Terms term1 = Terms.builder().title("test1").termsUrl("test1_url")
+        Terms term1 = Terms.builder().termsId(1L).title("test1").termsUrl("test1_url")
             .isRequired(true).build();
-        Terms term2 = Terms.builder().title("test2").termsUrl("test2_url")
+        Terms term2 = Terms.builder().termsId(2L).title("test2").termsUrl("test2_url")
             .isRequired(true).build();
         term1.setCreatedDate(LocalDateTime.now());
         term1.setLastModifiedDate(LocalDateTime.now());

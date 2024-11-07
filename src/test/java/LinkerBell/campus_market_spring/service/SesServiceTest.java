@@ -4,14 +4,18 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import LinkerBell.campus_market_spring.domain.Campus;
+import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.dto.MailResponseDto;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.repository.CampusRepository;
+import LinkerBell.campus_market_spring.repository.UserRepository;
 import com.google.common.cache.LoadingCache;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import org.assertj.core.util.Lists;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -42,8 +46,11 @@ class SesServiceTest {
     @Mock
     CampusRepository campusRepository;
 
+    @Mock
+    UserRepository userRepository;
 
     @Test
+    @DisplayName("이메일 전송 성공 테스트")
     public void sendEmailSuccessTest() {
         // given
         String email = "abc@gmail.com";
@@ -54,6 +61,7 @@ class SesServiceTest {
         SendEmailResponse response = SendEmailResponse.builder()
             .messageId(messageId).build();
         given(campusRepository.findByEmail(anyString())).willReturn(campuses);
+        given(userRepository.findBySchoolEmail(anyString())).willReturn(Optional.empty());
         given(sesV2AsyncClient.sendEmail(any(SendEmailRequest.class)))
             .willReturn(CompletableFuture.completedFuture(response));
         given(springTemplateEngine.process(anyString(), any(IContext.class)))
@@ -66,6 +74,7 @@ class SesServiceTest {
     }
 
     @Test
+    @DisplayName("이메일 전송 실패 테스트")
     public void sendEmailFailureTest() {
         // given
         String email = "abc@gmail.com";
@@ -75,6 +84,7 @@ class SesServiceTest {
             SdkClientException.create("Email sending failed")));
         given(campusRepository.findByEmail(anyString())).willReturn(Lists.newArrayList(
             Campus.builder().build()));
+        given(userRepository.findBySchoolEmail(anyString())).willReturn(Optional.empty());
         given(sesV2AsyncClient.sendEmail(any(SendEmailRequest.class))).willReturn(futureException);
 
         // when & then
@@ -84,6 +94,7 @@ class SesServiceTest {
     }
 
     @Test
+    @DisplayName("허용하지 않는 이메일 형식 에러 테스트")
     public void emailNotValidatedTest() {
         // given
         String email1 = "";
@@ -102,6 +113,7 @@ class SesServiceTest {
     }
 
     @Test
+    @DisplayName("인증 코드 불일치 에러 테스트")
     public void verifyCodeFailureTest() {
         // given
         sendEmailSuccessTest();
@@ -112,6 +124,21 @@ class SesServiceTest {
         assertThatThrownBy(() -> sesService.verifyTokenAndCode(token, validCode))
             .isInstanceOf(CustomException.class)
             .hasMessageContaining("인증 코드가 일치하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("학교 이메일 중복 에러 테스트")
+    public void duplicateSchoolEmailTest() {
+        // given
+        Campus campus = Campus.builder().email("school.com").universityName("test").region("수원")
+            .campusId(1L).build();
+        User user = User.builder().userId(1L).campus(campus).build();
+        given(campusRepository.findByEmail(anyString())).willReturn(Lists.newArrayList(campus));
+        given(userRepository.findBySchoolEmail(anyString())).willReturn(Optional.ofNullable(user));
+
+        // when & then
+        assertThatThrownBy(() -> sesService.processEmail("test@school.com"))
+            .isInstanceOf(CustomException.class).hasMessageContaining("중복된 학교 이메일입니다.");
     }
 
     private record EmailAndCode(String email, String code) {}
