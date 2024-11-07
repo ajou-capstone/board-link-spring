@@ -7,7 +7,6 @@ import lombok.Setter;
 
 
 @Getter
-@Setter
 public class AuthUserDto {
 
     private Long userId;

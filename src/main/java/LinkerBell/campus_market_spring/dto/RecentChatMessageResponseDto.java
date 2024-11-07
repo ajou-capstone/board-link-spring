@@ -8,6 +8,6 @@ import java.util.List;
 @Getter
 @Builder
 public class RecentChatMessageResponseDto {
-    private Long chatRoomId;
+
     private List<Long> messageIdList;
 }

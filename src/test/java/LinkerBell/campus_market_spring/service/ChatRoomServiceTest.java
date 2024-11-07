@@ -172,7 +172,8 @@ class ChatRoomServiceTest {
     @DisplayName("사용자가 판매자인 경우 채팅방 목록 조회 테스트")
     void getChatRooms_UserIsSeller() {
         // given
-        authUserDto.setUserId(seller.getUserId()); // 판매자로 설정
+        AuthUserDto sellerAuthUserDto = new AuthUserDto(seller.getUserId(), "loginEmail",
+            Role.USER); // 판매자로 설정
         when(userRepository.findById(seller.getUserId())).thenReturn(Optional.of(seller));
         when(chatRoomRepository.findAll()).thenReturn(List.of(chatRoom));
         when(chatPropertiesRepository.findByUserAndChatRoom(seller, chatRoom)).thenReturn(
@@ -181,7 +182,7 @@ class ChatRoomServiceTest {
             chatMessage);
 
         // when
-        List<ChatRoomDataResponseDto> chatRooms = chatRoomService.getChatRooms(authUserDto);
+        List<ChatRoomDataResponseDto> chatRooms = chatRoomService.getChatRooms(sellerAuthUserDto);
 
         // then
         assertThat(chatRooms).hasSize(1);
@@ -193,4 +194,5 @@ class ChatRoomServiceTest {
         assertEquals(chatProperties.isAlarm(), responseDto.getIsAlarm());
         assertEquals(chatMessage.getMessageId(), responseDto.getMessageId());
     }
+
 }

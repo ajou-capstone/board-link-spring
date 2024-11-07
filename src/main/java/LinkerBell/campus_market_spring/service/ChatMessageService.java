@@ -40,7 +40,6 @@ public class ChatMessageService {
         // 채팅방들마다 7일간 메시지들 찾기
         for (ChatRoom chatRoom : chatRoomList) {
             RecentChatMessageResponseDto recentChatMessageResponseDto = RecentChatMessageResponseDto.builder()
-                .chatRoomId(chatRoom.getChatRoomId())
                 .messageIdList(chatMessageRepository.findMessageIdsByChatRoomAndRecentDays(chatRoom,
                     sevenDaysAgo))
                 .build();
@@ -54,7 +53,10 @@ public class ChatMessageService {
     // 메시지 읽음으로 표시하기
     @Transactional
     public void readMessage(Long messageId) {
-        chatMessageRepository.updateByIsReadTrueByMessageId(messageId);
+        ChatMessage chatMessage = chatMessageRepository.findById(messageId)
+            .orElseThrow(() -> new CustomException(ErrorCode.MESSAGE_NOT_FOUND));
+
+        chatMessage.setRead(true);
     }
 
     // 메시지 내용들 가져오기

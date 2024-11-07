@@ -24,7 +24,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -69,10 +68,8 @@ class ChatMessageServiceTest {
         // then
         assertThat(result).hasSize(1);
         RecentChatMessageResponseDto responseDto = result.get(0);
-        assertThat(responseDto.getChatRoomId()).isEqualTo(chatRoomId);
         assertThat(responseDto.getMessageIdList()).containsExactly(messageId1, messageId2);
     }
-
 
     @Test
     void getRecentMessageList_UserNotFound() {
@@ -93,7 +90,6 @@ class ChatMessageServiceTest {
         // given
         Long userId = 1L;
         Long chatRoomId = 10L;
-        LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
 
         // Mock User and ChatRoom
         User user = new User();
@@ -115,7 +111,6 @@ class ChatMessageServiceTest {
         // then
         assertThat(result).hasSize(1);
         RecentChatMessageResponseDto responseDto = result.get(0);
-        assertThat(responseDto.getChatRoomId()).isEqualTo(chatRoomId);
         assertThat(responseDto.getMessageIdList()).isEmpty(); // 메시지가 없는 경우 빈 리스트 반환
     }
 
@@ -123,12 +118,18 @@ class ChatMessageServiceTest {
     void readMessage_Success() {
         // given
         Long messageId = 100L;
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setMessageId(messageId);
+        chatMessage.setRead(false);
+
+        when(chatMessageRepository.findById(messageId)).thenReturn(Optional.of(chatMessage));
 
         // when
         chatMessageService.readMessage(messageId);
 
         // then
-        verify(chatMessageRepository, times(1)).updateByIsReadTrueByMessageId(messageId);
+        assertThat(chatMessage.isRead()).isTrue(); // dirty checking으로 변경 여부 확인
+        verify(chatMessageRepository, times(1)).findById(messageId); // findById가 호출되었는지 검증
     }
 
     @Test
@@ -188,4 +189,3 @@ class ChatMessageServiceTest {
         verify(chatMessageRepository, never()).findById(anyLong());
     }
 }
-
