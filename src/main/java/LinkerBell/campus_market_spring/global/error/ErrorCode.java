@@ -36,8 +36,8 @@ public enum ErrorCode {
     USER_TERMS_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, 4029, "사용자 약관 동의 정보가 없습니다."),
     DUPLICATE_SCHOOL_EMAIL(HttpStatus.BAD_REQUEST, 4030, "중복된 학교 이메일입니다."),
     NOT_MATCH_USER_ID_WITH_ITEM_USER_ID(HttpStatus.FORBIDDEN, 4031, "해당 아이템 게시글의 작성자가 아닙니다."),
-
-
+    INVALID_FILE_NAME(HttpStatus.BAD_REQUEST, 4032, "파일 이름을 비우거나 공백으로 할 수 없습니다."),
+    
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다.");
 
     private final HttpStatus httpStatus;

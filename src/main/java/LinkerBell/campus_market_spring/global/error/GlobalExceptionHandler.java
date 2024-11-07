@@ -1,12 +1,20 @@
 package LinkerBell.campus_market_spring.global.error;
 
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import java.util.Locale;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.StaticMessageSource;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
@@ -71,5 +79,35 @@ public class GlobalExceptionHandler {
         }
 
         throw ex;
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity handleHandlerMethodValidationException(
+        HandlerMethodValidationException ex, HttpServletRequest request) {
+
+        log.error("[{}], [{}], [{}], [{}]",
+            ex.getMessage(), ex.getMethod().getName(), ex.getBody().getDetail(),
+            request.getRequestURI());
+        if (ex.getMethod().getName().equals("getPresignedPutUrl")) {
+            ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_FILE_NAME);
+            return ResponseEntity.status(errorResponse.getHttpStatus()).body(errorResponse);
+        }
+
+        return ResponseEntity.status(ex.getStatusCode()).body(ex.getBody());
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity handleMissingServletRequestParameterException(
+        MissingServletRequestParameterException ex, HttpServletRequest request) {
+
+        log.error("[{}], [{}], [{}], [{}]",
+            ex.getMessage(), ex.getMethodParameter().getMethod().getName(), ex.getBody().getType(),
+            request.getRequestURI());
+        if (ex.getMethodParameter().getMethod().getName().equals("getPresignedPutUrl")) {
+            ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_FILE_NAME);
+            return ResponseEntity.status(errorResponse.getHttpStatus()).body(errorResponse);
+        }
+
+        return ResponseEntity.status(ex.getStatusCode()).body(ex.getBody());
     }
 }
