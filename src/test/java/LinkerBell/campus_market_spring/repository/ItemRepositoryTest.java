@@ -94,6 +94,7 @@ class ItemRepositoryTest {
                     .category(Category.ELECTRONICS_IT)
                     .title("itemFirst" + i)
                     .price(i)
+                    .thumbnail("https://defaultImage.com")
                     .build();
             } else if (i < 15) {
                 item = Item.builder()
@@ -102,6 +103,7 @@ class ItemRepositoryTest {
                     .category(Category.BOOKS_EDUCATIONAL_MATERIALS)
                     .title("itemSecond" + i)
                     .price(i)
+                    .thumbnail("https://defaultImage.com")
                     .build();
             } else {
                 item = Item.builder()
@@ -110,6 +112,7 @@ class ItemRepositoryTest {
                     .category(Category.FASHION_ACCESSORIES)
                     .title("itemThird" + i)
                     .price(1)
+                    .thumbnail("https://defaultImage.com")
                     .build();
             }
             itemRepository.save(item);
@@ -626,6 +629,197 @@ class ItemRepositoryTest {
             .isInstanceOf(CustomException.class)
             .hasMessageContaining("아이템의 캠퍼스와 일치하지 않는 캠퍼스입니다.");
         //then
+    }
+
+    @Test
+    @DisplayName("아이템 아이디를 통해 아이템 사진들을 가져오는 테스트")
+    public void findByItem_itemIdTest() throws Exception {
+        //given
+        List<ItemPhotos> findItemPhotos = itemPhotosRepository.findByItem_itemId(
+            items.get(0).getItemId());
+        //when
+
+        //then
+        assertThat(findItemPhotos.size()).isEqualTo(2);
+        assertThat(findItemPhotos.get(0).getImageAddress()).isEqualTo(
+            itemPhotos.get(0).getImageAddress());
+        assertThat(findItemPhotos.get(1).getImageAddress()).isEqualTo(
+            itemPhotos.get(1).getImageAddress());
+    }
+
+    @Test
+    @DisplayName("유저 아이디와 등로된 아이템 아이디의 유저가 다른경우 에러 테스트")
+    public void NotMatchUserIdWithItemUserIdTest() throws Exception {
+        //given
+        User user = users.get(1);
+        Item item = items.get(0);
+        //when
+
+        //then
+        assertThatThrownBy(() -> {
+            if (user.getUserId() != item.getUser().getUserId()) {
+                throw new CustomException(ErrorCode.NOT_MATCH_USER_ID_WITH_ITEM_USER_ID);
+            }
+        }).isInstanceOf(CustomException.class)
+            .hasMessageContaining("해당 아이템 게시글의 작성자가 아닙니다.");
+    }
+
+    @Test
+    @DisplayName("기존 이미지가 존재하고, 새롭게 업데이트할 아이템 이미지가 존재할 때 테스트")
+    public void updatedItemWithExistingItemPhotosAndExistingNewImagesTest() throws Exception {
+        //given
+        Item item = items.get(0);
+        List<ItemPhotos> existingItemPhotos = itemPhotosRepository.findByItem_itemId(
+            item.getItemId());
+        List<String> newImageAddresses = new ArrayList<>();
+        newImageAddresses.add(existingItemPhotos.get(0).getImageAddress());
+        newImageAddresses.add("https://newImage0");
+
+        //when
+        updateItemPhotos(existingItemPhotos, newImageAddresses, item);
+        List<ItemPhotos> updatedItemPhotos = itemPhotosRepository.findByItem_itemId(
+            item.getItemId());
+        List<String> updatedItemPhotosUrl = updatedItemPhotos.stream().map(
+            ItemPhotos::getImageAddress).toList();
+        //then
+        assertThat(updatedItemPhotos.size()).isEqualTo(2);
+        assertThat(updatedItemPhotosUrl).doesNotContain(
+            existingItemPhotos.get(1).getImageAddress());
+        assertThat(updatedItemPhotosUrl).contains(existingItemPhotos.get(0).getImageAddress(),
+            "https://newImage0");
+    }
+
+    @Test
+    @DisplayName("기존 이미지가 존재하고, 새롭게 업데이트할 아이템 이미지가 존재하지 않을때 테스트")
+    public void updatedItemWithExistingItemPhotosAndNotExistingNewImagesTest() throws Exception {
+        //given
+        Item item = items.get(0);
+        List<ItemPhotos> existingItemPhotos = itemPhotosRepository.findByItem_itemId(
+            item.getItemId());
+        List<String> newImageAddresses = new ArrayList<>();
+
+        //when
+        updateItemPhotos(existingItemPhotos, newImageAddresses, item);
+        List<ItemPhotos> updatedItemPhotos = itemPhotosRepository.findByItem_itemId(
+            item.getItemId());
+        //then
+        assertThat(updatedItemPhotos.size()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("기존 이미지가 존재하지 않고, 새롭게 업데이트할 아이템 이미지가 존재할 때 테스트")
+    public void updatedItemWithNotExistingItemPhotosAndExistingNewImagesTest() throws Exception {
+        //given
+        Item item = items.get(23);
+        List<ItemPhotos> existingItemPhotos = itemPhotosRepository.findByItem_itemId(
+            item.getItemId());
+
+        assertThat(existingItemPhotos.size()).isEqualTo(0);
+
+        List<String> newImageAddresses = new ArrayList<>();
+        newImageAddresses.add("https://newImage0");
+        newImageAddresses.add("https://newImage1");
+        newImageAddresses.add("https://newImage2");
+
+        //when
+        updateItemPhotos(existingItemPhotos, newImageAddresses, item);
+        List<ItemPhotos> updatedItemPhotos = itemPhotosRepository.findByItem_itemId(
+            item.getItemId());
+        List<String> updatedItemPhotosUrl = updatedItemPhotos.stream().map(
+            ItemPhotos::getImageAddress).toList();
+
+        //then
+        assertThat(updatedItemPhotos.size()).isEqualTo(3);
+        assertThat(updatedItemPhotosUrl).contains("https://newImage0", "https://newImage1",
+            "https://newImage2");
+    }
+
+    @Test
+    @DisplayName("기존 이미지가 존재하지 않고, 새롭게 업데이트할 아이템 이미지가 존재하지 않을 때 테스트")
+    public void updatedItemWithNotExistingItemPhotosAndNotExistingNewImagesTest() throws Exception {
+        //given
+        Item item = items.get(23);
+        List<ItemPhotos> existingItemPhotos = itemPhotosRepository.findByItem_itemId(
+            item.getItemId());
+
+        assertThat(existingItemPhotos.size()).isEqualTo(0);
+
+        List<String> newImageAddresses = new ArrayList<>();
+
+        //when
+        updateItemPhotos(existingItemPhotos, newImageAddresses, item);
+        List<ItemPhotos> updatedItemPhotos = itemPhotosRepository.findByItem_itemId(
+            item.getItemId());
+        List<String> updatedItemPhotosUrl = updatedItemPhotos.stream().map(
+            ItemPhotos::getImageAddress).toList();
+        //then
+        assertThat(updatedItemPhotos.size()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("아이템 업데이트 테스트")
+    public void updatedItemPropertiesTest() throws Exception {
+        //given
+        Item item = items.get(0);
+        String title = "updateTitle";
+        String description = "updateDescription";
+        Integer price = 100000;
+        Category category = Category.HOUSEHOLD_ITEMS;
+        String thumbnail = "https://updateThumbnail";
+
+        //when
+        item.setTitle(title);
+        item.setDescription(description);
+        item.setPrice(price);
+        item.setCategory(category);
+        item.setThumbnail(thumbnail);
+
+        Item updatedItem = itemRepository.findById(item.getItemId()).get();
+
+        //then
+        assertThat(updatedItem.getTitle()).isEqualTo(title);
+        assertThat(updatedItem.getDescription()).isEqualTo(description);
+        assertThat(updatedItem.getPrice()).isEqualTo(price);
+        assertThat(updatedItem.getCategory()).isEqualTo(category);
+        assertThat(updatedItem.getThumbnail()).isEqualTo(thumbnail);
+    }
+
+    @Test
+    @DisplayName("아이템 삭제 테스트")
+    public void deleteItemTest() throws Exception {
+        //given
+        Item item = items.get(0);
+        item.setDeleted(true);
+
+        //when
+        Item deletedItem = itemRepository.findById(item.getItemId()).get();
+
+        //then
+        assertThat(deletedItem.isDeleted()).isTrue();
+    }
+
+    private void updateItemPhotos(List<ItemPhotos> existingItemPhotos,
+        List<String> newImageAddresses,
+        Item item) {
+
+        List<String> existingAddresses = existingItemPhotos.stream()
+            .map(ItemPhotos::getImageAddress)
+            .toList();
+
+        newImageAddresses.stream()
+            .filter(address -> !existingAddresses.contains(address))
+            .forEach(address -> {
+                ItemPhotos newPhoto = new ItemPhotos();
+                newPhoto.registerItemPhotos(item, address);
+                itemPhotosRepository.save(newPhoto);
+            });
+
+        existingItemPhotos.stream()
+            .filter(photo -> !newImageAddresses.contains(photo.getImageAddress()))
+            .forEach(photo -> {
+                itemPhotosRepository.delete(photo);
+                //s3에 있는 기존 이미지 삭제
+            });
     }
 
 }

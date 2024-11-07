@@ -11,14 +11,19 @@ import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_SOR
 import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_THUMBNAIL;
 import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_TITLE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.verify;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import LinkerBell.campus_market_spring.domain.Category;
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
@@ -43,7 +48,6 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -80,7 +84,7 @@ class ItemControllerTest {
         mockMvc.perform(get("/api/v1/items")
                 .contentType(MediaType.APPLICATION_JSON))
             .andDo(print())
-            .andExpect(MockMvcResultMatchers.status().isOk());
+            .andExpect(status().isOk());
 
         verify(itemService).itemSearch(any(Long.class), Mockito.argThat(dto -> {
             Pageable pageable = dto.getPageable();
@@ -107,7 +111,7 @@ class ItemControllerTest {
                 .param("sort", "price,asc")
                 .contentType(MediaType.APPLICATION_JSON))
             .andDo(print())
-            .andExpect(MockMvcResultMatchers.status().isOk());
+            .andExpect(status().isOk());
 
         verify(itemService).itemSearch(any(Long.class), Mockito.argThat(dto -> {
             Pageable pageable = dto.getPageable();
@@ -247,7 +251,7 @@ class ItemControllerTest {
                 .param("sort", "createdDate,desc")
                 .contentType(MediaType.APPLICATION_JSON))
             .andDo(print())
-            .andExpect(MockMvcResultMatchers.status().isOk());
+            .andExpect(status().isOk());
 
         verify(itemService).itemSearch(any(Long.class), Mockito.argThat(dto -> {
             Pageable pageable = dto.getPageable();
@@ -268,7 +272,7 @@ class ItemControllerTest {
                 .param("sort", "price")
                 .contentType(MediaType.APPLICATION_JSON))
             .andDo(print())
-            .andExpect(MockMvcResultMatchers.status().isOk());
+            .andExpect(status().isOk());
 
         verify(itemService).itemSearch(any(Long.class), Mockito.argThat(dto -> {
             Pageable pageable = dto.getPageable();
@@ -289,7 +293,7 @@ class ItemControllerTest {
                 .param("sort", "price,desc")
                 .contentType(MediaType.APPLICATION_JSON))
             .andDo(print())
-            .andExpect(MockMvcResultMatchers.status().isOk());
+            .andExpect(status().isOk());
 
         verify(itemService).itemSearch(any(Long.class), Mockito.argThat(dto -> {
             Pageable pageable = dto.getPageable();
@@ -356,7 +360,7 @@ class ItemControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(itemRequestJson))
             .andDo(print())
-            .andExpect(MockMvcResultMatchers.status().isOk());
+            .andExpect(status().isOk());
 
         ArgumentCaptor<ItemRegisterRequestDto> captor = ArgumentCaptor.forClass(
             ItemRegisterRequestDto.class);
@@ -578,7 +582,7 @@ class ItemControllerTest {
         mockMvc.perform(get("/api/v1/items/categories")
                 .contentType(MediaType.APPLICATION_JSON))
             .andDo(print())
-            .andExpect(MockMvcResultMatchers.status().isOk());
+            .andExpect(status().isOk());
 
     }
 
@@ -612,6 +616,58 @@ class ItemControllerTest {
             .andExpect(jsonPath("$.code").value(INVALID_ITEM_ID.getCode()));
 
         verify(itemService, times(0)).itemSearch(any(Long.class), any());
+    }
+
+    @Test
+    @DisplayName("정상적인 아이템 업데이트 테스트")
+    public void defaultItemUpdateTest() throws Exception {
+        String itemRequestJson = """
+            {
+              "title": "testTitle",
+              "price": "20",
+              "description": "testDescription",
+              "category": "ELECTRONICS_IT",
+              "thumbnail": "https://www.default.com"
+            }
+            """;
+
+        doNothing().when(itemService)
+            .updateItem(any(Long.class), any(Long.class), any(ItemRegisterRequestDto.class));
+
+        long itemId = 1L;
+        mockMvc.perform(patch("/api/v1/items/" + itemId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(itemRequestJson))
+            .andDo(print())
+            .andExpect(status().isNoContent());
+
+        ArgumentCaptor<ItemRegisterRequestDto> captor = ArgumentCaptor.forClass(
+            ItemRegisterRequestDto.class);
+        verify(itemService).updateItem(any(Long.class), eq(itemId), captor.capture());
+
+        ItemRegisterRequestDto capturedDto = captor.getValue();
+        assertThat(capturedDto.getTitle()).isEqualTo("testTitle");
+        assertThat(capturedDto.getPrice()).isEqualTo(20);
+        assertThat(capturedDto.getDescription()).isEqualTo("testDescription");
+        assertThat(capturedDto.getCategory()).isEqualTo(Category.ELECTRONICS_IT);
+        assertThat(capturedDto.getThumbnail()).isEqualTo("https://www.default.com");
+        assertThat(capturedDto.getImages()).isNull();
+    }
+
+    @Test
+    @DisplayName("정상적인 아이템 삭제 테스트")
+    public void defaultItemDeleteTest() throws Exception {
+
+        doNothing().when(itemService).deleteItem(any(Long.class), any(Long.class));
+
+        long itemId = 1L;
+        mockMvc.perform(delete("/api/v1/items/" + itemId)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andDo(print())
+            .andExpect(status().isNoContent());
+
+        verify(itemService).deleteItem(any(Long.class), eq(itemId));
+
     }
 
 
