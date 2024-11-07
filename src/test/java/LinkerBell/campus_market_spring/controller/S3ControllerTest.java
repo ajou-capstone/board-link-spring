@@ -58,11 +58,12 @@ class S3ControllerTest {
             .param("fileName", "test"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.presignedUrl").value(s3ResponseDto.getPresignedUrl()))
-            .andExpect(jsonPath("$.s3Url").value(s3ResponseDto.getS3url()))
+            .andExpect(jsonPath("$.s3url").value(s3ResponseDto.getS3url()))
             .andDo(print());
     }
 
     @Test
+    @DisplayName("파일 이름이 공백일 경우")
     public void fileNameBlankExceptionTest() throws Exception {
 
         // when & then
@@ -73,6 +74,7 @@ class S3ControllerTest {
     }
 
     @Test
+    @DisplayName("파일 이름이 들어오지 않을 경우")
     public void fileNameNullExceptionTest() throws Exception {
 
         // when & then
