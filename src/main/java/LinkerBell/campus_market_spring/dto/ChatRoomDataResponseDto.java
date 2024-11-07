@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ChatRoomResponseDto {
+public class ChatRoomDataResponseDto {
 
     private Long chatRoomId;
     private Long userId;
@@ -14,4 +14,5 @@ public class ChatRoomResponseDto {
     private String title;
     @JsonProperty(value = "isAlarm")
     private Boolean isAlarm;
+    private Long messageId;
 }
