@@ -11,13 +11,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ChatPropertiesRepository extends JpaRepository<ChatProperties, Long> {
+
     ChatProperties findByUserAndChatRoom(User user, ChatRoom chatRoom);
-
-    @Modifying(clearAutomatically = true)
-    @Query("UPDATE ChatProperties cp SET cp.isExited = true WHERE cp.user = :user AND cp.chatRoom = :chatRoom")
-    void updateIsExitedTrueByUserAndChatRoom(@Param("user") User user, @Param("chatRoom") ChatRoom chatRoom);
-
-    @Modifying(clearAutomatically = true)
-    @Query("UPDATE ChatProperties cp SET cp.isAlarm = :isAlarm WHERE cp.user = :user AND cp.chatRoom = :chatRoom")
-    void updateIsAlarmByUserAndChatRoom(@Param("user") User user, @Param("chatRoom") ChatRoom chatRoom, @Param("isAlarm") boolean isAlarm);
 }

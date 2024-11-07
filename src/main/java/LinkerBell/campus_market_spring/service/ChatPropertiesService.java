@@ -1,5 +1,6 @@
 package LinkerBell.campus_market_spring.service;
 
+import LinkerBell.campus_market_spring.domain.ChatProperties;
 import LinkerBell.campus_market_spring.domain.ChatRoom;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
@@ -27,6 +28,10 @@ public class ChatPropertiesService {
             );
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
             .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
-        chatPropertiesRepository.updateIsAlarmByUserAndChatRoom(user, chatRoom, isAlarm);
+
+        ChatProperties chatProperties = chatPropertiesRepository.findByUserAndChatRoom(user,
+            chatRoom);
+
+        chatProperties.setAlarm(isAlarm);
     }
 }

@@ -12,9 +12,6 @@ import java.util.List;
 
 @Repository
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
-    @Modifying(clearAutomatically = true)
-    @Query("UPDATE ChatRoom c SET c.userCount = c.userCount - 1 WHERE c.chatRoomId = :chatRoomId AND c.userCount > 0")
-    void decrementUserCountByChatRoomId(@Param("chatRoomId") Long chatRoomId);
 
     List<ChatRoom> findByUser(User user);
 }

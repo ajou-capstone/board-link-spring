@@ -38,7 +38,11 @@ public class ChatRoomService {
             .orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
         User seller = item.getUser();
 
-        ChatRoom chatRoom = ChatRoom.builder().user(buyer).item(item).build();
+        ChatRoom chatRoom = ChatRoom.builder()
+            .user(buyer)
+            .item(item)
+            .userCount(1)
+            .build();
 
         chatRoomRepository.save(chatRoom);
 
@@ -103,11 +107,14 @@ public class ChatRoomService {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow();
         User user = userRepository.findById(authUserDto.getUserId()).orElseThrow();
 
+        ChatProperties chatProperties = chatPropertiesRepository.findByUserAndChatRoom(user,
+            chatRoom);
+
         // isExited = true로 바꾸기
-        chatPropertiesRepository.updateIsExitedTrueByUserAndChatRoom(user, chatRoom);
+        chatProperties.setExited(true);
 
         // 채팅방에서 userCount - 1 하기
-        chatRoomRepository.decrementUserCountByChatRoomId(chatRoomId);
+        chatRoom.setUserCount(chatRoom.getUserCount() - 1);
     }
 
     // 채팅방 1개 정보 가져오기
