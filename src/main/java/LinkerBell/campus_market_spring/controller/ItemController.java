@@ -64,12 +64,6 @@ public class ItemController {
     }
 
 
-    private void validCategory(ItemRegisterRequestDto itemRegisterRequestDto) {
-        if (itemRegisterRequestDto.getCategory() == null) {
-            itemRegisterRequestDto.setCategory(Category.OTHER);
-        }
-    }
-
     @GetMapping("/categories")
     public ResponseEntity<ItemCategoryResponseDto> itemCategoriesReturn(
         @Login AuthUserDto authUserDto) {
@@ -108,6 +102,22 @@ public class ItemController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{itemId}/change-status")
+    public ResponseEntity<?> itemStatusChange(
+        @Login AuthUserDto authUserDto,
+        @PathVariable("itemId") Long itemId,
+        @Valid @RequestBody ItemStatusChangeRequestDto itemStatusChangeRequestDto
+    ) {
+        validItemId(itemId);
+        itemService.changeItemStatus(authUserDto.getUserId(), itemId, itemStatusChangeRequestDto);
+        return ResponseEntity.noContent().build();
+    }
+
+    private void validCategory(ItemRegisterRequestDto itemRegisterRequestDto) {
+        if (itemRegisterRequestDto.getCategory() == null) {
+            itemRegisterRequestDto.setCategory(Category.OTHER);
+        }
+    }
 
     private void validItemId(Long itemId) {
 

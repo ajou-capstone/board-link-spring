@@ -4,6 +4,7 @@ import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import java.util.Locale;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.http.ProblemDetail;
@@ -50,20 +51,26 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> validException(MethodArgumentNotValidException ex)
         throws MethodArgumentNotValidException {
 
-        if (ex.getFieldError().getField().equals("title")) {
+        if (Objects.requireNonNull(ex.getFieldError()).getField().equals("title")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_TITLE);
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
-        } else if (ex.getFieldError().getField().equals("price")) {
+        } else if (Objects.requireNonNull(ex.getFieldError()).getField().equals("price")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_PRICE);
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
-        } else if (ex.getFieldError().getField().equals("description")) {
+        } else if (Objects.requireNonNull(ex.getFieldError()).getField().equals("description")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_DESCRIPTION);
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
-        } else if (ex.getFieldError().getField().equals("thumbnail")) {
+        } else if (Objects.requireNonNull(ex.getFieldError()).getField().equals("thumbnail")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_THUMBNAIL);
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
-        } else if (ex.getFieldError().getField().startsWith("images")) {
+        } else if (Objects.requireNonNull(ex.getFieldError()).getField().startsWith("images")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_PHOTOS);
+            return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
+        } else if (Objects.requireNonNull(ex.getFieldError()).getField().equals("itemStatus")) {
+            ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_STATUS);
+            return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
+        } else if (Objects.requireNonNull(ex.getFieldError()).getField().equals("buyerId")) {
+            ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_BUYER);
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
         }
 
@@ -75,6 +82,10 @@ public class GlobalExceptionHandler {
         if (ex.getCause().getMessage()
             .contains("LinkerBell.campus_market_spring.domain.Category")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_CATEGORY);
+            return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
+        } else if (ex.getCause().getMessage()
+            .contains("LinkerBell.campus_market_spring.domain.ItemStatus")) {
+            ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_STATUS);
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
         }
 

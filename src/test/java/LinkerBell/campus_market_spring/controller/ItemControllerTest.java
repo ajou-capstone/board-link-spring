@@ -3,9 +3,11 @@ package LinkerBell.campus_market_spring.controller;
 import static LinkerBell.campus_market_spring.global.error.ErrorCode.DUPLICATE_ITEM_PHOTOS;
 import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_CATEGORY;
 import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_DESCRIPTION;
+import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_ITEM_BUYER;
 import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_ITEM_ID;
 import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_ITEM_PHOTOS;
 import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_ITEM_PHOTOS_COUNT;
+import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_ITEM_STATUS;
 import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_PRICE;
 import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_SORT;
 import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_THUMBNAIL;
@@ -29,6 +31,7 @@ import LinkerBell.campus_market_spring.domain.Category;
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
 import LinkerBell.campus_market_spring.dto.ItemRegisterRequestDto;
 import LinkerBell.campus_market_spring.dto.ItemRegisterResponseDto;
+import LinkerBell.campus_market_spring.dto.ItemStatusChangeRequestDto;
 import LinkerBell.campus_market_spring.global.error.GlobalExceptionHandler;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.service.ItemService;
@@ -670,6 +673,116 @@ class ItemControllerTest {
 
     }
 
+    @Test
+    @DisplayName("정상적인 아이템 거래상태 변경 테스트")
+    public void defaultItemStatusChangeTest() throws Exception {
+        String itemRequestJson = """
+            {
+              "itemStatus" : "SOLDOUT",
+              "buyerId": "2"
+            }
+            """;
+
+        doNothing().when(itemService).changeItemStatus(any(Long.class), any(Long.class), any(
+            ItemStatusChangeRequestDto.class));
+
+        long itemId = 1L;
+        mockMvc.perform(patch("/api/v1/items/" + itemId + "/change-status")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(itemRequestJson))
+            .andDo(print())
+            .andExpect(status().isNoContent());
+
+        verify(itemService).changeItemStatus(any(Long.class), eq(itemId), any(
+            ItemStatusChangeRequestDto.class));
+
+    }
+
+    @Test
+    @DisplayName("itemStatus에 아무 값도 안들어올때")
+    public void ItemStatusNullTest() throws Exception {
+        long itemId = 1L;
+        String itemRequestJson = """
+            {
+              "buyerId": "2"
+            }
+            """;
+
+        mockMvc.perform(patch("/api/v1/items/" + itemId + "/change-status")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(itemRequestJson))
+            .andDo(print())
+            .andExpect(
+                result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
+                    MethodArgumentNotValidException.class))
+            .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.code").value(INVALID_ITEM_STATUS.getCode()));
+    }
+
+    @Test
+    @DisplayName("itemStatus에 이상한 값 들어올때")
+    public void ItemStatusInvalidValueTest() throws Exception {
+        long itemId = 1L;
+        String itemRequestJson = """
+            {
+              "itemStatus" : "",
+              "buyerId": "2"
+            }
+            """;
+
+        mockMvc.perform(patch("/api/v1/items/" + itemId + "/change-status")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(itemRequestJson))
+            .andDo(print())
+            .andExpect(
+                result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
+                    HttpMessageNotReadableException.class))
+            .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.code").value(INVALID_ITEM_STATUS.getCode()));
+    }
+
+    @Test
+    @DisplayName("itemBuyer에 아무 값도 안 들어올때")
+    public void ItemBuyerNullTest() throws Exception {
+        long itemId = 1L;
+        String itemRequestJson = """
+            {
+              "itemStatus" : "SOLDOUT"
+            }
+            """;
+
+        mockMvc.perform(patch("/api/v1/items/" + itemId + "/change-status")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(itemRequestJson))
+            .andDo(print())
+            .andExpect(
+                result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
+                    MethodArgumentNotValidException.class))
+            .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.code").value(INVALID_ITEM_BUYER.getCode()));
+    }
+
+    @Test
+    @DisplayName("itemBuyer에 빈 값 들어올때")
+    public void ItemBuyerEmptyValueTest() throws Exception {
+        long itemId = 1L;
+        String itemRequestJson = """
+            {
+              "itemStatus" : "SOLDOUT",
+              "itemBuyer" : " "
+            }
+            """;
+
+        mockMvc.perform(patch("/api/v1/items/" + itemId + "/change-status")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(itemRequestJson))
+            .andDo(print())
+            .andExpect(
+                result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
+                    MethodArgumentNotValidException.class))
+            .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.code").value(INVALID_ITEM_BUYER.getCode()));
+    }
 
     static class MockLoginArgumentResolver implements HandlerMethodArgumentResolver {
 

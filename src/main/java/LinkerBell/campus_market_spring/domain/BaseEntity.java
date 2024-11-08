@@ -16,9 +16,14 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public abstract class BaseEntity {
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdDate;
     @LastModifiedDate
     private LocalDateTime lastModifiedDate;
+
+    public void setCreatedDateManually(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
 }

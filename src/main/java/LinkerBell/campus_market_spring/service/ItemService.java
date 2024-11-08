@@ -2,15 +2,18 @@ package LinkerBell.campus_market_spring.service;
 
 import LinkerBell.campus_market_spring.domain.Item;
 import LinkerBell.campus_market_spring.domain.ItemPhotos;
+import LinkerBell.campus_market_spring.domain.ItemStatus;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.dto.ItemDetailsViewResponseDto;
 import LinkerBell.campus_market_spring.dto.ItemRegisterRequestDto;
 import LinkerBell.campus_market_spring.dto.ItemRegisterResponseDto;
 import LinkerBell.campus_market_spring.dto.ItemSearchRequestDto;
 import LinkerBell.campus_market_spring.dto.ItemSearchResponseDto;
+import LinkerBell.campus_market_spring.dto.ItemStatusChangeRequestDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
+import LinkerBell.campus_market_spring.repository.ChatRoomRepository;
 import LinkerBell.campus_market_spring.repository.ItemPhotosRepository;
 import LinkerBell.campus_market_spring.repository.ItemRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
@@ -30,6 +33,8 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final ItemPhotosRepository itemPhotosRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final S3Service s3Service;
 
     @Transactional(readOnly = true)
     public SliceResponse<ItemSearchResponseDto> itemSearch(Long userId,
@@ -128,6 +133,45 @@ public class ItemService {
         item.setDeleted(true);
     }
 
+    public void changeItemStatus(Long userId, Long itemId,
+        ItemStatusChangeRequestDto itemStatusChangeRequestDto) {
+        User user = getUserWithCampus(userId);
+        User userBuyer = getUserWithCampus(itemStatusChangeRequestDto.getBuyerId());
+        Item item = getItem(itemId);
+
+        if (item.isDeleted()) {
+            throw new CustomException(ErrorCode.DELETED_ITEM_ID);
+        }
+
+        if (UserCampusIsMatchedByItemCampus(user, item)) {
+            throw new CustomException(ErrorCode.NOT_MATCH_USER_CAMPUS_WITH_ITEM_CAMPUS);
+        }
+
+        if (userIsNotEqualsToItemUser(user, item)) {
+            throw new CustomException(ErrorCode.NOT_MATCH_USER_ID_WITH_ITEM_USER_ID);
+        }
+
+        if (item.getItemStatus() == ItemStatus.SOLDOUT || item.getUserBuyer() != null) {
+            throw new CustomException(ErrorCode.ALREADY_SOLD_OUT_ITEM);
+        }
+
+        if (itemStatusChangeRequestDto.getItemStatus() != ItemStatus.SOLDOUT) {
+            throw new CustomException(ErrorCode.DO_NOT_ROLL_BACK_ITEM_STATUS_FOR_SALE);
+        }
+
+        if (isChatRoomExistsForUserBuyerAndItem(userBuyer, item)) {
+            throw new CustomException(ErrorCode.INVALID_ITEM_BUYER);
+        }
+        item.setItemStatus(itemStatusChangeRequestDto.getItemStatus());
+        item.setUserBuyer(userBuyer);
+    }
+
+    private boolean isChatRoomExistsForUserBuyerAndItem(User userBuyer, Item item) {
+        return !chatRoomRepository.existsByUser_userIdAndItem_itemId(
+            userBuyer.getUserId(),
+            item.getItemId());
+    }
+
     private void updateItemProperties(ItemRegisterRequestDto itemRegisterRequestDto, Item item) {
         item.setTitle(itemRegisterRequestDto.getTitle());
         item.setDescription(itemRegisterRequestDto.getDescription());
@@ -135,7 +179,7 @@ public class ItemService {
         item.setCategory(itemRegisterRequestDto.getCategory());
 
         if (isNotEqualsToThumbnail(itemRegisterRequestDto, item)) {
-            //s3에 있는 기존 이미지 삭제
+            s3Service.deleteS3File(item.getThumbnail());
             item.setThumbnail(itemRegisterRequestDto.getThumbnail());
         }
     }
@@ -165,7 +209,7 @@ public class ItemService {
             .filter(photo -> !newImageAddresses.contains(photo.getImageAddress()))
             .forEach(photo -> {
                 itemPhotosRepository.delete(photo);
-                //s3에 있는 기존 이미지 삭제
+                s3Service.deleteS3File(photo.getImageAddress());
             });
     }
 

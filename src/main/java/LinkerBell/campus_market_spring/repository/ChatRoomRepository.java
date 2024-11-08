@@ -11,4 +11,6 @@ import java.util.List;
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     List<ChatRoom> findByUser(User user);
+
+    boolean existsByUser_userIdAndItem_itemId(Long userId, Long itemId);
 }
