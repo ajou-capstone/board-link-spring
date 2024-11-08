@@ -3,6 +3,7 @@ package LinkerBell.campus_market_spring.service;
 import LinkerBell.campus_market_spring.domain.Campus;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.dto.CampusResponseDto;
+import LinkerBell.campus_market_spring.dto.OtherProfileResponseDto;
 import LinkerBell.campus_market_spring.dto.ProfileResponseDto;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
@@ -82,6 +83,21 @@ public class ProfileService {
         user.setCampus(findCampus);
 
         return createMyProfileResponseDto(user);
+    }
+
+    public OtherProfileResponseDto getOtherProfile(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        
+        return createOtherProfileResponseDto(user);
+    }
+
+    private OtherProfileResponseDto createOtherProfileResponseDto(User user) {
+        return OtherProfileResponseDto.builder()
+            .id(user.getUserId())
+            .nickname(user.getNickname())
+            .profileImage(user.getProfileImage())
+            .rating(user.getRating()).build();
     }
 
     private List<Campus> findCampusList(String schoolEmail) {

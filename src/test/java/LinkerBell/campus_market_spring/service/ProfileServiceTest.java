@@ -8,6 +8,7 @@ import LinkerBell.campus_market_spring.domain.Campus;
 import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.dto.CampusResponseDto;
+import LinkerBell.campus_market_spring.dto.OtherProfileResponseDto;
 import LinkerBell.campus_market_spring.dto.ProfileResponseDto;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
@@ -15,7 +16,9 @@ import LinkerBell.campus_market_spring.repository.CampusRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
+import javax.print.attribute.standard.MediaSize.Other;
 import org.assertj.core.util.Lists;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,11 +38,21 @@ class ProfileServiceTest {
     @InjectMocks
     ProfileService profileService;
 
+    private User user;
+    private Campus campus;
+    private Campus diffCampus;
+
+    @BeforeEach
+    public void setUp() {
+        user = createUser();
+        campus = createCampus();
+        diffCampus = createDiffCampus();
+    }
+
     @Test
     @DisplayName("프로필 정보 가져오기 테스트")
     public void getProfileTest() {
         // given
-        User user = createUser();
         given(userRepository.findById(1L)).willReturn(Optional.ofNullable(user));
 
         // when
@@ -55,7 +68,6 @@ class ProfileServiceTest {
     @DisplayName("프로필 정보 변경 테스트")
     public void saveProfileTest() {
         // given
-        User user = createUser();
         given(userRepository.findById(1L)).willReturn(Optional.ofNullable(user));
         // when
         ProfileResponseDto profileResponseDto = profileService.saveProfile(1L, "new nickname", "imageUrl");
@@ -69,7 +81,6 @@ class ProfileServiceTest {
     @DisplayName("닉네임만 변경 테스트")
     public void onlyUpdateNicknameTest() {
         // given
-        User user = createUser();
         given(userRepository.findById(Mockito.anyLong())).willReturn(Optional.ofNullable(user));
         // when
         ProfileResponseDto profileResponseDto = profileService.saveProfile(user.getUserId(), "new_nickname", null);
@@ -84,7 +95,6 @@ class ProfileServiceTest {
     @DisplayName("프로필 이미지만 변경 테스트")
     public void onlyUpdateImageUrlTest() {
         // given
-        User user = createUser();
         given(userRepository.findById(Mockito.anyLong())).willReturn(Optional.ofNullable(user));
 
         // when
@@ -100,8 +110,6 @@ class ProfileServiceTest {
     @DisplayName("캠퍼스 정보 가져오기 테스트")
     public void getCampusTest() {
         // given
-        User user = createUser();
-        Campus campus = createCampus();
         given(campusRepository.findByEmail(Mockito.anyString())).willReturn(Lists.newArrayList(campus));
         given(userRepository.findById(Mockito.anyLong())).willReturn(Optional.ofNullable(user));
         // when
@@ -111,23 +119,11 @@ class ProfileServiceTest {
         assertThat(campusList.size()).isGreaterThan(0);
     }
 
-//    @Test
-//    public void findCampusTest() {
-//        // given
-//        String schoolEmail = "abc@asd.ac.ad";
-//        given(campusRepository.findByEmail(Mockito.anyString())).willReturn(Lists.newArrayList());
-//        // when & then
-//        assertThatThrownBy(() -> profileService.findCampusList(schoolEmail)).isInstanceOf(CustomException.class);
-//    }
 
     @Test
     @DisplayName("캠퍼스 저장 예외 테스트")
     public void saveCampusErrorTest() {
         // given
-        User user = createUser();
-        Campus campus = createCampus();
-        Campus diffCampus = createDiffCampus();
-
         given(userRepository.findById(Mockito.anyLong())).willReturn(Optional.ofNullable(user));
         given(campusRepository.findByEmail(Mockito.anyString())).willReturn(Lists.newArrayList(diffCampus));
         // when & then
@@ -139,8 +135,6 @@ class ProfileServiceTest {
     @DisplayName("캠퍼스 저장 테스트")
     public void saveCampusTest() {
         // given
-        User user = createUser();
-        Campus campus = createCampus();
         given(userRepository.findById(Mockito.anyLong())).willReturn(Optional.ofNullable(user));
         given(campusRepository.findByEmail(Mockito.anyString())).willReturn(Lists.newArrayList(campus));
         
@@ -149,6 +143,21 @@ class ProfileServiceTest {
 
         // then
         assertThat(profileResponseDto).isNotNull();
+    }
+
+    @Test
+    @DisplayName("다른 사용자 프로필 정보 가져오기")
+    public void getOtherProfileTest() {
+        // given
+        given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(user));
+        // when
+        OtherProfileResponseDto responseDto = profileService.getOtherProfile(1L);
+        // then
+        assertThat(responseDto).isNotNull();
+        assertThat(responseDto.getId()).isEqualTo(user.getUserId());
+        assertThat(responseDto.getProfileImage()).isEqualTo(user.getProfileImage());
+        assertThat(responseDto.getNickname()).isEqualTo(user.getNickname());
+        assertThat(responseDto.getRating()).isEqualTo(user.getRating());
     }
 
     private Campus createCampus() {
@@ -167,6 +176,7 @@ class ProfileServiceTest {
             .nickname("old_nickname")
             .profileImage("old_url")
             .schoolEmail("abc@ajou.ac.kr")
+            .rating(0.0)
             .role(Role.GUEST).build();
     }
 
