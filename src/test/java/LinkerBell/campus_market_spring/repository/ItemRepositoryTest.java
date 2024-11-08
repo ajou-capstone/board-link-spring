@@ -116,7 +116,9 @@ class ItemRepositoryTest {
                     .build();
             }
             itemRepository.save(item);
-            item.setCreatedDate(LocalDateTime.of(2023, 10, 31, 0, 0).plusSeconds(i * 10));
+            LocalDateTime localDateTime =LocalDateTime.of(2023, 10, i+1, 0, 0,0);
+            item.setCreatedDate(localDateTime);
+            itemRepository.updateCreatedDate(item.getItemId(),localDateTime);
             items.add(item);
         }
         int j = 0;

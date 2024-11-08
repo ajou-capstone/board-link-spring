@@ -122,7 +122,7 @@ public class ItemServiceTest {
                     .thumbnail("https://defaultImage.com")
                     .build();
             }
-            item.setCreatedDate(LocalDateTime.of(2023, 10, 31, 0, 0).plusSeconds(i * 10));
+            item.setCreatedDate(LocalDateTime.of(2023, 10, i+1, 0, 0,0));
             items.add(item);
         }
         int j = 0;
