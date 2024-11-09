@@ -19,11 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class ProfileService {
 
     private final UserRepository userRepository;
     private final CampusRepository campusRepository;
 
+    @Transactional(readOnly = true)
     public ProfileResponseDto getMyProfile(Long userId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -31,7 +33,6 @@ public class ProfileService {
         return createMyProfileResponseDto(user);
     }
 
-    @Transactional
     public ProfileResponseDto saveProfile(Long userId, String nickname, String imageUrl) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -60,6 +61,7 @@ public class ProfileService {
             .rating(user.getRating()).build();
     }
 
+    @Transactional(readOnly = true)
     public List<CampusResponseDto> getCampusList(Long userId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -69,7 +71,6 @@ public class ProfileService {
             .toList();
     }
 
-    @Transactional
     public ProfileResponseDto saveCampus(Long userId, Long campusId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -85,11 +86,19 @@ public class ProfileService {
         return createMyProfileResponseDto(user);
     }
 
-    public OtherProfileResponseDto getOtherProfile(Long userId) {
+    @Transactional(readOnly = true)
+    public OtherProfileResponseDto getOtherProfile(Long userId, Long otherId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        User other = userRepository.findById(otherId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getCampus() != other.getCampus()) {
+            throw new CustomException(ErrorCode.NOT_MATCH_USER_CAMPUS);
+        }
         
-        return createOtherProfileResponseDto(user);
+        return createOtherProfileResponseDto(other);
     }
 
     private OtherProfileResponseDto createOtherProfileResponseDto(User user) {

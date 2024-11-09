@@ -39,12 +39,14 @@ class ProfileServiceTest {
     ProfileService profileService;
 
     private User user;
+    private User other;
     private Campus campus;
     private Campus diffCampus;
 
     @BeforeEach
     public void setUp() {
         user = createUser();
+        other = createOther();
         campus = createCampus();
         diffCampus = createDiffCampus();
     }
@@ -149,15 +151,35 @@ class ProfileServiceTest {
     @DisplayName("다른 사용자 프로필 정보 가져오기")
     public void getOtherProfileTest() {
         // given
-        given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(user));
+        user.setCampus(campus);
+        other.setCampus(campus);
+
+        given(userRepository.findById(user.getUserId())).willReturn(Optional.ofNullable(user));
+        given(userRepository.findById(other.getUserId())).willReturn(Optional.ofNullable(other));
         // when
-        OtherProfileResponseDto responseDto = profileService.getOtherProfile(1L);
+        OtherProfileResponseDto responseDto =
+            profileService.getOtherProfile(user.getUserId(), other.getUserId());
         // then
         assertThat(responseDto).isNotNull();
-        assertThat(responseDto.getId()).isEqualTo(user.getUserId());
-        assertThat(responseDto.getProfileImage()).isEqualTo(user.getProfileImage());
-        assertThat(responseDto.getNickname()).isEqualTo(user.getNickname());
-        assertThat(responseDto.getRating()).isEqualTo(user.getRating());
+        assertThat(responseDto.getId()).isEqualTo(other.getUserId());
+        assertThat(responseDto.getProfileImage()).isEqualTo(other.getProfileImage());
+        assertThat(responseDto.getNickname()).isEqualTo(other.getNickname());
+        assertThat(responseDto.getRating()).isEqualTo(other.getRating());
+    }
+
+    @Test
+    @DisplayName("캠퍼스가 다른 사용자 프로필 정보 확인 에러 테스트")
+    public void diffCampusOtherProfileErrorTest() {
+        // given
+        user.setCampus(campus);
+        other.setCampus(diffCampus);
+
+        given(userRepository.findById(user.getUserId())).willReturn(Optional.ofNullable(user));
+        given(userRepository.findById(other.getUserId())).willReturn(Optional.ofNullable(other));
+        // when & then
+        assertThatThrownBy(() -> profileService.getOtherProfile(user.getUserId(), other.getUserId()))
+            .isInstanceOf(CustomException.class)
+            .hasMessageContaining(ErrorCode.NOT_MATCH_USER_CAMPUS.getMessage());
     }
 
     private Campus createCampus() {
@@ -186,6 +208,12 @@ class ProfileServiceTest {
             .email("test.ac.kr")
             .region("수원시")
             .universityName("테스트대학교").build();
+    }
+
+    private User createOther() {
+        return User.builder().userId(11L).schoolEmail("test2.example2.com")
+            .profileImage("other's profile image").rating(5.2).nickname("I'm other")
+            .role(Role.GUEST).build();
     }
 
 }

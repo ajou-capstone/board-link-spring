@@ -58,9 +58,9 @@ public class ProfileController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<OtherProfileResponseDto> getOtherProfile(
-        @PathVariable("userId") Long userId) {
-        OtherProfileResponseDto responseDto = profileService.getOtherProfile(userId);
+    public ResponseEntity<OtherProfileResponseDto> getOtherProfile(@Login AuthUserDto user,
+        @PathVariable("userId") Long otherId) {
+        OtherProfileResponseDto responseDto = profileService.getOtherProfile(user.getUserId(), otherId);
         return ResponseEntity.ok(responseDto);
     }
 }

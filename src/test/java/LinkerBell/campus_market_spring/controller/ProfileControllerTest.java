@@ -139,16 +139,17 @@ class ProfileControllerTest {
         // given
         OtherProfileResponseDto responseDto = OtherProfileResponseDto.builder()
             .id(1L).rating(0.0).profileImage("test_url").nickname("test_user").build();
-        given(profileService.getOtherProfile(anyLong())).willReturn(responseDto);
+        given(profileService.getOtherProfile(anyLong(), anyLong())).willReturn(responseDto);
+
         // when
         mockMvc.perform(get("/api/v1/profile/" + responseDto.getId()))
             .andExpect(status().isOk()).andDo(print()).andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.profileImage").value("test_url"))
                     .andExpect(jsonPath("$.nickname").value("test_user"))
                         .andExpect(jsonPath("$.rating").value(0.0));
-        // then
 
-        then(profileService).should(times(1)).getOtherProfile(argThat(v -> {
+        // then
+        then(profileService).should(times(1)).getOtherProfile(anyLong(),argThat(v -> {
             assertThat(v).isEqualTo(responseDto.getId());
             return true;
         }));

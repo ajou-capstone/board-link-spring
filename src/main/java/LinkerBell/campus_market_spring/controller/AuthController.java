@@ -30,6 +30,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody AuthRequestDto authRequestDto) {
         AuthResponseDto authResponseDto = authService.googleLogin(authRequestDto.getIdToken());
+        log.info("firebaseToken: [{}]", authRequestDto.getFirebaseToken());
         return ResponseEntity.ok(authResponseDto);
     }
 

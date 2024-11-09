@@ -41,6 +41,8 @@ public enum ErrorCode {
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, 4033, "채팅방이 존재하지 않습니다."),
     MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, 4034, "채팅 메시지가 존재하지 않습니다."),
 
+    NOT_MATCH_USER_CAMPUS(HttpStatus.FORBIDDEN, 4035, "캠퍼스가 일치하지 않는 사용자입니다."),
+
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다.");
 
     private final HttpStatus httpStatus;
