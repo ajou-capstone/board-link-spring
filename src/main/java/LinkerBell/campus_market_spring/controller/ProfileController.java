@@ -4,6 +4,7 @@ import LinkerBell.campus_market_spring.dto.AuthUserDto;
 import LinkerBell.campus_market_spring.dto.CollectionResponse.CampusCollectionResponseDto;
 import LinkerBell.campus_market_spring.dto.CampusRequestDto;
 import LinkerBell.campus_market_spring.dto.CampusResponseDto;
+import LinkerBell.campus_market_spring.dto.OtherProfileResponseDto;
 import LinkerBell.campus_market_spring.dto.ProfileRequestDto;
 import LinkerBell.campus_market_spring.dto.ProfileResponseDto;
 import LinkerBell.campus_market_spring.global.auth.Login;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,5 +55,12 @@ public class ProfileController {
         ProfileResponseDto profileResponseDto = profileService.saveCampus(user.getUserId(),
             campusRequestDto.getCampusId());
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<OtherProfileResponseDto> getOtherProfile(@Login AuthUserDto user,
+        @PathVariable("userId") Long otherId) {
+        OtherProfileResponseDto responseDto = profileService.getOtherProfile(user.getUserId(), otherId);
+        return ResponseEntity.ok(responseDto);
     }
 }

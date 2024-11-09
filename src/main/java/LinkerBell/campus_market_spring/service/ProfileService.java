@@ -3,6 +3,7 @@ package LinkerBell.campus_market_spring.service;
 import LinkerBell.campus_market_spring.domain.Campus;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.dto.CampusResponseDto;
+import LinkerBell.campus_market_spring.dto.OtherProfileResponseDto;
 import LinkerBell.campus_market_spring.dto.ProfileResponseDto;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
@@ -18,11 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class ProfileService {
 
     private final UserRepository userRepository;
     private final CampusRepository campusRepository;
 
+    @Transactional(readOnly = true)
     public ProfileResponseDto getMyProfile(Long userId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -30,7 +33,6 @@ public class ProfileService {
         return createMyProfileResponseDto(user);
     }
 
-    @Transactional
     public ProfileResponseDto saveProfile(Long userId, String nickname, String imageUrl) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -59,6 +61,7 @@ public class ProfileService {
             .rating(user.getRating()).build();
     }
 
+    @Transactional(readOnly = true)
     public List<CampusResponseDto> getCampusList(Long userId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -68,7 +71,6 @@ public class ProfileService {
             .toList();
     }
 
-    @Transactional
     public ProfileResponseDto saveCampus(Long userId, Long campusId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -82,6 +84,29 @@ public class ProfileService {
         user.setCampus(findCampus);
 
         return createMyProfileResponseDto(user);
+    }
+
+    @Transactional(readOnly = true)
+    public OtherProfileResponseDto getOtherProfile(Long userId, Long otherId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        User other = userRepository.findById(otherId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getCampus() != other.getCampus()) {
+            throw new CustomException(ErrorCode.NOT_MATCH_USER_CAMPUS);
+        }
+        
+        return createOtherProfileResponseDto(other);
+    }
+
+    private OtherProfileResponseDto createOtherProfileResponseDto(User user) {
+        return OtherProfileResponseDto.builder()
+            .id(user.getUserId())
+            .nickname(user.getNickname())
+            .profileImage(user.getProfileImage())
+            .rating(user.getRating()).build();
     }
 
     private List<Campus> findCampusList(String schoolEmail) {

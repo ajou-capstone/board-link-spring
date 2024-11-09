@@ -1,6 +1,7 @@
 package LinkerBell.campus_market_spring.controller;
 
 import static org.mockito.BDDMockito.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
@@ -11,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
 import LinkerBell.campus_market_spring.dto.CampusRequestDto;
 import LinkerBell.campus_market_spring.dto.CampusResponseDto;
+import LinkerBell.campus_market_spring.dto.OtherProfileResponseDto;
 import LinkerBell.campus_market_spring.dto.ProfileRequestDto;
 import LinkerBell.campus_market_spring.dto.ProfileResponseDto;
 import LinkerBell.campus_market_spring.global.error.GlobalExceptionHandler;
@@ -129,6 +131,28 @@ class ProfileControllerTest {
         // then
         MvcResult mvcResult = resultActions.andExpect(status().isNoContent()).andDo(print())
             .andReturn();
+    }
+
+    @Test
+    @DisplayName("다른 사용자 프로필 가져오기 테스트")
+    public void getOtherProfileTest() throws Exception {
+        // given
+        OtherProfileResponseDto responseDto = OtherProfileResponseDto.builder()
+            .id(1L).rating(0.0).profileImage("test_url").nickname("test_user").build();
+        given(profileService.getOtherProfile(anyLong(), anyLong())).willReturn(responseDto);
+
+        // when
+        mockMvc.perform(get("/api/v1/profile/" + responseDto.getId()))
+            .andExpect(status().isOk()).andDo(print()).andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.profileImage").value("test_url"))
+                    .andExpect(jsonPath("$.nickname").value("test_user"))
+                        .andExpect(jsonPath("$.rating").value(0.0));
+
+        // then
+        then(profileService).should(times(1)).getOtherProfile(anyLong(),argThat(v -> {
+            assertThat(v).isEqualTo(responseDto.getId());
+            return true;
+        }));
     }
 
     private List<CampusResponseDto> createCampusList() {

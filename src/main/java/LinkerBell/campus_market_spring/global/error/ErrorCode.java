@@ -44,6 +44,8 @@ public enum ErrorCode {
     DO_NOT_ROLL_BACK_ITEM_STATUS_FOR_SALE(HttpStatus.BAD_REQUEST, 4037, "아이템을 판매중인 상태로 바꿀 수 없습니다."),
     ALREADY_SOLD_OUT_ITEM(HttpStatus.BAD_REQUEST, 4038, "이미 거래 완료된 아이템 입니다."),
 
+    NOT_MATCH_USER_CAMPUS(HttpStatus.FORBIDDEN, 4035, "캠퍼스가 일치하지 않는 사용자입니다."),
+
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다.");
 
     private final HttpStatus httpStatus;
