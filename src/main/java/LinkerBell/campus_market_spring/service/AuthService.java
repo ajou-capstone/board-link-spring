@@ -15,6 +15,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,9 +71,12 @@ public class AuthService {
 
     private void saveUserFcmToken(String firebaseToken, User user) {
         userFcmTokenRepository.findByFcmToken(firebaseToken).ifPresentOrElse(userFcmToken -> {
-                log.info("already exists.");
+                log.info("already exist.");
+                userFcmToken.setLastModifiedDate(LocalDateTime.now());
+                userFcmTokenRepository.save(userFcmToken);
             },
             () -> {
+                log.info("not exist.");
                 UserFcmToken userFcmToken = UserFcmToken.builder().fcmToken(firebaseToken)
                     .user(user).build();
                 userFcmTokenRepository.save(userFcmToken);
