@@ -30,12 +30,14 @@ public class ItemRegisterRequestDto {
 
     private Category category;
 
-    @Pattern(regexp = "^(https?|ftp):\\/\\/([\\w\\-]+\\.)+[\\w\\-]+(\\/[-a-zA-Z0-9@:%._\\+~#=]*)?$",
+    @Pattern(regexp = "^(https?|ftp):\\/\\/([\\w\\-]+\\.)+[\\w\\-]+(\\/[-a-zA-Z0-9@:%._\\+~#=]*)*$",
         message = "Must be a valid URL."
     )
     private String thumbnail;
 
-    private List<@Pattern(regexp = "^(https?|ftp):\\/\\/([\\w\\-]+\\.)+[\\w\\-]+(\\/[-a-zA-Z0-9@:%._\\+~#=]*)?$",
-        message = "Must be a valid URL.") String> images;
+    private List<@Pattern(
+        regexp = "^(https?|ftp):\\/\\/([\\w\\-]+\\.)+[\\w\\-]+(\\/[-a-zA-Z0-9@:%._\\+~#=]*)*$",
+        message = "Must be a valid URL."
+    ) String> images;
 
 }
