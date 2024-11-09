@@ -58,10 +58,11 @@ class AuthControllerTest {
     @Test
     public void loginTest() throws Exception {
         // given
-        RequestDto requestDto = new RequestDto("123", "123");
+        RequestDto requestDto = new RequestDto("googleToken", "firebaseToken");
         AuthResponseDto authResponseDto = AuthResponseDto.builder().accessToken("testAccessToken")
             .refreshToken("testRefreshToken").build();
-        given(authService.googleLogin(Mockito.anyString())).willReturn(authResponseDto);
+        given(authService.googleLogin(requestDto.getIdToken(), requestDto.getFirebaseToken()))
+            .willReturn(authResponseDto);
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -72,6 +73,10 @@ class AuthControllerTest {
                 jsonPath("$.accessToken").value("testAccessToken"))
             .andExpect(jsonPath("$.refreshToken").value("testRefreshToken"))
             .andExpect(status().isOk()).andDo(print()).andReturn();
+
+        then(authService).should(times(1))
+            .googleLogin(assertArg(g-> assertThat(g).isEqualTo(requestDto.getIdToken())),
+                assertArg(f -> assertThat(f).isEqualTo(requestDto.getFirebaseToken())));
     }
 
     @Test
@@ -136,7 +141,6 @@ class AuthControllerTest {
         }
 
     }
-
     static class RequestDto {
 
         String idToken;
@@ -148,6 +152,14 @@ class AuthControllerTest {
         public RequestDto(String idToken, String firebaseToken) {
             this.idToken = idToken;
             this.firebaseToken = firebaseToken;
+        }
+
+        public String getIdToken() {
+            return this.idToken;
+        }
+
+        public String getFirebaseToken() {
+            return this.firebaseToken;
         }
     }
 }
