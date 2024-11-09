@@ -37,9 +37,12 @@ public enum ErrorCode {
     DUPLICATE_SCHOOL_EMAIL(HttpStatus.BAD_REQUEST, 4030, "중복된 학교 이메일입니다."),
     NOT_MATCH_USER_ID_WITH_ITEM_USER_ID(HttpStatus.FORBIDDEN, 4031, "해당 아이템 게시글의 작성자가 아닙니다."),
     INVALID_FILE_NAME(HttpStatus.BAD_REQUEST, 4032, "파일 이름을 비우거나 공백으로 할 수 없습니다."),
-    
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, 4033, "채팅방이 존재하지 않습니다."),
     MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, 4034, "채팅 메시지가 존재하지 않습니다."),
+    INVALID_ITEM_STATUS(HttpStatus.BAD_REQUEST, 4035, "잘못된 아이템 거래 상태입니다."),
+    INVALID_ITEM_BUYER(HttpStatus.BAD_REQUEST, 4036, "잘못된 아이템 구매자입니다."),
+    DO_NOT_ROLL_BACK_ITEM_STATUS_FOR_SALE(HttpStatus.BAD_REQUEST, 4037, "아이템을 판매중인 상태로 바꿀 수 없습니다."),
+    ALREADY_SOLD_OUT_ITEM(HttpStatus.BAD_REQUEST, 4038, "이미 거래 완료된 아이템 입니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다.");
 

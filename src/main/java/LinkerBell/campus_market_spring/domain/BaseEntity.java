@@ -16,9 +16,11 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public abstract class BaseEntity {
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdDate;
     @LastModifiedDate
     private LocalDateTime lastModifiedDate;
+    
 }

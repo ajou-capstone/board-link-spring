@@ -8,6 +8,7 @@ import LinkerBell.campus_market_spring.domain.Category;
 import LinkerBell.campus_market_spring.domain.ChatRoom;
 import LinkerBell.campus_market_spring.domain.Item;
 import LinkerBell.campus_market_spring.domain.ItemPhotos;
+import LinkerBell.campus_market_spring.domain.ItemStatus;
 import LinkerBell.campus_market_spring.domain.Like;
 import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
@@ -16,6 +17,7 @@ import LinkerBell.campus_market_spring.dto.ItemSearchResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -26,10 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
-@Transactional
 class ItemRepositoryTest {
 
     @Autowired
@@ -58,7 +58,7 @@ class ItemRepositoryTest {
     List<ItemPhotos> itemPhotos;
 
     @BeforeEach
-    void beforeEach() {
+    void beforeEach() throws InterruptedException, NoSuchFieldException, IllegalAccessException {
         items = new ArrayList<>();
         users = new ArrayList<>();
         campuses = new ArrayList<>();
@@ -116,6 +116,9 @@ class ItemRepositoryTest {
                     .build();
             }
             itemRepository.save(item);
+            LocalDateTime localDateTime =LocalDateTime.of(2023, 10, i+1, 0, 0,0);
+            item.setCreatedDate(localDateTime);
+            itemRepository.updateCreatedDate(item.getItemId(),localDateTime);
             items.add(item);
         }
         int j = 0;
@@ -798,6 +801,46 @@ class ItemRepositoryTest {
         assertThat(deletedItem.isDeleted()).isTrue();
     }
 
+    @Test
+    @DisplayName("이 아이템의 구매자가 채팅방에 존재하는 경우 테스트")
+    public void ExistsChatroomUserAndItemTest() throws Exception {
+        //given
+        Long buyerId = users.get(2).getUserId();
+        Long itemId = items.get(2).getItemId();
+        //when
+        //then
+        assertThat(chatRoomRepository.existsByUser_userIdAndItem_itemId(buyerId,
+            itemId)).isTrue();
+    }
+
+    @Test
+    @DisplayName("이 아이템의 구매자가 채팅방에 존재하지 않는 경우 테스트")
+    public void NotExistsChatroomUserAndItemTest() throws Exception {
+        //given
+        Long buyerId = users.get(4).getUserId();
+        Long itemId = items.get(2).getItemId();
+        //when
+        //then
+        assertThat(chatRoomRepository.existsByUser_userIdAndItem_itemId(buyerId,
+            itemId)).isFalse();
+    }
+
+    @Test
+    @DisplayName("정상적인 아이템 거래 상태 변경 테스트")
+    public void defaultItemStatusChangeTest() throws Exception {
+        //given
+        User userBuyer = users.get(2);
+        Item item = items.get(2);
+        ItemStatus itemStatus = ItemStatus.SOLDOUT;
+        //when
+        item.setItemStatus(itemStatus);
+        item.setUserBuyer(userBuyer);
+        Item updatedItem = itemRepository.findById(item.getItemId()).get();
+        //then
+        assertThat(updatedItem.getItemStatus()).isEqualTo(itemStatus);
+        assertThat(updatedItem.getUserBuyer()).isEqualTo(userBuyer);
+    }
+
     private void updateItemPhotos(List<ItemPhotos> existingItemPhotos,
         List<String> newImageAddresses,
         Item item) {
@@ -818,7 +861,6 @@ class ItemRepositoryTest {
             .filter(photo -> !newImageAddresses.contains(photo.getImageAddress()))
             .forEach(photo -> {
                 itemPhotosRepository.delete(photo);
-                //s3에 있는 기존 이미지 삭제
             });
     }
 
