@@ -34,7 +34,7 @@ public class S3Service {
         String encodedTime = getEncodedTime(now).substring(0, 6);
 
         String keyName = String.format("%s/%s%s%s",
-            awsProperties.folder(), fileName, date, encodedTime);
+            awsProperties.folder(), encodedTime, date, fileName);
 
         log.info("keyName: [{}]", keyName);
         
