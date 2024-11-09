@@ -16,6 +16,7 @@ import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.service.AuthService;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -56,6 +57,7 @@ class AuthControllerTest {
     }
 
     @Test
+    @DisplayName("로그인 테스트")
     public void loginTest() throws Exception {
         // given
         RequestDto requestDto = new RequestDto("googleToken", "firebaseToken");
@@ -80,6 +82,7 @@ class AuthControllerTest {
     }
 
     @Test
+    @DisplayName("토큰 재발급 요청 테스트")
     public void refreshTest() throws Exception {
         // given
         AuthResponseDto authResponseDto = AuthResponseDto.builder().accessToken("testAccessToken")
@@ -98,6 +101,7 @@ class AuthControllerTest {
     }
 
     @Test
+    @DisplayName("토큰 재발급 시 토큰 에러 테스트")
     public void refreshJWTExceptionTest() throws Exception {
         // given
         AuthResponseDto authResponseDto = AuthResponseDto.builder().accessToken("testAccessToken")
@@ -113,6 +117,7 @@ class AuthControllerTest {
     }
 
     @Test
+    @DisplayName("토큰 재발급 시 사용자 에러 테스트")
     public void refreshUserNotFoundExceptionTest() throws Exception {
         // given
         AuthResponseDto authResponseDto = AuthResponseDto.builder().accessToken("testAccessToken")
