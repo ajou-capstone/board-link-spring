@@ -77,6 +77,15 @@ public class ChatRoomService {
                 return;
             }
 
+            // 채팅방에 메시지가 없는 경우
+            Long messageId;
+            if (chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc() == null) {
+                messageId = -1L;
+            } else {
+                messageId = chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc()
+                    .getMessageId();
+            }
+
             // 내가 구매자인 경우
             if (chatRoom.getUser().getUserId().equals(user.getUserId())) {
                 ChatRoomDataResponseDto tempChatRoomDataResponseDto = ChatRoomDataResponseDto.builder()
@@ -86,8 +95,7 @@ public class ChatRoomService {
                     .title(chatRoom.getItem().getUser().getNickname()) // 판매자의 닉네임이 제목에 보이게
                     .isAlarm(
                         chatPropertiesRepository.findByUserAndChatRoom(user, chatRoom).isAlarm())
-                    .messageId(chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc()
-                        .getMessageId()).build();
+                    .messageId(messageId).build();
 
                 chatRoomDataResponseDtoList.add(tempChatRoomDataResponseDto);
             } else if (chatRoom.getItem().getUser().getUserId()
@@ -98,8 +106,7 @@ public class ChatRoomService {
                     .title(chatRoom.getUser().getNickname()) // 구매자의 닉네임이 제목에 보이게
                     .isAlarm(
                         chatPropertiesRepository.findByUserAndChatRoom(user, chatRoom).isAlarm())
-                    .messageId(chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc()
-                        .getMessageId()).build();
+                    .messageId(messageId).build();
 
                 chatRoomDataResponseDtoList.add(tempChatRoomDataResponseDto);
             }
@@ -135,6 +142,15 @@ public class ChatRoomService {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
             .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
 
+        // 채팅방에 메시지가 없는 경우
+        Long messageId;
+        if (chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc() == null) {
+            messageId = -1L;
+        } else {
+            messageId = chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc()
+                .getMessageId();
+        }
+
         // 내가 구매자인 경우
         if (chatRoom.getUser().getUserId().equals(user.getUserId())) {
             chatRoomDataResponseDto = ChatRoomDataResponseDto.builder()
@@ -144,8 +160,7 @@ public class ChatRoomService {
                 .title(chatRoom.getItem().getUser().getNickname()) // 판매자의 닉네임이 제목에 보이게
                 .isAlarm(
                     chatPropertiesRepository.findByUserAndChatRoom(user, chatRoom).isAlarm())
-                .messageId(chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc()
-                    .getMessageId()).build();
+                .messageId(messageId).build();
         } else { // 내가 판매자인 경우
             chatRoomDataResponseDto = ChatRoomDataResponseDto.builder()
                 .chatRoomId(chatRoom.getChatRoomId()).userId(chatRoom.getUser().getUserId())
@@ -153,8 +168,7 @@ public class ChatRoomService {
                 .title(chatRoom.getUser().getNickname()) // 구매자의 닉네임이 제목에 보이게
                 .isAlarm(
                     chatPropertiesRepository.findByUserAndChatRoom(user, chatRoom).isAlarm())
-                .messageId(chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc()
-                    .getMessageId()).build();
+                .messageId(messageId).build();
         }
 
         return chatRoomDataResponseDto;
