@@ -2,6 +2,7 @@ package LinkerBell.campus_market_spring.controller;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -55,6 +56,7 @@ class LikeControllerTest {
             .likeId(1L).isLike(true).itemId(1L).build();
         given(likeService.likeItem(anyLong(), anyLong())).willReturn(likeResponseDto);
         // when & then
+
         mockMvc.perform(post("/api/v1/items/" + 1L + "/likes"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.likeId").value(likeResponseDto.getLikeId()))
