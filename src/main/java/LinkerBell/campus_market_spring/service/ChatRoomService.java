@@ -1,5 +1,6 @@
 package LinkerBell.campus_market_spring.service;
 
+import LinkerBell.campus_market_spring.domain.ChatMessage;
 import LinkerBell.campus_market_spring.domain.ChatProperties;
 import LinkerBell.campus_market_spring.domain.ChatRoom;
 import LinkerBell.campus_market_spring.domain.Item;
@@ -78,12 +79,12 @@ public class ChatRoomService {
             }
 
             // 채팅방에 메시지가 없는 경우
+            ChatMessage recentChatMessage = chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc();
             Long messageId;
-            if (chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc() == null) {
+            if (recentChatMessage == null) {
                 messageId = -1L;
             } else {
-                messageId = chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc()
-                    .getMessageId();
+                messageId = recentChatMessage.getMessageId();
             }
 
             // 내가 구매자인 경우
@@ -143,12 +144,12 @@ public class ChatRoomService {
             .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
 
         // 채팅방에 메시지가 없는 경우
+        ChatMessage recentChatMessage = chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc();
         Long messageId;
-        if (chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc() == null) {
+        if (recentChatMessage == null) {
             messageId = -1L;
         } else {
-            messageId = chatMessageRepository.findTopByIsReadTrueOrderByCreatedDateDesc()
-                .getMessageId();
+            messageId = recentChatMessage.getMessageId();
         }
 
         // 내가 구매자인 경우
