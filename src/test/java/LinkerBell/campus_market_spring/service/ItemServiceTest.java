@@ -67,7 +67,7 @@ public class ItemServiceTest {
     List<ItemPhotos> itemPhotos;
 
     @BeforeEach
-    void beforeEach() throws InterruptedException, NoSuchFieldException, IllegalAccessException {
+    void beforeEach() {
         items = new ArrayList<>();
         users = new ArrayList<>();
         campuses = new ArrayList<>();
@@ -77,6 +77,7 @@ public class ItemServiceTest {
 
         for (int i = 0; i < 2; i++) {
             Campus campus = Campus.builder()
+                .campusId((long) (i + 1))
                 .universityName("campus" + i)
                 .region("수원")
                 .email("abc" + i).build();
@@ -85,6 +86,7 @@ public class ItemServiceTest {
 
         for (int i = 0; i < 5; i++) {
             User user = User.builder()
+                .userId((long) (i + 1))
                 .nickname("user" + i)
                 .campus(i < 1 ? campuses.get(0) : campuses.get(1))
                 .role(Role.USER)
@@ -96,6 +98,7 @@ public class ItemServiceTest {
             Item item;
             if (i < 5) {
                 item = Item.builder()
+                    .itemId((long) (i + 1))
                     .user(users.get(0))
                     .campus(campuses.get(0))
                     .category(Category.ELECTRONICS_IT)
@@ -105,6 +108,7 @@ public class ItemServiceTest {
                     .build();
             } else if (i < 15) {
                 item = Item.builder()
+                    .itemId((long) (i + 1))
                     .user(users.get(1))
                     .campus(campuses.get(1))
                     .category(Category.BOOKS_EDUCATIONAL_MATERIALS)
@@ -114,6 +118,7 @@ public class ItemServiceTest {
                     .build();
             } else {
                 item = Item.builder()
+                    .itemId((long) (i + 1))
                     .user(users.get(2))
                     .campus(campuses.get(1))
                     .category(Category.FASHION_ACCESSORIES)
@@ -122,12 +127,13 @@ public class ItemServiceTest {
                     .thumbnail("https://defaultImage.com")
                     .build();
             }
-            item.setCreatedDate(LocalDateTime.of(2023, 10, i+1, 0, 0,0));
+            item.setCreatedDate(LocalDateTime.of(2023, 10, i + 1, 0, 0, 0));
             items.add(item);
         }
         int j = 0;
         for (int i = 0; i < 32; i++) {
             ItemPhotos itemPhoto = ItemPhotos.builder()
+                .itemPhotosId((long) (i + 1))
                 .imageAddress("https://testImage" + i)
                 .item(items.get(j))
                 .build();
@@ -141,27 +147,31 @@ public class ItemServiceTest {
             Like like;
             if (i < 4) {
                 like = Like.builder()
+                    .likeId((long) (i + 1))
                     .item(items.get(0))
                     .user(users.get(i))
                     .build();
             } else {
                 like = Like.builder()
+                    .likeId((long) (i + 1))
                     .item(items.get(1))
                     .user(users.get(i))
                     .build();
             }
             likes.add(like);
         }
-
+        int k = 1;
         for (int i = 2; i < 5; i++) {
             ChatRoom chatRoom;
             if (i < 4) {
                 chatRoom = ChatRoom.builder()
+                    .chatRoomId((long) k++)
                     .item(items.get(2))
                     .user(users.get(i))
                     .build();
             } else {
                 chatRoom = ChatRoom.builder()
+                    .chatRoomId((long) k++)
                     .item(items.get(3))
                     .user(users.get(i))
                     .build();
@@ -276,4 +286,5 @@ public class ItemServiceTest {
         assertThat(item.getItemStatus()).isEqualTo(itemStatusChangeRequestDto.getItemStatus());
         assertThat(item.getUserBuyer()).isEqualTo(userBuyer);
     }
+
 }
