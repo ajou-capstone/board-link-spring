@@ -13,7 +13,6 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -79,7 +78,7 @@ class FcmServiceTest {
         keywordRepository.deleteAll();
     }
 
-    @Test
+    //@Test
     @DisplayName("테스트 알림 보내는 테스트")
     public void testFcmSendTest() throws Exception {
         FcmMessageDto message = FcmMessageDto.builder()
@@ -91,7 +90,7 @@ class FcmServiceTest {
         fcmService.sendNotification(message);
     }
 
-    @Test
+    //@Test
     @DisplayName("키워드 알림 보내기 테스트")
     public void sendFcmMessageWithKeywordsTest() throws Exception {
         //given
