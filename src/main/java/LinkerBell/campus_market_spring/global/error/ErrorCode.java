@@ -45,7 +45,10 @@ public enum ErrorCode {
     ALREADY_SOLD_OUT_ITEM(HttpStatus.BAD_REQUEST, 4038, "이미 거래 완료된 아이템 입니다."),
     NOT_MATCH_USER_CAMPUS(HttpStatus.FORBIDDEN, 4039, "캠퍼스가 일치하지 않는 사용자입니다."),
 
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다.");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다."),
+
+    FCM_INVALID_ARGUMENT(HttpStatus.BAD_REQUEST, 6001, "유효하지 않은 FCM 토큰입니다."),
+    FCM_UNREGISTERED(HttpStatus.NOT_FOUND, 6002, "만료된 FCM 토큰입니다.");
 
     private final HttpStatus httpStatus;
     private final int code;

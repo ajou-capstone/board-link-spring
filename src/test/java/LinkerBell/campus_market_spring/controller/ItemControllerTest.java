@@ -351,7 +351,8 @@ class ItemControllerTest {
               "price": "20",
               "description": "testDescription",
               "category": "ELECTRONICS_IT",
-              "thumbnail": "https://www.default.com"
+              "thumbnail": "https://www.default.com",
+              "images" : ["https://www.images1.com"]
             }
             """;
 
@@ -375,7 +376,7 @@ class ItemControllerTest {
         assertThat(capturedDto.getDescription()).isEqualTo("testDescription");
         assertThat(capturedDto.getCategory()).isEqualTo(Category.ELECTRONICS_IT);
         assertThat(capturedDto.getThumbnail()).isEqualTo("https://www.default.com");
-        assertThat(capturedDto.getImages()).isNull();
+        assertThat(capturedDto.getImages()).contains("https://www.images1.com");
     }
 
     @Test

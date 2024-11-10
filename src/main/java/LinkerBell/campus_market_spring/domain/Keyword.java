@@ -1,10 +1,21 @@
 package LinkerBell.campus_market_spring.domain;
 
-import jakarta.persistence.*;
+import static jakarta.persistence.FetchType.LAZY;
 
-import static jakarta.persistence.FetchType.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
 @Entity
+@Getter
+@Builder
+@AllArgsConstructor
 public class Keyword extends BaseEntity {
 
     @Id
