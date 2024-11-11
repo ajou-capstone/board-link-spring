@@ -58,7 +58,7 @@ class ItemRepositoryTest {
     List<ItemPhotos> itemPhotos;
 
     @BeforeEach
-    void beforeEach() throws InterruptedException, NoSuchFieldException, IllegalAccessException {
+    void beforeEach() {
         items = new ArrayList<>();
         users = new ArrayList<>();
         campuses = new ArrayList<>();
@@ -116,9 +116,9 @@ class ItemRepositoryTest {
                     .build();
             }
             itemRepository.save(item);
-            LocalDateTime localDateTime =LocalDateTime.of(2023, 10, i+1, 0, 0,0);
+            LocalDateTime localDateTime = LocalDateTime.of(2023, 10, i + 1, 0, 0, 0);
             item.setCreatedDate(localDateTime);
-            itemRepository.updateCreatedDate(item.getItemId(),localDateTime);
+            itemRepository.updateCreatedDate(item.getItemId(), localDateTime);
             items.add(item);
         }
         int j = 0;

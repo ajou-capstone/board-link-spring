@@ -42,3 +42,4 @@ src/main/resources/application.yml
 src/test/resources/*
 
 *.csv
+*.json

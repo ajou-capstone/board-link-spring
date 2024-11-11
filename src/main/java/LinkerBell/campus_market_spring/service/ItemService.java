@@ -3,6 +3,7 @@ package LinkerBell.campus_market_spring.service;
 import LinkerBell.campus_market_spring.domain.Item;
 import LinkerBell.campus_market_spring.domain.ItemPhotos;
 import LinkerBell.campus_market_spring.domain.ItemStatus;
+import LinkerBell.campus_market_spring.domain.Keyword;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.dto.ItemDetailsViewResponseDto;
 import LinkerBell.campus_market_spring.dto.ItemRegisterRequestDto;
@@ -16,9 +17,11 @@ import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.repository.ChatRoomRepository;
 import LinkerBell.campus_market_spring.repository.ItemPhotosRepository;
 import LinkerBell.campus_market_spring.repository.ItemRepository;
+import LinkerBell.campus_market_spring.repository.UserFcmTokenRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,7 +37,11 @@ public class ItemService {
     private final UserRepository userRepository;
     private final ItemPhotosRepository itemPhotosRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final UserFcmTokenRepository userFcmTokenRepository;
+
     private final S3Service s3Service;
+    private final FcmService fcmService;
+    private final KeywordService keywordService;
 
     @Transactional(readOnly = true)
     public SliceResponse<ItemSearchResponseDto> itemSearch(Long userId,
@@ -51,14 +58,19 @@ public class ItemService {
         ItemRegisterRequestDto itemRegisterRequestDto) {
         User user = getUserWithCampus(userId);
 
-        Item savedItem = itemRegisterDtoToItem(itemRegisterRequestDto, user);
-        itemRepository.save(savedItem);
+        Item newItem = itemRegisterDtoToItem(itemRegisterRequestDto, user);
+        Item savedItem = itemRepository.save(newItem);
 
         if (itemRegisterRequestDto.getImages() != null && !itemRegisterRequestDto.getImages()
             .isEmpty()) {
             List<ItemPhotos> itemPhotos = imagesToItemPhotos(itemRegisterRequestDto, savedItem);
             itemPhotosRepository.saveAll(itemPhotos);
         }
+
+        List<Keyword> sendingKeywords = keywordService.findKeywordsWithSameItemCampusAndTitle(
+            savedItem);
+
+        fcmService.sendFcmMessageWithKeywords(sendingKeywords, savedItem);
 
         return new ItemRegisterResponseDto(savedItem.getItemId());
 
@@ -179,7 +191,9 @@ public class ItemService {
         item.setCategory(itemRegisterRequestDto.getCategory());
 
         if (isNotEqualsToThumbnail(itemRegisterRequestDto, item)) {
-            s3Service.deleteS3File(item.getThumbnail());
+            if (!item.getThumbnail().equals("https://www.default.com")) {
+                s3Service.deleteS3File(item.getThumbnail());
+            }
             item.setThumbnail(itemRegisterRequestDto.getThumbnail());
         }
     }
@@ -214,11 +228,11 @@ public class ItemService {
     }
 
     private boolean userIsNotEqualsToItemUser(User user, Item item) {
-        return user.getUserId() != item.getUser().getUserId();
+        return !Objects.equals(user.getUserId(), item.getUser().getUserId());
     }
 
     private boolean UserCampusIsMatchedByItemCampus(User user, Item item) {
-        return user.getCampus().getCampusId() != item.getCampus().getCampusId();
+        return !Objects.equals(user.getCampus().getCampusId(), item.getCampus().getCampusId());
     }
 
     private Item getItem(Long itemId) {

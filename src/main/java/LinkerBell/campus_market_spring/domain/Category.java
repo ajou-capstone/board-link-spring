@@ -4,7 +4,6 @@ public enum Category {
     ELECTRONICS_IT,           // 전자제품/IT 기기
     HOME_APPLIANCES,           // 생활가전
     FASHION_ACCESSORIES,       // 패션/의류 및 잡화
-    ACCESSORIES,               // 액세서리
     BOOKS_EDUCATIONAL_MATERIALS, // 도서/학습자료
     STATIONERY_OFFICE_SUPPLIES, // 문구/사무 용품
     HOUSEHOLD_ITEMS,           // 생활용품
