@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +43,9 @@ public class ItemService {
     private final S3Service s3Service;
     private final FcmService fcmService;
     private final KeywordService keywordService;
+
+    @Value("${path.default_item_thumbnail}")
+    private String defaultItemThumbnail;
 
     @Transactional(readOnly = true)
     public SliceResponse<ItemSearchResponseDto> itemSearch(Long userId,
@@ -191,11 +195,15 @@ public class ItemService {
         item.setCategory(itemRegisterRequestDto.getCategory());
 
         if (isNotEqualsToThumbnail(itemRegisterRequestDto, item)) {
-            if (!item.getThumbnail().equals("https://www.default.com")) {
+            if (isNotEqualsToDefaultImage(item)) {
                 s3Service.deleteS3File(item.getThumbnail());
             }
             item.setThumbnail(itemRegisterRequestDto.getThumbnail());
         }
+    }
+
+    private boolean isNotEqualsToDefaultImage(Item item) {
+        return !(item.getThumbnail().equals(defaultItemThumbnail));
     }
 
     private boolean isNotEqualsToThumbnail(ItemRegisterRequestDto itemRegisterRequestDto,

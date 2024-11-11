@@ -9,6 +9,7 @@ import LinkerBell.campus_market_spring.service.ItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -24,6 +25,9 @@ import java.util.Arrays;
 public class ItemController {
 
     private final ItemService itemService;
+
+    @Value("${path.default_item_thumbnail}")
+    private String defaultItemThumbnail;
 
     @GetMapping
     public ResponseEntity<SliceResponse<ItemSearchResponseDto>> itemSearch(@Login AuthUserDto user,
@@ -131,7 +135,7 @@ public class ItemController {
 
     private void validThumbnail(ItemRegisterRequestDto itemRegisterRequestDto) {
         if (itemRegisterRequestDto.getThumbnail() == null) {
-            itemRegisterRequestDto.setThumbnail("https://www.default.com");
+            itemRegisterRequestDto.setThumbnail(defaultItemThumbnail);
         }
     }
 
