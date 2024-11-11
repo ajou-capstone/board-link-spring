@@ -71,10 +71,10 @@ public class ChatRoomService {
         User user = userRepository.findById(authUserDto.getUserId())
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         chatRoomRepository.findAll().forEach(chatRoom -> {
-            // 나간 채팅방인 경우
+            // 나간 채팅방인 경우, 유저가 포함되지 않은 채팅방인 경우
             ChatProperties chatProperties = chatPropertiesRepository.findByUserAndChatRoom(user,
                 chatRoom);
-            if (chatProperties.isExited()) {
+            if (chatProperties == null || chatProperties.isExited()) {
                 return;
             }
 
@@ -119,8 +119,10 @@ public class ChatRoomService {
     // 채팅방 나가기
     @Transactional
     public void leaveChatRoom(Long chatRoomId, AuthUserDto authUserDto) {
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow();
-        User user = userRepository.findById(authUserDto.getUserId()).orElseThrow();
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+            .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
+        User user = userRepository.findById(authUserDto.getUserId())
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         ChatProperties chatProperties = chatPropertiesRepository.findByUserAndChatRoom(user,
             chatRoom);
