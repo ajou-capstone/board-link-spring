@@ -42,4 +42,4 @@ src/main/resources/application.yml
 src/test/resources/*
 
 *.csv
-src/main/resources/campus-market-6bce6-firebase-adminsdk-vhvpy-5852dcffc7.json
+*.json
