@@ -23,7 +23,7 @@ jobs:
         run: |
           echo "${{ secrets.CAMPUS_DATASET }}" | base64 --decode > ./campus_dataset.csv
           echo "${{ secrets.TERMS_INFO }}" | base64 --decode > ./terms_dataset.csv
-          echo "${{ secrets.FIREBASE_SDK_JSON }}" | base64 -- decode > ./campus-market-firebase-adminsdk.json
+          echo "${{ secrets.FIREBASE_SDK_JSON }}" | base64 --decode > ./campus-market-firebase-adminsdk.json
         shell: bash
 
       - name: Set up AWS Credentials
