@@ -28,26 +28,28 @@ public class ChatMessageService {
 
     // 최근 7일간 메시지 목록들 가져오기
     @Transactional(readOnly = true)
-    public List<RecentChatMessageResponseDto> getRecentMessageList(Long userId) {
-        List<RecentChatMessageResponseDto> recentChatMessageResponseDtoList = new ArrayList<>();
+    public RecentChatMessageResponseDto getRecentMessageList(Long userId) {
+        List<Long> recentChatMessageIdList = new ArrayList<>();
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
 
         // 유저가 속한 채팅방들 찾기
-        List<ChatRoom> chatRoomList = chatRoomRepository.findByUser(user);
+        List<ChatRoom> chatRoomList = chatRoomRepository.findByUserOrItemSeller(user);
 
         // 채팅방들마다 7일간 메시지들 찾기
         for (ChatRoom chatRoom : chatRoomList) {
-            RecentChatMessageResponseDto recentChatMessageResponseDto = RecentChatMessageResponseDto.builder()
-                .messageIdList(chatMessageRepository.findMessageIdsByChatRoomAndRecentDays(chatRoom,
-                    sevenDaysAgo))
-                .build();
-
-            recentChatMessageResponseDtoList.add(recentChatMessageResponseDto);
+            recentChatMessageIdList.addAll(
+                chatMessageRepository.findMessageIdsByChatRoomAndRecentDays(chatRoom,
+                    sevenDaysAgo));
         }
 
-        return recentChatMessageResponseDtoList;
+        RecentChatMessageResponseDto recentChatMessageResponseDto = RecentChatMessageResponseDto
+            .builder()
+            .messageIdList(recentChatMessageIdList)
+            .build();
+
+        return recentChatMessageResponseDto;
     }
 
     // 메시지 읽음으로 표시하기
