@@ -53,6 +53,7 @@ public class User extends BaseEntity {
     @Column(columnDefinition = "json")
     private String timetable;
 
+    @Builder.Default
     private boolean isDeleted = false;
 
     public void setTimetableFromJson(Object timetableObject) {
