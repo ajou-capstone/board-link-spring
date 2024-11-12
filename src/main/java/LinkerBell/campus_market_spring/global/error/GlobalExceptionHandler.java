@@ -2,15 +2,10 @@ package LinkerBell.campus_market_spring.global.error;
 
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletRequestWrapper;
-import java.util.Locale;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.support.StaticMessageSource;
-import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -79,16 +74,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> notReadableException(HttpMessageNotReadableException ex) {
-        if (ex.getCause().getMessage()
-            .contains("LinkerBell.campus_market_spring.domain.Category")) {
-            ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_CATEGORY);
-            return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
-        } else if (ex.getCause().getMessage()
-            .contains("LinkerBell.campus_market_spring.domain.ItemStatus")) {
-            ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_STATUS);
-            return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
+        if(ex.getCause() != null) {
+            if (ex.getCause().getMessage()
+                .contains("LinkerBell.campus_market_spring.domain.Category")) {
+                ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_CATEGORY);
+                return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
+            } else if (ex.getCause().getMessage()
+                .contains("LinkerBell.campus_market_spring.domain.ItemStatus")) {
+                ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_STATUS);
+                return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
+            }
         }
-
         throw ex;
     }
 
