@@ -2,10 +2,8 @@ package LinkerBell.campus_market_spring.controller;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
-<<<<<<< HEAD
 
-=======
->>>>>>> 059a706 (fix: 좋아요 누르기 기능 수정)
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -23,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.MethodParameter;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -47,7 +46,9 @@ class LikeControllerTest {
     public void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(likeController)
             .setControllerAdvice(GlobalExceptionHandler.class)
-            .setCustomArgumentResolvers(mockLoginArgumentResolver)
+            .setCustomArgumentResolvers(
+                new PageableHandlerMethodArgumentResolver(),
+                mockLoginArgumentResolver)
             .build();
     }
 
@@ -69,6 +70,20 @@ class LikeControllerTest {
         then(likeService).should(times(1)).likeItem(anyLong(), assertArg(itemId -> {
             assertThat(itemId).isEqualTo(1L);
         }));
+    }
+
+    @Test
+    @DisplayName("좋아요 목록 가져오기 테스트")
+    public void getLikeListTest() throws Exception {
+        // given
+        // when & then
+        mockMvc.perform(get("/api/v1/items/likes")
+                .queryParam("page", "0")
+                .queryParam("size", "10"))
+            .andExpect(status().isOk())
+            .andDo(print());
+
+
     }
 
     static class MockLoginArgumentResolver implements HandlerMethodArgumentResolver {
