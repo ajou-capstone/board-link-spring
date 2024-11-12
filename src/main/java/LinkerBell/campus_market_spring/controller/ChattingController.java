@@ -27,6 +27,9 @@ public class ChattingController {
         ChattingResponseDto chattingResponseDto = chattingService.makeChattingResponseDto(
             authUserDto.getUserId(), chatRoomId, chattingRequestDto);
 
-        messagingTemplate.convertAndSend("/send/chat/" + chatRoomId, chattingResponseDto);
+        messagingTemplate.convertAndSend("/sub/chat/" + chatRoomId, chattingResponseDto);
+
+        log.info("userId {} send to chatRoomId {} : {}", authUserDto.getUserId(), chatRoomId,
+            chattingResponseDto.getContent());
     }
 }
