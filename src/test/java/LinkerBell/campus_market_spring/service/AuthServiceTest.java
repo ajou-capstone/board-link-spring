@@ -77,7 +77,7 @@ class AuthServiceTest {
     public void reissueJwtTest() {
         // given
         User user = getUser();
-        String refreshToken = jwtUtils.generateRefreshToken(user.getLoginEmail(), user.getRole());
+        String refreshToken = jwtUtils.generateRefreshToken(user.getUserId(), user.getLoginEmail(), user.getRole());
         user.setRefreshToken(refreshToken);
         MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
         mockHttpServletRequest.addHeader("refresh", "Bearer " + refreshToken);

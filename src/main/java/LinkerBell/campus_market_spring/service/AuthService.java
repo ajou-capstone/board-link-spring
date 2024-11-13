@@ -56,8 +56,8 @@ public class AuthService {
 
         // TODO: check logout and blacklist
 
-        String accessToken = jwtUtils.generateAccessToken(user.getLoginEmail(), user.getRole());
-        String refreshToken = jwtUtils.generateRefreshToken(user.getLoginEmail(), user.getRole());
+        String accessToken = jwtUtils.generateAccessToken(user.getUserId(), user.getLoginEmail(), user.getRole());
+        String refreshToken = jwtUtils.generateRefreshToken(user.getUserId(), user.getLoginEmail(), user.getRole());
 
         user.setRefreshToken(refreshToken);
         userRepository.save(user);
@@ -151,9 +151,9 @@ public class AuthService {
             throw new CustomException(ErrorCode.INVALID_JWT);
         }
 
-        String reissuedAccessToken = jwtUtils.generateAccessToken(user.getLoginEmail(),
+        String reissuedAccessToken = jwtUtils.generateAccessToken(user.getUserId(), user.getLoginEmail(),
             user.getRole());
-        String reissuedRefreshToken = jwtUtils.generateRefreshToken(user.getLoginEmail(),
+        String reissuedRefreshToken = jwtUtils.generateRefreshToken(user.getUserId(), user.getLoginEmail(),
             user.getRole());
 
         user.setRefreshToken(reissuedRefreshToken);
