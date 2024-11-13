@@ -9,6 +9,7 @@ import LinkerBell.campus_market_spring.domain.ItemStatus;
 import LinkerBell.campus_market_spring.domain.Like;
 import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
+import LinkerBell.campus_market_spring.dto.LikeDeleteResponseDto;
 import LinkerBell.campus_market_spring.dto.LikeResponseDto;
 import LinkerBell.campus_market_spring.dto.LikeSearchResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
@@ -101,6 +102,45 @@ class LikeServiceTest {
         assertThat(responseDto.getItemId()).isEqualTo(item.getItemId());
         assertThat(responseDto.getLikeId()).isEqualTo(like.getLikeId());
         assertThat(responseDto.isLike()).isTrue();
+    }
+
+    @Test
+    @DisplayName("좋아요 취소하기 테스트")
+    public void deleteLikeTest() {
+        // given
+        Like like = new Like(1L, user, item);
+        given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(user));
+        given(itemRepository.findById(anyLong())).willReturn(Optional.ofNullable(item));
+        given(likeRepository.findByUserAndItem(any(User.class), any(Item.class)))
+            .willReturn(Optional.ofNullable(like));
+        // when
+        LikeDeleteResponseDto responseDto = likeService.deleteLike(user.getUserId(), item.getItemId());
+        // then
+        then(likeRepository).should(times(1)).deleteById(assertArg( id -> {
+            assertThat(id).isEqualTo(like.getLikeId());
+        }));
+        assertThat(responseDto).isNotNull();
+        assertThat(responseDto.getItemId()).isEqualTo(item.getItemId());
+        assertThat(responseDto.isLike()).isFalse();
+    }
+
+    @Test
+    @DisplayName("좋아요 취소하기 테스트 + 좋아요 기록이 없을 경우")
+    public void deleteEmptyLikeTest() {
+        // given
+
+        given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(user));
+        given(itemRepository.findById(anyLong())).willReturn(Optional.ofNullable(item));
+        given(likeRepository.findByUserAndItem(any(User.class), any(Item.class)))
+            .willReturn(Optional.empty());
+        // when
+        LikeDeleteResponseDto responseDto = likeService.deleteLike(user.getUserId(), item.getItemId());
+        // then
+        then(likeRepository).should(times(0)).deleteById(anyLong());
+
+        assertThat(responseDto).isNotNull();
+        assertThat(responseDto.getItemId()).isEqualTo(item.getItemId());
+        assertThat(responseDto.isLike()).isFalse();
     }
 
     private User createUser(Long id) {
