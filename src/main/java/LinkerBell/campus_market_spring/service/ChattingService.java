@@ -11,9 +11,11 @@ import LinkerBell.campus_market_spring.repository.ChatMessageRepository;
 import LinkerBell.campus_market_spring.repository.ChatRoomRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChattingService {
@@ -25,6 +27,8 @@ public class ChattingService {
     @Transactional
     public ChattingResponseDto makeChattingResponseDto(Long userId, Long chatRoomId,
         ChattingRequestDto chattingRequestDto) {
+        log.info("makeChattingResponseDto...");
+
         // 메시지 정보를 db에 저장
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));

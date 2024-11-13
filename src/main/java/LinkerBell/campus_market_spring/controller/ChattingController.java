@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 
 @Slf4j
@@ -21,15 +23,21 @@ public class ChattingController {
     private final ChattingService chattingService;
 
     @MessageMapping("/chat/{chatRoomId}")
-    public void sendMessage(@Login AuthUserDto authUserDto, @DestinationVariable Long chatRoomId,
+    public void sendMessage(Authentication authentication, @DestinationVariable Long chatRoomId,
         ChattingRequestDto chattingRequestDto) {
 
+        log.info("start sendMessage...");
+
+        Long userId = Long.valueOf(((UserDetails) authentication.getPrincipal()).getUsername());
+
+        log.info("userId = " + userId + "chatRoomId = " + chatRoomId);
+
         ChattingResponseDto chattingResponseDto = chattingService.makeChattingResponseDto(
-            authUserDto.getUserId(), chatRoomId, chattingRequestDto);
+            userId, chatRoomId, chattingRequestDto);
 
         messagingTemplate.convertAndSend("/sub/chat/" + chatRoomId, chattingResponseDto);
 
-        log.info("userId {} send to chatRoomId {} : {}", authUserDto.getUserId(), chatRoomId,
+        log.info("userId {} send to chatRoomId {} : {}", userId, chatRoomId,
             chattingResponseDto.getContent());
     }
 }
