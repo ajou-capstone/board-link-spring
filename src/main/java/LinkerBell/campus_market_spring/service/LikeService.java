@@ -4,6 +4,7 @@ import LinkerBell.campus_market_spring.domain.Item;
 import LinkerBell.campus_market_spring.domain.Like;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.dto.ItemSearchResponseDto;
+import LinkerBell.campus_market_spring.dto.LikeDeleteResponseDto;
 import LinkerBell.campus_market_spring.dto.LikeResponseDto;
 import LinkerBell.campus_market_spring.dto.LikeSearchResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
@@ -53,5 +54,22 @@ public class LikeService {
 
     public SliceResponse<LikeSearchResponseDto> getLikes(Long userId, Pageable pageable) {
         return likeRepository.findAllByUserId(userId, pageable);
+    }
+
+    public LikeDeleteResponseDto deleteLike(Long userId, Long itemId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        Item item = itemRepository.findById(itemId)
+            .orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
+
+        likeRepository.findByUserAndItem(user, item).ifPresent(like -> {
+            likeRepository.deleteById(like.getLikeId());
+        });
+
+        return LikeDeleteResponseDto.builder()
+            .itemId(itemId)
+            .isLike(false)
+            .build();
     }
 }
