@@ -1,5 +1,9 @@
 package LinkerBell.campus_market_spring.global.config;
 
+import LinkerBell.campus_market_spring.global.error.ErrorCode;
+import LinkerBell.campus_market_spring.global.error.exception.CustomException;
+import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
@@ -10,11 +14,14 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class WebSocketHandler implements ChannelInterceptor {
+
+    private final JwtUtils jwtUtils;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -23,16 +30,23 @@ public class WebSocketHandler implements ChannelInterceptor {
         log.info("accessor command : {}", accessor.getCommand().name());
 
         if (accessor.getCommand() == StompCommand.CONNECT) {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Map<String, Object> headerAttribute = accessor.getSessionAttributes();
+            String authToken = (String) headerAttribute.get("authorization");
+            if (StringUtils.hasText(authToken) && authToken.startsWith("Bearer ")) {
+                authToken = authToken.substring(7);
+            }
+            Authentication authentication = jwtUtils.getAuthentication(authToken);
+
             if (authentication == null) {
                 log.info("authentication is null");
             }
             accessor.setUser(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
             log.info("connected authentication name : {}", authentication.getName());
         }
 
         if (accessor.getCommand() == StompCommand.SEND) {
-            log.info("destination : {}", accessor.getDestination());
+            log.info("send");
         }
 
         if (accessor.getCommand() == StompCommand.SUBSCRIBE) {
