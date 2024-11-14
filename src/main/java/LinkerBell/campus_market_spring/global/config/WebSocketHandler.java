@@ -35,10 +35,16 @@ public class WebSocketHandler implements ChannelInterceptor {
             if (StringUtils.hasText(authToken) && authToken.startsWith("Bearer ")) {
                 authToken = authToken.substring(7);
             }
+
+            if (!jwtUtils.validateToken(authToken)) {
+                log.error("Invalid JWT token");
+                throw new CustomException(ErrorCode.INVALID_JWT);
+            }
+
             Authentication authentication = jwtUtils.getAuthentication(authToken);
 
             if (authentication == null) {
-                log.info("authentication is null");
+                log.error("authentication is null");
             }
             accessor.setUser(authentication);
             SecurityContextHolder.getContext().setAuthentication(authentication);

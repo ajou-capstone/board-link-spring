@@ -24,7 +24,7 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
         log.info("before handshake authToken: {}", authToken);
 
         if (authToken == null) {
-            log.info("authToken is null");
+            log.error("authToken is null");
             throw new CustomException(ErrorCode.JWT_IS_NULL);
         }
 
