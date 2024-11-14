@@ -1,6 +1,7 @@
 package LinkerBell.campus_market_spring.dto;
 
 import LinkerBell.campus_market_spring.domain.ItemStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Data;
@@ -18,11 +19,13 @@ public class ItemSearchResponseDto {
     private Integer chatCount;
     private Integer likeCount;
     private ItemStatus itemStatus;
+    @JsonProperty(value = "isLiked")
+    private boolean isLiked;
 
     @QueryProjection
     public ItemSearchResponseDto(Long itemId, Long userId, String nickname, String thumbnail,
-        String title, Integer price, Integer chatCount, Integer likeCount,
-        ItemStatus itemStatus) {
+        String title, Integer price, Integer chatCount, Integer likeCount, ItemStatus itemStatus,
+        boolean isLiked) {
         this.itemId = itemId;
         this.userId = userId;
         this.nickname = nickname;
@@ -32,5 +35,6 @@ public class ItemSearchResponseDto {
         this.chatCount = chatCount;
         this.likeCount = likeCount;
         this.itemStatus = itemStatus;
+        this.isLiked = isLiked;
     }
 }

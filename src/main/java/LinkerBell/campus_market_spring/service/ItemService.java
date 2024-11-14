@@ -52,7 +52,7 @@ public class ItemService {
         ItemSearchRequestDto itemSearchRequestDto) {
         User user = getUserWithCampus(userId);
 
-        return itemRepository.itemSearch(user.getCampus().getCampusId(),
+        return itemRepository.itemSearch(userId, user.getCampus().getCampusId(),
             itemSearchRequestDto.getName(),
             itemSearchRequestDto.getCategory(), itemSearchRequestDto.getMinPrice(),
             itemSearchRequestDto.getMaxPrice(), itemSearchRequestDto.getPageable());
