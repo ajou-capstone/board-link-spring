@@ -24,20 +24,20 @@ public class ChattingController {
     private final ChattingService chattingService;
 
     @MessageMapping("/chat/{chatRoomId}")
-    public void sendMessage(@AuthenticationPrincipal UserDetails user,
+    public void sendMessage(SimpMessageHeaderAccessor accessor,
         @DestinationVariable Long chatRoomId,
         ChattingRequestDto chattingRequestDto) {
 
         log.info("start sendMessage...");
 
-        if (user == null) {
-            log.error("chatting controller : user is null");
+        if (accessor == null) {
+            log.error("chatting controller : accessor is null");
             throw new CustomException(ErrorCode.JWT_IS_NULL);
         }
 
-        Long userId = Long.valueOf(user.getUsername());
+        Long userId = Long.valueOf(accessor.getUser().getName());
 
-        log.info("userId = " + userId + "chatRoomId = " + chatRoomId);
+        log.info("userId = " + userId + " chatRoomId = " + chatRoomId);
 
         ChattingResponseDto chattingResponseDto = chattingService.makeChattingResponseDto(
             userId, chatRoomId, chattingRequestDto);
