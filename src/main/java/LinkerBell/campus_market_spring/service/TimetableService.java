@@ -6,6 +6,10 @@ import LinkerBell.campus_market_spring.dto.TimetableResponseDto;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,17 +27,18 @@ public class TimetableService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        String timetable = user.getTimetable();
-
-        if (timetable == null) {
-            timetable = "{}";
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Map<String, Object>> timetableList = Collections.emptyList();
+        try {
+            if(user.getTimetable() != null) {
+                timetableList = objectMapper.readValue(user.getTimetable(), List.class);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        TimetableResponseDto timetableResponseDto = TimetableResponseDto.builder()
-            .timetable(timetable)
+        return TimetableResponseDto.builder()
+            .timetable(timetableList)
             .build();
-
-        return timetableResponseDto;
     }
 
     // 시간표 데이터 수정하기
@@ -41,8 +46,8 @@ public class TimetableService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        String timetable = timetableRequestDto.getTimetable();
+        List<Map<String, Object>> timetable = timetableRequestDto.getTimetable();
+        user.setTimetableFromJson(timetable);
 
-        user.setTimetable(timetable);
     }
 }
