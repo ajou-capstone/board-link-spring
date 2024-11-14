@@ -19,6 +19,8 @@ import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -38,7 +40,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
 
 
     @Override
-    public SliceResponse<ItemSearchResponseDto> itemSearch(Long campusId, String name,
+    public SliceResponse<ItemSearchResponseDto> itemSearch(Long userId, Long campusId, String name,
         Category category, Integer minPrice, Integer maxPrice, Pageable pageable) {
         QItem item = QItem.item;
         QUser user = QUser.user;
@@ -55,7 +57,16 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                 item.price,
                 chatRoom.countDistinct().intValue(),
                 like.countDistinct().intValue(),
-                item.itemStatus
+                item.itemStatus,
+                new CaseBuilder()
+                    .when(
+                        JPAExpressions.selectFrom(like)
+                            .where(like.user.userId.eq(userId)
+                                .and(like.item.eq(item)))
+                            .exists()
+                    ).then(true)
+                    .otherwise(false)
+                    .as("isLiked")
             ))
             .from(item)
             .leftJoin(item.user, user)

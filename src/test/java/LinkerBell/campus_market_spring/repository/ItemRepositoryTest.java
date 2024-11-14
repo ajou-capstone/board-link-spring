@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 
 @DataJpaTest
 class ItemRepositoryTest {
@@ -184,7 +185,8 @@ class ItemRepositoryTest {
     @DisplayName("모든 값이 null이고 최신순 정렬일 때 test, 특정 캠퍼스, 좋아요, chat개수 확인 포함 test")
     public void defaultSearchTest() throws Exception {
         //given
-        Long userId = users.get(0).getCampus().getCampusId();
+        Long userId = users.get(0).getUserId();
+        Long campusId = users.get(0).getCampus().getCampusId();
         String name = null;
         Category category = null;
         Integer minPrice = null;
@@ -193,7 +195,7 @@ class ItemRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
         SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
-            userId, name, category, minPrice, maxPrice, pageRequest);
+            userId, campusId, name, category, minPrice, maxPrice, pageRequest);
 
         //then
         assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
@@ -207,6 +209,7 @@ class ItemRepositoryTest {
             users.get(0).getNickname());
         assertThat(itemSearchResponseDtoSliceResponse.getContent().get(0).getPrice()).isEqualTo(
             items.get(4).getPrice());
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(0).isLiked()).isFalse();
 
         assertThat(itemSearchResponseDtoSliceResponse.getContent().get(1).getTitle()).isEqualTo(
             items.get(3).getTitle());
@@ -218,6 +221,7 @@ class ItemRepositoryTest {
             users.get(0).getNickname());
         assertThat(itemSearchResponseDtoSliceResponse.getContent().get(1).getPrice()).isEqualTo(
             items.get(3).getPrice());
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(1).isLiked()).isFalse();
 
         assertThat(itemSearchResponseDtoSliceResponse.getCurrentPage()).isEqualTo(0);
         assertThat(itemSearchResponseDtoSliceResponse.getSize()).isEqualTo(2);
@@ -231,7 +235,8 @@ class ItemRepositoryTest {
     @DisplayName("특정 이름으로 검색하는 test 실행")
     public void itemNameSearchTest() throws Exception {
         //given
-        Long userId = users.get(1).getCampus().getCampusId();
+        Long userId = users.get(1).getUserId();
+        Long campusId = users.get(1).getCampus().getCampusId();
         String name = "sec";
         Category category = null;
         Integer minPrice = null;
@@ -240,7 +245,7 @@ class ItemRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
         SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
-            userId, name, category, minPrice, maxPrice, pageRequest);
+            userId, campusId, name, category, minPrice, maxPrice, pageRequest);
 
         //then
         assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
@@ -278,7 +283,8 @@ class ItemRepositoryTest {
     @DisplayName("특정 카테고리로 검색하는 test 실행")
     public void itemCategorySearchTest() throws Exception {
         //given
-        Long userId = users.get(1).getCampus().getCampusId();
+        Long userId = users.get(1).getUserId();
+        Long campusId = users.get(1).getCampus().getCampusId();
         String name = null;
         Category category = Category.BOOKS_EDUCATIONAL_MATERIALS;
         Integer minPrice = null;
@@ -287,7 +293,7 @@ class ItemRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
         SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
-            userId, name, category, minPrice, maxPrice, pageRequest);
+            userId,campusId, name, category, minPrice, maxPrice, pageRequest);
 
         //then
         assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
@@ -325,7 +331,8 @@ class ItemRepositoryTest {
     @DisplayName("가격 오름차순으로 검색하는 test 실행 또한 같은 가격이면 가장 최근에 등록된 아이템부터 보여준다.")
     public void itemAscendingPriceSearchTest() throws Exception {
         //given
-        Long userId = users.get(1).getCampus().getCampusId();
+        Long userId = users.get(1).getUserId();
+        Long campusId = users.get(1).getCampus().getCampusId();
         String name = null;
         Category category = null;
         Integer minPrice = null;
@@ -334,7 +341,7 @@ class ItemRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
         SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
-            userId, name, category, minPrice, maxPrice, pageRequest);
+            userId,campusId, name, category, minPrice, maxPrice, pageRequest);
 
         //then
         assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
@@ -372,7 +379,8 @@ class ItemRepositoryTest {
     @DisplayName("가격 내림차순으로 검색하는 test 실행")
     public void itemDescendingPriceSearchTest() throws Exception {
         //given
-        Long userId = users.get(1).getCampus().getCampusId();
+        Long userId = users.get(1).getUserId();
+        Long campusId = users.get(1).getCampus().getCampusId();
         String name = null;
         Category category = null;
         Integer minPrice = null;
@@ -381,7 +389,7 @@ class ItemRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
         SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
-            userId, name, category, minPrice, maxPrice, pageRequest);
+            userId,campusId, name, category, minPrice, maxPrice, pageRequest);
 
         //then
         assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
@@ -419,7 +427,8 @@ class ItemRepositoryTest {
     @DisplayName("최소 가격에서 최대 가격 사이의 값 출력")
     public void itemMinPriceBetweenMaxPriceSearchTest() throws Exception {
         //given
-        Long userId = users.get(1).getCampus().getCampusId();
+        Long userId = users.get(1).getUserId();
+        Long campusId = users.get(1).getCampus().getCampusId();
         String name = null;
         Category category = null;
         Integer minPrice = 6;
@@ -428,7 +437,7 @@ class ItemRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
         SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
-            userId, name, category, minPrice, maxPrice, pageRequest);
+            userId,campusId, name, category, minPrice, maxPrice, pageRequest);
 
         //then
         assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
@@ -460,6 +469,56 @@ class ItemRepositoryTest {
             Sort.by(Sort.Direction.DESC, "createdDate"));
         assertThat(itemSearchResponseDtoSliceResponse.isHasPrevious()).isFalse();
         assertThat(itemSearchResponseDtoSliceResponse.isHasNext()).isFalse();
+    }
+
+    @Test
+    @DisplayName("item Search에서 isLiked값이 잘 읽히는지 테스트")
+    public void itemSearchIsLikedTest() throws Exception {
+        //given
+        Long userId = users.get(2).getUserId();
+        Long campusId = users.get(0).getCampus().getCampusId();
+        String name = null;
+        Category category = null;
+        Integer minPrice = null;
+        Integer maxPrice = null;
+        Sort sort = Sort.by("createdDate").ascending();
+        PageRequest pageRequest = PageRequest.of(0, 2, sort);
+        //when
+        SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
+            userId,campusId, name, category, minPrice, maxPrice, pageRequest);
+
+        //then
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(0).getTitle()).isEqualTo(
+            items.get(0).getTitle());
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(0).getLikeCount()).isEqualTo(
+            2);
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(0).getChatCount()).isEqualTo(
+            0);
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(0).getNickname()).isEqualTo(
+            users.get(0).getNickname());
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(0).getPrice()).isEqualTo(
+            items.get(0).getPrice());
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(0).isLiked()).isTrue();
+
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(1).getTitle()).isEqualTo(
+            items.get(1).getTitle());
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(1).getLikeCount()).isEqualTo(
+            1);
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(1).getChatCount()).isEqualTo(
+            0);
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(1).getNickname()).isEqualTo(
+            users.get(0).getNickname());
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(1).getPrice()).isEqualTo(
+            items.get(1).getPrice());
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(1).isLiked()).isFalse();
+
+        assertThat(itemSearchResponseDtoSliceResponse.getCurrentPage()).isEqualTo(0);
+        assertThat(itemSearchResponseDtoSliceResponse.getSize()).isEqualTo(2);
+        assertThat(itemSearchResponseDtoSliceResponse.getSort()).isEqualTo(
+            Sort.by(Direction.ASC, "createdDate"));
+        assertThat(itemSearchResponseDtoSliceResponse.isHasPrevious()).isFalse();
+        assertThat(itemSearchResponseDtoSliceResponse.isHasNext()).isTrue();
     }
 
     @Test
