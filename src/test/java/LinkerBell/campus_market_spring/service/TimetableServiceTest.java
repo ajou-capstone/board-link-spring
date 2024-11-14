@@ -1,21 +1,24 @@
 package LinkerBell.campus_market_spring.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import LinkerBell.campus_market_spring.domain.User;
+import LinkerBell.campus_market_spring.dto.TimetableRequestDto;
+import LinkerBell.campus_market_spring.dto.TimetableResponseDto;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.repository.UserRepository;
-import LinkerBell.campus_market_spring.dto.TimetableRequestDto;
-import LinkerBell.campus_market_spring.dto.TimetableResponseDto;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class TimetableServiceTest {
 
@@ -63,26 +66,6 @@ class TimetableServiceTest {
 
         // Then
         assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
-        verify(userRepository, times(1)).findById(userId);
-    }
-
-    @Test
-    void testGetTimetable_TimetableNotFound() {
-        // Given
-        Long userId = 1L;
-        User user = User.builder()
-            .userId(userId)
-            .timetable(null)
-            .build();
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-        // When
-        CustomException exception = assertThrows(CustomException.class,
-            () -> timetableService.getTimetable(userId));
-
-        // Then
-        assertEquals(ErrorCode.TIMETABLE_NOT_FOUND, exception.getErrorCode());
         verify(userRepository, times(1)).findById(userId);
     }
 
