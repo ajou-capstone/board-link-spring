@@ -26,7 +26,7 @@ public class TimetableService {
         String timetable = user.getTimetable();
 
         if (timetable == null) {
-            throw new CustomException(ErrorCode.TIMETABLE_NOT_FOUND);
+            timetable = "{}";
         }
 
         TimetableResponseDto timetableResponseDto = TimetableResponseDto.builder()
