@@ -47,7 +47,6 @@ public class WebSocketHandler implements ChannelInterceptor {
                 log.error("Connect - authentication is null");
             }
             accessor.setUser(authentication);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
             log.info("connected authentication name : {}", accessor.getUser().getName());
         }
 
