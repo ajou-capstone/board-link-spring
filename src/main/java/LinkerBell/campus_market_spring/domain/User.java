@@ -2,6 +2,7 @@ package LinkerBell.campus_market_spring.domain;
 
 import static jakarta.persistence.FetchType.LAZY;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -50,8 +51,17 @@ public class User extends BaseEntity {
     private Role role;
     @Lob
     @Column(columnDefinition = "json")
-    private String timetable = "{}";
+    private String timetable;
 
     private boolean isDeleted = false;
+
+    public void setTimetableFromJson(Object timetableObject) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            this.timetable = objectMapper.writeValueAsString(timetableObject);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }
