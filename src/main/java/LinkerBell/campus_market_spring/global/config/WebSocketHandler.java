@@ -37,21 +37,22 @@ public class WebSocketHandler implements ChannelInterceptor {
             }
 
             if (!jwtUtils.validateToken(authToken)) {
-                log.error("Invalid JWT token");
+                log.error("Connect - Invalid JWT token");
                 throw new CustomException(ErrorCode.INVALID_JWT);
             }
 
             Authentication authentication = jwtUtils.getAuthentication(authToken);
 
             if (authentication == null) {
-                log.error("authentication is null");
+                log.error("Connect - authentication is null");
             }
             accessor.setUser(authentication);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.info("connected authentication name : {}", authentication.getName());
+            log.info("connected authentication name : {}", accessor.getUser().getName());
         }
 
         if (accessor.getCommand() == StompCommand.SEND) {
+            log.info("accessor getUser : {}", accessor.getUser());
             log.info("send");
         }
 
