@@ -18,9 +18,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final WebSocketHandler webSocketHandler;
 
+    private final HttpHandshakeInterceptor httpHandshakeInterceptor;
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws/chat").setAllowedOrigins("*");
+        registry.addEndpoint("/ws/chat").setAllowedOrigins("*")
+            .addInterceptors(httpHandshakeInterceptor);
 
     }
 

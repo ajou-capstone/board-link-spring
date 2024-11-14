@@ -3,6 +3,7 @@ package LinkerBell.campus_market_spring.global.config;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
@@ -11,7 +12,9 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Component
@@ -27,23 +30,29 @@ public class WebSocketHandler implements ChannelInterceptor {
         log.info("accessor command : {}", accessor.getCommand().name());
 
         if (accessor.getCommand() == StompCommand.CONNECT) {
-            String authToken = accessor.getFirstNativeHeader("Authorization");
+            Map<String, Object> headerAttribute = accessor.getSessionAttributes();
+            String authToken = (String) headerAttribute.get("authorization");
+            if (StringUtils.hasText(authToken) && authToken.startsWith("Bearer ")) {
+                authToken = authToken.substring(7);
+            }
 
-            if (authToken == null) {
-                log.info("authToken is null");
-                throw new CustomException(ErrorCode.JWT_IS_NULL);
-            } else if (!jwtUtils.validateToken(authToken)) {
-                log.info("authToken is not valid");
+            if (!jwtUtils.validateToken(authToken)) {
+                log.error("Invalid JWT token");
                 throw new CustomException(ErrorCode.INVALID_JWT);
             }
 
             Authentication authentication = jwtUtils.getAuthentication(authToken);
+
+            if (authentication == null) {
+                log.error("authentication is null");
+            }
             accessor.setUser(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
             log.info("connected authentication name : {}", authentication.getName());
         }
 
         if (accessor.getCommand() == StompCommand.SEND) {
-            log.info("destination : {}", accessor.getDestination());
+            log.info("send");
         }
 
         if (accessor.getCommand() == StompCommand.SUBSCRIBE) {

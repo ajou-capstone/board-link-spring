@@ -26,7 +26,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+        FilterChain filterChain) throws ServletException, IOException {
         try {
             String token = jwtUtils.resolveToken(request);
             if (jwtUtils.validateToken(token)) {
@@ -44,12 +44,13 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return path.startsWith("/api/v1/auth/login") || path.startsWith("/api/v1/auth/refresh");
+        return path.startsWith("/api/v1/auth/login") || path.startsWith("/api/v1/auth/refresh")
+            || path.startsWith("/ws");
 
     }
 
     private void handleException(HttpServletResponse response, ErrorCode errorCode)
-            throws IOException {
+        throws IOException {
         ErrorResponse errorResponse = new ErrorResponse(errorCode);
         ObjectMapper objectMapper = new ObjectMapper();
 
