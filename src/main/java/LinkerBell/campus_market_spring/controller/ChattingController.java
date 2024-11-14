@@ -11,6 +11,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 
@@ -23,18 +24,18 @@ public class ChattingController {
     private final ChattingService chattingService;
 
     @MessageMapping("/chat/{chatRoomId}")
-    public void sendMessage(SimpMessageHeaderAccessor accessor,
+    public void sendMessage(@AuthenticationPrincipal UserDetails user,
         @DestinationVariable Long chatRoomId,
         ChattingRequestDto chattingRequestDto) {
 
         log.info("start sendMessage...");
 
-        if (accessor.getUser() == null) {
+        if (user == null) {
             log.error("chatting controller : user is null");
             throw new CustomException(ErrorCode.JWT_IS_NULL);
         }
 
-        Long userId = Long.valueOf(((UserDetails) accessor.getUser()).getUsername());
+        Long userId = Long.valueOf(user.getUsername());
 
         log.info("userId = " + userId + "chatRoomId = " + chatRoomId);
 
