@@ -51,7 +51,12 @@ public class WebSocketHandler implements ChannelInterceptor {
         }
 
         if (accessor.getCommand() == StompCommand.SEND) {
-            log.info("accessor getUser : {}", accessor.getUser());
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null) {
+                log.error("SEND - authentication is null");
+            } else {
+                log.info("accessor getUser : {}", accessor.getUser());
+            }
             log.info("send");
         }
 
