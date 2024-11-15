@@ -16,11 +16,11 @@ import java.util.List;
 public class ItemRegisterRequestDto {
 
     @NotBlank
-    @Size(min = 2, max = 100)
+    @Size(min = 2, max = 50)
     private String title;
 
     @NotBlank
-    @Size(min = 2, max = 2000)
+    @Size(min = 2, max = 1000)
     private String description;
 
     @NotNull
