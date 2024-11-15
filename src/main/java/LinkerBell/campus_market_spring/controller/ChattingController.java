@@ -10,7 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
 @Slf4j
@@ -35,12 +38,17 @@ public class ChattingController {
 
         Long userId = Long.valueOf(accessor.getUser().getName());
 
+        // 헤더 만들기 테스트
+        accessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+        accessor.setLeaveMutable(true);
+
         ChattingResponseDto chattingResponseDto = chattingService.makeChattingResponseDto(
             userId, chatRoomId, chattingRequestDto);
 
         log.info("chattingResponseDto = " + chattingResponseDto);
 
-        messagingTemplate.convertAndSend("/sub/chat/" + chatRoomId, chattingResponseDto);
+        messagingTemplate.convertAndSend("/sub/chat/" + chatRoomId, chattingResponseDto,
+            accessor.getMessageHeaders());
 
         log.info("userId {} send to chatRoomId {} : {}", userId, chatRoomId,
             chattingResponseDto.getContent());
