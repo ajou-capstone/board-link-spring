@@ -40,6 +40,8 @@ public class ChattingController {
         ChattingResponseDto chattingResponseDto = chattingService.makeChattingResponseDto(
             userId, chatRoomId, chattingRequestDto);
 
+        log.info("chattingResponseDto = " + chattingResponseDto);
+
         messagingTemplate.convertAndSend("/sub/chat/" + chatRoomId, chattingResponseDto);
 
         log.info("userId {} send to chatRoomId {} : {}", userId, chatRoomId,
