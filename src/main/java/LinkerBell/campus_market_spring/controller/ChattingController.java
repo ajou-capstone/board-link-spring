@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -25,11 +26,10 @@ public class ChattingController {
     private final ChattingService chattingService;
 
     @MessageMapping("/chat/{chatRoomId}")
-    public void sendMessage(SimpMessageHeaderAccessor accessor,
+    @SendTo("/sub/chat/{chatRoomId}")
+    public ChattingResponseDto sendMessage(SimpMessageHeaderAccessor accessor,
         @DestinationVariable Long chatRoomId,
         ChattingRequestDto chattingRequestDto) {
-
-        log.info("start sendMessage...");
 
         if (accessor == null) {
             log.error("chatting controller : accessor is null");
@@ -38,19 +38,17 @@ public class ChattingController {
 
         Long userId = Long.valueOf(accessor.getUser().getName());
 
-        // 헤더 만들기 테스트
-        accessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
-        accessor.setLeaveMutable(true);
-
         ChattingResponseDto chattingResponseDto = chattingService.makeChattingResponseDto(
             userId, chatRoomId, chattingRequestDto);
 
         log.info("chattingResponseDto = " + chattingResponseDto);
 
-        messagingTemplate.convertAndSend("/sub/chat/" + chatRoomId, chattingResponseDto,
-            accessor.getMessageHeaders());
+//        messagingTemplate.convertAndSend("/sub/chat/" + chatRoomId, chattingResponseDto,
+//            accessor.getMessageHeaders());
 
         log.info("userId {} send to chatRoomId {} : {}", userId, chatRoomId,
             chattingResponseDto.getContent());
+
+        return chattingResponseDto;
     }
 }
