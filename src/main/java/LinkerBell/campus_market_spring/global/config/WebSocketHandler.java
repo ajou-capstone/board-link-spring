@@ -30,6 +30,9 @@ public class WebSocketHandler implements ChannelInterceptor {
 
         log.info("accessor command : {}", accessor.getCommand().name());
 
+        log.info("message payload : {}", message.getPayload());
+        log.info("message header : {} ", message.getHeaders());
+
         if (accessor.getCommand() == StompCommand.CONNECT) {
             Map<String, Object> headerAttribute = accessor.getSessionAttributes();
             String authToken = (String) headerAttribute.get("authorization");
