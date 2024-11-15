@@ -380,8 +380,37 @@ class ItemControllerTest {
     }
 
     @Test
-    @DisplayName("title이 null일때 등록 테스트")
-    public void titleNullItemRegisterTest() throws Exception {
+    @DisplayName("정상적인 아이템 등록 테스트")
+    public void TestItemRegisterTest() throws Exception {
+        String itemRequestJson = """
+            {
+              "title": "testTitle",
+              "price": "20",
+              "description": "testDescription",
+              "category": "ELECTRONICS_IT",
+              "thumbnail": "",
+              "images" : []
+            }
+            """;
+
+        ItemRegisterResponseDto responseDto = new ItemRegisterResponseDto(1L);
+        when(itemService.itemRegister(any(Long.class),
+            any(ItemRegisterRequestDto.class))).thenReturn(responseDto);
+
+        mockMvc.perform(post("/api/v1/items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(itemRequestJson))
+            .andDo(print())
+            .andExpect(status().isOk());
+
+        ArgumentCaptor<ItemRegisterRequestDto> captor = ArgumentCaptor.forClass(
+            ItemRegisterRequestDto.class);
+        verify(itemService).itemRegister(any(Long.class), captor.capture());
+    }
+
+    @Test
+    @DisplayName("title이 빈값일때 등록 테스트")
+    public void titleEmptyValueItemRegisterTest() throws Exception {
         String itemRequestJson = """
             {
               "title": "",
