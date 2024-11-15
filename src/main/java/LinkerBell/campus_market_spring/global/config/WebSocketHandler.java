@@ -65,6 +65,12 @@ public class WebSocketHandler implements ChannelInterceptor {
             log.info("user {} subscribed to {}", username, destination);
         }
 
+        if (accessor.getCommand() == StompCommand.UNSUBSCRIBE) {
+            String destination = accessor.getDestination();
+            String username = accessor.getUser().getName();
+            log.info("user {} unsubscribed to {}", username, destination);
+        }
+
         if (accessor.getMessage() != null) {
             log.info("message : {}", accessor.getMessage());
         }
