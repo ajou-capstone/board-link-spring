@@ -30,12 +30,15 @@ public class GlobalExceptionHandler {
 
         if (ex.getName().equals("minPrice") || ex.getName().equals("maxPrice")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_PRICE);
+            log.error(ErrorCode.INVALID_PRICE.getMessage());
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
         } else if (ex.getName().equals("category")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_CATEGORY);
+            log.error(ErrorCode.INVALID_CATEGORY.getMessage());
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
         } else if (ex.getName().equals("itemId")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_ID);
+            log.error(ErrorCode.INVALID_ITEM_ID.getMessage());
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
         }
 
@@ -48,24 +51,31 @@ public class GlobalExceptionHandler {
 
         if (Objects.requireNonNull(ex.getFieldError()).getField().equals("title")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_TITLE);
+            log.error(ErrorCode.INVALID_TITLE.getMessage());
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
         } else if (Objects.requireNonNull(ex.getFieldError()).getField().equals("price")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_PRICE);
+            log.error(ErrorCode.INVALID_PRICE.getMessage());
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
         } else if (Objects.requireNonNull(ex.getFieldError()).getField().equals("description")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_DESCRIPTION);
+            log.error(ErrorCode.INVALID_DESCRIPTION.getMessage());
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
         } else if (Objects.requireNonNull(ex.getFieldError()).getField().equals("thumbnail")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_THUMBNAIL);
+            log.error(ErrorCode.INVALID_THUMBNAIL.getMessage());
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
         } else if (Objects.requireNonNull(ex.getFieldError()).getField().startsWith("images")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_PHOTOS);
+            log.error(ErrorCode.INVALID_ITEM_PHOTOS.getMessage());
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
         } else if (Objects.requireNonNull(ex.getFieldError()).getField().equals("itemStatus")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_STATUS);
+            log.error(ErrorCode.INVALID_ITEM_STATUS.getMessage());
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
         } else if (Objects.requireNonNull(ex.getFieldError()).getField().equals("buyerId")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_BUYER);
+            log.error(ErrorCode.INVALID_ITEM_BUYER.getMessage());
             return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
         }
 
@@ -78,10 +88,12 @@ public class GlobalExceptionHandler {
             if (ex.getCause().getMessage()
                 .contains("LinkerBell.campus_market_spring.domain.Category")) {
                 ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_CATEGORY);
+                log.error(ErrorCode.INVALID_CATEGORY.getMessage());
                 return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
             } else if (ex.getCause().getMessage()
                 .contains("LinkerBell.campus_market_spring.domain.ItemStatus")) {
                 ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_STATUS);
+                log.error(ErrorCode.INVALID_ITEM_STATUS.getMessage());
                 return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
             }
         }

@@ -16,11 +16,11 @@ import java.util.List;
 public class ItemRegisterRequestDto {
 
     @NotBlank
-    @Size(min = 2, max = 100)
+    @Size(min = 2, max = 50)
     private String title;
 
     @NotBlank
-    @Size(min = 2, max = 2000)
+    @Size(min = 2, max = 1000)
     private String description;
 
     @NotNull
@@ -30,13 +30,13 @@ public class ItemRegisterRequestDto {
 
     private Category category;
 
-    @Pattern(regexp = "^(|https?|ftp):\\/\\/([\\w\\-]+\\.)+[\\w\\-]+(\\/[-a-zA-Z0-9@:%._\\+~#=]*)*$",
+    @Pattern(regexp = "^$|^(|https?|ftp):\\/\\/([\\w\\-]+\\.)+[\\w\\-]+(\\/[-a-zA-Z0-9@:%._\\+~#=]*)*$",
         message = "Must be a valid URL."
     )
     private String thumbnail;
 
     private List<@Pattern(
-        regexp = "^(|https?|ftp):\\/\\/([\\w\\-]+\\.)+[\\w\\-]+(\\/[-a-zA-Z0-9@:%._\\+~#=]*)*$",
+        regexp = "^$|^(https?|ftp):\\/\\/([\\w\\-]+\\.)+[\\w\\-]+(\\/[-a-zA-Z0-9@:%._\\+~#=]*)*$",
         message = "Must be a valid URL."
     ) String> images;
 
