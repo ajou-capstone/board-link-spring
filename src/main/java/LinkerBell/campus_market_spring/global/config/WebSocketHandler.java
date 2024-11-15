@@ -29,11 +29,6 @@ public class WebSocketHandler implements ChannelInterceptor {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message,
             StompHeaderAccessor.class);
 
-        log.info("accessor command : {}", accessor.getCommand().name());
-
-        log.info("message payload : {}", message.getPayload());
-        log.info("message header : {} ", message.getHeaders());
-
         if (accessor.getCommand() == StompCommand.CONNECT) {
             Map<String, Object> headerAttribute = accessor.getSessionAttributes();
             String authToken = (String) headerAttribute.get("authorization");
@@ -52,7 +47,6 @@ public class WebSocketHandler implements ChannelInterceptor {
                 log.error("Connect - authentication is null");
             }
             accessor.setUser(authentication);
-            log.info("connected authentication name : {}", accessor.getUser().getName());
         }
 
         if (accessor.getCommand() == StompCommand.SEND) {
@@ -89,15 +83,13 @@ public class WebSocketHandler implements ChannelInterceptor {
 
         // 메시지의 Payload를 확인
         Object payload = message.getPayload();
+        log.info("postsend - Payload: {}", payload);
         if (payload instanceof byte[]) {
             // 바이트 배열이면 UTF-8로 디코딩
             String decodedPayload = new String((byte[]) payload, StandardCharsets.UTF_8);
-            log.info("Decoded payload (JSON): {}", decodedPayload);
+            log.info("postsend - Decoded payload (JSON): {}", decodedPayload);
         } else {
-            log.info("Payload: {}", payload);
+            log.info("postsend - Payload: {}", payload);
         }
-
-        // 메시지의 Headers 확인
-        log.info("Message headers: {}", message.getHeaders());
     }
 }

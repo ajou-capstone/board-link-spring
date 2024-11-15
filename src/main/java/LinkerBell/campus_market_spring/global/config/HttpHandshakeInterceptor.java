@@ -21,7 +21,6 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
         WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         HttpServletRequest req = ((ServletServerHttpRequest) request).getServletRequest();
         String authToken = req.getHeader("Authorization");
-        log.info("before handshake authToken: {}", authToken);
 
         if (authToken == null) {
             log.error("authToken is null");
