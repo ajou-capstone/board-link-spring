@@ -11,6 +11,7 @@ import LinkerBell.campus_market_spring.repository.ChatMessageRepository;
 import LinkerBell.campus_market_spring.repository.ChatRoomRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatMessageService {
@@ -43,6 +45,9 @@ public class ChatMessageService {
                 chatMessageRepository.findMessageIdsByChatRoomAndRecentDays(chatRoom,
                     sevenDaysAgo));
         }
+
+        log.info("ChatMessageService - recentChatMessageIdList : {}",
+            recentChatMessageIdList);
 
         RecentChatMessageResponseDto recentChatMessageResponseDto = RecentChatMessageResponseDto
             .builder()
