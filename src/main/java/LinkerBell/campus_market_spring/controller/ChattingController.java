@@ -35,8 +35,6 @@ public class ChattingController {
 
         Long userId = Long.valueOf(accessor.getUser().getName());
 
-        log.info("userId = " + userId + " chatRoomId = " + chatRoomId);
-
         ChattingResponseDto chattingResponseDto = chattingService.makeChattingResponseDto(
             userId, chatRoomId, chattingRequestDto);
 
