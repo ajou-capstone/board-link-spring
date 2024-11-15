@@ -52,9 +52,10 @@ public class WebSocketHandler implements ChannelInterceptor {
         }
 
         if (accessor.getCommand() == StompCommand.SEND) {
-            log.info("accessor getUserName : {}", accessor.getUser().getName());
+            String destination = accessor.getDestination();
+            String username = accessor.getUser().getName();
 
-            log.info("send");
+            log.info("user {} send to destination {}", username, destination);
         }
 
         if (accessor.getCommand() == StompCommand.SUBSCRIBE) {

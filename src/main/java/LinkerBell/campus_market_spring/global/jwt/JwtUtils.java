@@ -86,7 +86,6 @@ public class JwtUtils {
 
     public String resolveToken(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
-        log.info("Authorization header token is : " + token);
         if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
             return token.substring(7);
         }
