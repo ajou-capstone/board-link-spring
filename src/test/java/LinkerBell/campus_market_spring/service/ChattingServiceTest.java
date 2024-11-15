@@ -101,7 +101,7 @@ class ChattingServiceTest {
 
         // Then
         assertThat(responseDto).isNotNull();
-        assertThat(responseDto.getChattingId()).isEqualTo(savedMessage.getMessageId());
+        assertThat(responseDto.getMessageId()).isEqualTo(savedMessage.getMessageId());
         assertThat(responseDto.getChatRoomId()).isEqualTo(chatRoomId);
         assertThat(responseDto.getUserId()).isEqualTo(userId);
         assertThat(responseDto.getContent()).isEqualTo("Hello World");

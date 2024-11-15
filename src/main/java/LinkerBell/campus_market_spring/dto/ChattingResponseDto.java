@@ -17,7 +17,7 @@ import lombok.ToString;
 @ToString
 public class ChattingResponseDto {
 
-    private Long chattingId;
+    private Long messageId;
     private Long chatRoomId;
     private Long userId;
     private String content;
