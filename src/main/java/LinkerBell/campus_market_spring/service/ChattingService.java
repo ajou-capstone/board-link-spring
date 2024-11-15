@@ -36,6 +36,11 @@ public class ChattingService {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
             .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
 
+        if (chattingRequestDto.getContentType() == null) {
+            log.error("makeChattingResponseDto: contentType is null");
+            throw new CustomException(ErrorCode.INVALID_CONTENTTYPE);
+        }
+
         ChatMessage chatMessage = ChatMessage.builder()
             .chatRoom(chatRoom)
             .user(user)
