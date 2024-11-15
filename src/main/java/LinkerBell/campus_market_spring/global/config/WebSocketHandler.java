@@ -3,6 +3,7 @@ package LinkerBell.campus_market_spring.global.config;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,5 +80,24 @@ public class WebSocketHandler implements ChannelInterceptor {
         }
 
         return message;
+    }
+
+    @Override
+    public void postSend(Message<?> message, MessageChannel channel, boolean sent) {
+        log.info("PostSend -----");
+        log.info("Message sent status: {}", sent);
+
+        // 메시지의 Payload를 확인
+        Object payload = message.getPayload();
+        if (payload instanceof byte[]) {
+            // 바이트 배열이면 UTF-8로 디코딩
+            String decodedPayload = new String((byte[]) payload, StandardCharsets.UTF_8);
+            log.info("Decoded payload (JSON): {}", decodedPayload);
+        } else {
+            log.info("Payload: {}", payload);
+        }
+
+        // 메시지의 Headers 확인
+        log.info("Message headers: {}", message.getHeaders());
     }
 }
