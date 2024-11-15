@@ -11,6 +11,7 @@ import LinkerBell.campus_market_spring.service.ChatMessageService;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class ChatMessageController {
@@ -28,6 +30,7 @@ public class ChatMessageController {
     @GetMapping("api/v1/chat/recent-message")
     public ResponseEntity<RecentChatMessageResponseDto> getRecentMessage(
         @Login AuthUserDto authUserDto) {
+        log.info("ChatMessageController - Get recent chat message of {}", authUserDto.getUserId());
         RecentChatMessageResponseDto recentChatMessageResponseDto = chatMessageService.getRecentMessageList(
             authUserDto.getUserId());
         return ResponseEntity.ok(recentChatMessageResponseDto);
