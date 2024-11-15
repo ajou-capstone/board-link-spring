@@ -53,7 +53,7 @@ public class ChattingService {
 
         // chattingResponseDto 리턴
         ChattingResponseDto chattingResponseDto = ChattingResponseDto.builder()
-            .chattingId(savedChatMessage.getMessageId())
+            .messageId(savedChatMessage.getMessageId())
             .chatRoomId(chatRoomId)
             .userId(userId)
             .content(savedChatMessage.getContent())
