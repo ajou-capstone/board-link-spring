@@ -134,7 +134,7 @@ public class ItemController {
     }
 
     private void validThumbnail(ItemRegisterRequestDto itemRegisterRequestDto) {
-        if (itemRegisterRequestDto.getThumbnail() == null) {
+        if (itemRegisterRequestDto.getThumbnail() == null || itemRegisterRequestDto.getThumbnail().isEmpty()) {
             itemRegisterRequestDto.setThumbnail(defaultItemThumbnail);
         }
     }
