@@ -40,13 +40,14 @@ public class WebSocketHandler implements ChannelInterceptor {
                 log.info("mobile version authToken:{}", authToken);
             } else {
                 String nativeHeaderToken = accessor.getFirstNativeHeader("Authorization");
+                log.info("nativeHeaderToken : {}", nativeHeaderToken);
                 if (StringUtils.hasText(nativeHeaderToken) && nativeHeaderToken.startsWith(
                     "Bearer ")) {
                     authToken = nativeHeaderToken.substring(7);
                     log.info("http version authToken:{}", authToken);
                 }
             }
-
+            log.info("authToken : {}", authToken);
             if (!jwtUtils.validateToken(authToken)) {
                 log.error("Connect - Invalid JWT token");
                 throw new CustomException(ErrorCode.INVALID_JWT);
