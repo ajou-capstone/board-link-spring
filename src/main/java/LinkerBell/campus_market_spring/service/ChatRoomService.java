@@ -13,12 +13,14 @@ import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatRoomService {
@@ -38,6 +40,13 @@ public class ChatRoomService {
         Item item = itemRepository.findById(chatRoomRequestDto.getItemId())
             .orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
         User seller = item.getUser();
+
+        // 아이템, 구매자가 모두 같은 채팅방이 이미 존재하면 채팅방을 만들지 않음
+        if (chatRoomRepository.existsByUser_userIdAndItem_itemId(user.getUserId(),
+            item.getItemId())) {
+            log.error("아이템, 구매자가 모두 같은 채팅방이 존재함");
+            throw new CustomException(ErrorCode.DUPLICATE_CHATROOM);
+        }
 
         ChatRoom chatRoom = ChatRoom.builder()
             .user(buyer)
