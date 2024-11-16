@@ -33,6 +33,10 @@ public class S3Service {
         String date = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String encodedTime = getEncodedTime(now).substring(0, 6);
 
+        fileName = fileName.trim()
+            .replaceAll("\\s+", "-")
+            .replaceAll("_", "-");
+
         String keyName = String.format("%s/%s%s%s",
             awsProperties.folder(), encodedTime, date, fileName);
 

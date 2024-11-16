@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import LinkerBell.campus_market_spring.dto.S3ResponseDto;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -24,6 +25,20 @@ class S3ServiceTest {
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.getPresignedUrl()).contains(fileName);
         assertThat(responseDto.getS3url()).contains(fileName);
+    }
+
+    @Test
+    @DisplayName("파일 이름에 공백과 언더바가 포함된 경우 presigned put url 발급 테스트")
+    public void getPresignedPutUrlWithWhiteSpaceAndUnderscoreTest() {
+        // given
+        String fileName = "test_file and   white space";
+        // when
+        S3ResponseDto responseDto = s3Service.createPreSignedPutUrl(fileName);
+        // then
+        assertThat(responseDto).isNotNull();
+        assertThat(responseDto.getS3url()).doesNotContainAnyWhitespaces();
+        assertThat(responseDto.getS3url()).doesNotContain("_");
+        assertThat(responseDto.getS3url()).contains("test-file-and-white-space");
     }
 
 //    @Test
