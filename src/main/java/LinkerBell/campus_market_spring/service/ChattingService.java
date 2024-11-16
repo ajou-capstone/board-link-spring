@@ -2,6 +2,7 @@ package LinkerBell.campus_market_spring.service;
 
 import LinkerBell.campus_market_spring.domain.ChatMessage;
 import LinkerBell.campus_market_spring.domain.ChatRoom;
+import LinkerBell.campus_market_spring.domain.ContentType;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.dto.ChattingRequestDto;
 import LinkerBell.campus_market_spring.dto.ChattingResponseDto;
@@ -41,10 +42,18 @@ public class ChattingService {
             throw new CustomException(ErrorCode.INVALID_CONTENTTYPE);
         }
 
+        String content = "";
+
+        if (chattingRequestDto.getContentType() == ContentType.TIMETABLE) {
+            log.info("makeChattingResponseDto: contentType=TIMETABLE");
+        } else {
+            content = chattingRequestDto.getContent();
+        }
+
         ChatMessage chatMessage = ChatMessage.builder()
             .chatRoom(chatRoom)
             .user(user)
-            .content(chattingRequestDto.getContent())
+            .content(content)
             .contentType(chattingRequestDto.getContentType())
             .isRead(false)
             .build();
