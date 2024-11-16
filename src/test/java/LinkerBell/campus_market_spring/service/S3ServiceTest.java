@@ -31,7 +31,7 @@ class S3ServiceTest {
     @DisplayName("파일 이름에 공백과 언더바가 포함된 경우 presigned put url 발급 테스트")
     public void getPresignedPutUrlWithWhiteSpaceAndUnderscoreTest() {
         // given
-        String fileName = "test_file and white space";
+        String fileName = "test_file and   white space";
         // when
         S3ResponseDto responseDto = s3Service.createPreSignedPutUrl(fileName);
         // then

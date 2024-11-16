@@ -34,7 +34,7 @@ public class S3Service {
         String encodedTime = getEncodedTime(now).substring(0, 6);
 
         fileName = fileName.trim()
-            .replaceAll("\\s", "-")
+            .replaceAll("\\s+", "-")
             .replaceAll("_", "-");
 
         String keyName = String.format("%s/%s%s%s",
