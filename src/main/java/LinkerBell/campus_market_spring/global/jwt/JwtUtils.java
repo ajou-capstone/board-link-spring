@@ -70,16 +70,20 @@ public class JwtUtils {
     }
 
     public boolean validateToken(String token) {
+        log.info("validateToken() start, Token : {}", token);
         if (token == null) {
             throw new CustomException(ErrorCode.JWT_IS_NULL);
         }
         try {
             return !isExpired(token);
         } catch (MalformedJwtException e) {
+            log.error("validateToken(), MalformedJwtException : {}", e.getMessage());
             throw new CustomException(ErrorCode.INVALID_JWT);
         } catch (ExpiredJwtException e) {
+            log.error("validateToken(), ExpiredJwtException : {}", e.getMessage());
             throw new CustomException(ErrorCode.EXPIRED_JWT);
         } catch (RuntimeException e) {
+            log.error("validateToken(), RuntimeException : {}", e.getMessage());
             return false;
         }
     }
