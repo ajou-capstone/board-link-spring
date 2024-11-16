@@ -23,7 +23,7 @@ public class ChattingController {
     private final ChattingService chattingService;
 
     @MessageMapping("/chat/{chatRoomId}")
-    public ChattingResponseDto sendMessage(SimpMessageHeaderAccessor accessor,
+    public void sendMessage(SimpMessageHeaderAccessor accessor,
         @DestinationVariable Long chatRoomId,
         @Payload ChattingRequestDto chattingRequestDto) {
 
@@ -43,7 +43,5 @@ public class ChattingController {
 
         log.info("userId {} send to chatRoomId {} : {}", userId, chatRoomId,
             chattingResponseDto.getContent());
-
-        return chattingResponseDto;
     }
 }
