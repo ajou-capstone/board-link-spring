@@ -105,9 +105,11 @@ class LikeRepositoryTest {
         assertThat(likes.getContent().get(0).getItem().getNickname()).isEqualTo(other.getNickname());
         assertThat(likes.getContent().get(0).getItem().getChatCount()).isEqualTo(1);
         assertThat(likes.getContent().get(0).getItem().getLikeCount()).isEqualTo(2);
+        assertThat(likes.getContent().get(0).getItem().isLiked()).isTrue();
         assertThat(likes.getContent().get(1).getItem().getNickname()).isEqualTo(other.getNickname());
         assertThat(likes.getContent().get(1).getItem().getLikeCount()).isEqualTo(2);
         assertThat(likes.getContent().get(1).getItem().getChatCount()).isEqualTo(1);
+        assertThat(likes.getContent().get(1).getItem().isLiked()).isTrue();
     }
 
     @Test

@@ -8,7 +8,11 @@ import LinkerBell.campus_market_spring.dto.ItemSearchResponseDto;
 import LinkerBell.campus_market_spring.dto.LikeSearchResponseDto;
 import LinkerBell.campus_market_spring.dto.QItemSearchResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
+import com.google.firebase.database.core.utilities.Predicate;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -45,7 +49,8 @@ public class LikeRepositoryImpl implements LikeRepositoryCustom {
                     like.item.price,
                     chatRoom.countDistinct().intValue(),
                     like.count().intValue(),
-                    like.item.itemStatus)))
+                    like.item.itemStatus,
+                    Expressions.TRUE)))
             .from(like)
             .leftJoin(like.item, item)
             .leftJoin(item.user, user)
