@@ -41,20 +41,20 @@ public class ChatRoomService {
             .orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
         User seller = item.getUser();
 
+        // 아이템, 구매자가 모두 같은 채팅방이 이미 존재하면 채팅방을 만들지 않음
+        if (chatRoomRepository.existsByUser_userIdAndItem_itemId(user.getUserId(),
+            item.getItemId())) {
+            log.error("아이템, 구매자가 모두 같은 채팅방이 존재함");
+            throw new CustomException(ErrorCode.DUPLICATE_CHATROOM);
+        }
+
         ChatRoom chatRoom = ChatRoom.builder()
             .user(buyer)
             .item(item)
             .userCount(1)
             .build();
 
-        // 아이템, 구매자가 모두 같은 채팅방이 이미 존재하면 채팅방을 만들지 않음
-        if (chatRoomRepository.existsByUser_userIdAndItem_itemId(user.getUserId(),
-            item.getItemId())) {
-            log.error("아이템, 구매자가 모두 같은 채팅방이 존재함");
-            throw new CustomException(ErrorCode.DUPLICATE_CHATROOM);
-        } else {
-            chatRoomRepository.save(chatRoom);
-        }
+        chatRoomRepository.save(chatRoom);
 
         // 채팅방 설정 2개 만들기
         ChatProperties buyerChatProperties = ChatProperties.builder().user(buyer).chatRoom(chatRoom)
