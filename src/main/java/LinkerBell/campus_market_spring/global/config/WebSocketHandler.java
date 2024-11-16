@@ -37,6 +37,12 @@ public class WebSocketHandler implements ChannelInterceptor {
             String authToken = (String) headerAttribute.get("Authorization");
             if (StringUtils.hasText(authToken) && authToken.startsWith("Bearer ")) {
                 authToken = authToken.substring(7);
+            } else {
+                String nativeHeaderToken = accessor.getFirstNativeHeader("Authorization");
+                if (StringUtils.hasText(nativeHeaderToken) && nativeHeaderToken.startsWith(
+                    "Bearer ")) {
+                    authToken = nativeHeaderToken.substring(7);
+                }
             }
 
             if (!jwtUtils.validateToken(authToken)) {
