@@ -70,7 +70,6 @@ public class JwtUtils {
     }
 
     public boolean validateToken(String token) {
-        log.info("validateToken() start, Token : {}", token);
         if (token == null) {
             throw new CustomException(ErrorCode.JWT_IS_NULL);
         }
