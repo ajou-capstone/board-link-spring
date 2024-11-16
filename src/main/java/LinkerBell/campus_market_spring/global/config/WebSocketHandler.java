@@ -29,6 +29,8 @@ public class WebSocketHandler implements ChannelInterceptor {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message,
             StompHeaderAccessor.class);
 
+        log.info("before accessor : {}", accessor);
+
         if (accessor.getCommand() == StompCommand.CONNECT) {
             Map<String, Object> headerAttribute = accessor.getSessionAttributes();
             String authToken = (String) headerAttribute.get("authorization");
@@ -47,6 +49,8 @@ public class WebSocketHandler implements ChannelInterceptor {
                 log.error("Connect - authentication is null");
             }
             accessor.setUser(authentication);
+
+            log.info("after accessor : {}", accessor);
         }
 
         if (accessor.getCommand() == StompCommand.SEND) {
