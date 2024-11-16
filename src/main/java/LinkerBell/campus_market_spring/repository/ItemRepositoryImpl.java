@@ -188,10 +188,12 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                 case "price":
                     orderSpecifiers.add(order.isAscending() ? item.price.asc() : item.price.desc());
                     orderSpecifiers.add(item.createdDate.desc());
+                    orderSpecifiers.add(item.itemId.desc());
                     break;
                 case "createdDate":
                     orderSpecifiers.add(
                         order.isAscending() ? item.createdDate.asc() : item.createdDate.desc());
+                    orderSpecifiers.add(item.itemId.desc());
                     break;
                 default:
                     throw new CustomException(ErrorCode.INVALID_SORT);
