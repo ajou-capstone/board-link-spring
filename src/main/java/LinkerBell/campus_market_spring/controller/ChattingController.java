@@ -9,12 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.stomp.StompCommand;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
 @Slf4j
@@ -26,10 +23,9 @@ public class ChattingController {
     private final ChattingService chattingService;
 
     @MessageMapping("/chat/{chatRoomId}")
-    @SendTo("/sub/chat/{chatRoomId}")
     public ChattingResponseDto sendMessage(SimpMessageHeaderAccessor accessor,
         @DestinationVariable Long chatRoomId,
-        ChattingRequestDto chattingRequestDto) {
+        @Payload ChattingRequestDto chattingRequestDto) {
 
         if (accessor == null) {
             log.error("chatting controller : accessor is null");
@@ -43,8 +39,7 @@ public class ChattingController {
 
         log.info("chattingResponseDto = " + chattingResponseDto);
 
-//        messagingTemplate.convertAndSend("/sub/chat/" + chatRoomId, chattingResponseDto,
-//            accessor.getMessageHeaders());
+        messagingTemplate.convertAndSend("/sub/chat/" + chatRoomId, chattingResponseDto);
 
         log.info("userId {} send to chatRoomId {} : {}", userId, chatRoomId,
             chattingResponseDto.getContent());
