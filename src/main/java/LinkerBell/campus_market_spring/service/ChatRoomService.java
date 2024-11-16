@@ -47,9 +47,10 @@ public class ChatRoomService {
             .userCount(1)
             .build();
 
-        // 아이템, 구매자가 모두 같으면 채팅방을 만들지 않음
-        if (chatRoomRepository.findByUserAndItem(buyer, item).isPresent()) {
-            log.error("아이템, 구매자가 모두 같음");
+        // 아이템, 구매자가 모두 같은 채팅방이 이미 존재하면 채팅방을 만들지 않음
+        if (chatRoomRepository.existsByUser_userIdAndItem_itemId(user.getUserId(),
+            item.getItemId())) {
+            log.error("아이템, 구매자가 모두 같은 채팅방이 존재함");
             throw new CustomException(ErrorCode.DUPLICATE_CHATROOM);
         } else {
             chatRoomRepository.save(chatRoom);
