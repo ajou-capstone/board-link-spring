@@ -37,11 +37,13 @@ public class WebSocketHandler implements ChannelInterceptor {
             String authToken = (String) headerAttribute.get("Authorization");
             if (StringUtils.hasText(authToken) && authToken.startsWith("Bearer ")) {
                 authToken = authToken.substring(7);
+                log.info("mobile version authToken:{}", authToken);
             } else {
                 String nativeHeaderToken = accessor.getFirstNativeHeader("Authorization");
                 if (StringUtils.hasText(nativeHeaderToken) && nativeHeaderToken.startsWith(
                     "Bearer ")) {
                     authToken = nativeHeaderToken.substring(7);
+                    log.info("http version authToken:{}", authToken);
                 }
             }
 
@@ -51,6 +53,7 @@ public class WebSocketHandler implements ChannelInterceptor {
             }
 
             Authentication authentication = jwtUtils.getAuthentication(authToken);
+            log.info("jwtUtils.getAuthentication(authToken) = {}", authentication);
 
             if (authentication == null) {
                 log.error("Connect - authentication is null");
