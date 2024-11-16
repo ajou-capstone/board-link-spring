@@ -39,7 +39,7 @@ public class ChattingService {
 
         if (chattingRequestDto.getContentType() == null) {
             log.error("makeChattingResponseDto: contentType is null");
-            throw new CustomException(ErrorCode.INVALID_CONTENTTYPE);
+            throw new CustomException(ErrorCode.INVALID_CONTENT_TYPE);
         }
 
         String content = "";
