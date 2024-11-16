@@ -33,7 +33,8 @@ public class WebSocketHandler implements ChannelInterceptor {
 
         if (accessor.getCommand() == StompCommand.CONNECT) {
             Map<String, Object> headerAttribute = accessor.getSessionAttributes();
-            String authToken = (String) headerAttribute.get("authorization");
+            //String authToken = (String) headerAttribute.get("authorization");
+            String authToken = (String) headerAttribute.get("Authorization");
             if (StringUtils.hasText(authToken) && authToken.startsWith("Bearer ")) {
                 authToken = authToken.substring(7);
             }
