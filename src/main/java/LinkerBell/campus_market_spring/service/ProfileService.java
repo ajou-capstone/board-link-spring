@@ -27,7 +27,7 @@ public class ProfileService {
     private final UserRepository userRepository;
     private final CampusRepository campusRepository;
 
-    @Value("path.default_profile_image")
+    @Value("${path.default_profile_image}")
     private String defaultProfileImage;
 
     @Transactional(readOnly = true)
