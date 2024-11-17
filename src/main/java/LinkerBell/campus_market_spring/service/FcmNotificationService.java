@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class FcmNotificationService {
+
     private final UserFcmTokenRepository userFcmTokenRepository;
 
     @Async
