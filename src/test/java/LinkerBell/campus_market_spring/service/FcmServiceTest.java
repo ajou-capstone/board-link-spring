@@ -34,6 +34,9 @@ class FcmServiceTest {
     @Autowired
     FcmService fcmService;
 
+    @Autowired
+    FcmNotificationService fcmNotificationService;
+
 
     @Value("${my.fcm_token}")
     String targetTokens;
@@ -87,7 +90,7 @@ class FcmServiceTest {
             .body(body)
             .deeplinkUrl(deeplinkUrl)
             .build();
-        fcmService.sendNotification(message);
+        fcmNotificationService.sendNotification(message);
     }
 
     //@Test
