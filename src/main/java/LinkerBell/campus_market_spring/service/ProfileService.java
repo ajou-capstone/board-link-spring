@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 @Slf4j
@@ -42,9 +43,9 @@ public class ProfileService {
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         nickname = nickname == null ? user.getNickname() : nickname;
-        if (imageUrl == null && user.getProfileImage() == null) {
+        if (!StringUtils.hasText(imageUrl) && user.getProfileImage() == null) {
             imageUrl = defaultProfileImage;
-        } else if(imageUrl == null) {
+        } else if(!StringUtils.hasText(imageUrl)) {
             imageUrl = user.getProfileImage();
         }
         user.setNickname(nickname);
