@@ -26,6 +26,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class ProfileServiceTest {
@@ -49,6 +50,7 @@ class ProfileServiceTest {
         other = createOther();
         campus = createCampus();
         diffCampus = createDiffCampus();
+        ReflectionTestUtils.setField(profileService, "defaultProfileImage", "testDefaultImage");
     }
 
     @Test
@@ -77,6 +79,37 @@ class ProfileServiceTest {
         assertThat(profileResponseDto).isNotNull();
         assertThat(profileResponseDto.getNickname()).isEqualTo("new nickname");
         assertThat(profileResponseDto.getProfileImage()).isEqualTo("imageUrl");
+    }
+
+    @Test
+    @DisplayName("프로필 처음 등록할 때 받은 이미지가 없을 때")
+    public void saveProfileFirstAndNullImageTest() {
+        // given
+        user.setProfileImage(null);
+        given(userRepository.findById(1L)).willReturn(Optional.ofNullable(user));
+
+        // when
+        ProfileResponseDto profileResponseDto = profileService.saveProfile(1L, "new nickname", null);
+        // then
+        assertThat(profileResponseDto).isNotNull();
+        assertThat(profileResponseDto.getNickname()).isEqualTo("new nickname");
+        assertThat(profileResponseDto.getProfileImage()).isNotNull();
+        assertThat(profileResponseDto.getProfileImage()).isEqualTo("testDefaultImage");
+    }
+
+    @Test
+    @DisplayName("프로필 변경 시 받은 이미지가 없을 때")
+    public void saveProfileAndNullImageTest() {
+        // given
+        given(userRepository.findById(1L)).willReturn(Optional.ofNullable(user));
+
+        // when
+        ProfileResponseDto profileResponseDto = profileService.saveProfile(1L, "new nickname", null);
+        // then
+        assertThat(profileResponseDto).isNotNull();
+        assertThat(profileResponseDto.getNickname()).isEqualTo("new nickname");
+        assertThat(profileResponseDto.getProfileImage()).isNotNull();
+        assertThat(profileResponseDto.getProfileImage()).isEqualTo(user.getProfileImage());
     }
 
     @Test

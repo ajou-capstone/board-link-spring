@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,9 @@ public class ProfileService {
 
     private final UserRepository userRepository;
     private final CampusRepository campusRepository;
+
+    @Value("path.default_profile_image")
+    private String defaultProfileImage;
 
     @Transactional(readOnly = true)
     public ProfileResponseDto getMyProfile(Long userId) {
@@ -38,8 +42,11 @@ public class ProfileService {
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         nickname = nickname == null ? user.getNickname() : nickname;
-        imageUrl = imageUrl == null ? user.getProfileImage() : imageUrl;
-
+        if (imageUrl == null && user.getProfileImage() == null) {
+            imageUrl = defaultProfileImage;
+        } else if(imageUrl == null) {
+            imageUrl = user.getProfileImage();
+        }
         user.setNickname(nickname);
         user.setProfileImage(imageUrl);
 
@@ -97,7 +104,7 @@ public class ProfileService {
         if (user.getCampus() != other.getCampus()) {
             throw new CustomException(ErrorCode.NOT_MATCH_USER_CAMPUS);
         }
-        
+
         return createOtherProfileResponseDto(other);
     }
 
