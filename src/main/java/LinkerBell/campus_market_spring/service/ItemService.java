@@ -195,15 +195,9 @@ public class ItemService {
         item.setCategory(itemRegisterRequestDto.getCategory());
 
         if (isNotEqualsToThumbnail(itemRegisterRequestDto, item)) {
-            if (isNotEqualsToDefaultImage(item)) {
-                s3Service.deleteS3File(item.getThumbnail());
-            }
-            item.setThumbnail(itemRegisterRequestDto.getThumbnail());
+            s3Service.deleteS3File(item.getThumbnail());
         }
-    }
-
-    private boolean isNotEqualsToDefaultImage(Item item) {
-        return !(item.getThumbnail().equals(defaultItemThumbnail));
+        item.setThumbnail(itemRegisterRequestDto.getThumbnail());
     }
 
     private boolean isNotEqualsToThumbnail(ItemRegisterRequestDto itemRegisterRequestDto,
