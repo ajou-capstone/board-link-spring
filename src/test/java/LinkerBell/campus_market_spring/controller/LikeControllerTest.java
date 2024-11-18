@@ -64,6 +64,7 @@ class LikeControllerTest {
             .likeId(likeId).isLike(true).itemId(itemId).build();
         given(likeService.likeItem(anyLong(), anyLong())).willReturn(likeResponseDto);
         // when & then
+
         mockMvc.perform(post("/api/v1/items/" + itemId + "/likes"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.likeId").value(likeResponseDto.getLikeId()))

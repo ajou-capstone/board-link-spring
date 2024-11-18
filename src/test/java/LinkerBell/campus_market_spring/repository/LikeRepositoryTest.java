@@ -131,6 +131,38 @@ class LikeRepositoryTest {
     }
 
     @Test
+    @DisplayName("좋아요 목록 가져오기 + 삭제 처리된 상품이 있을 경우")
+    public void getLikeListWithDeletedItemTest() {
+        // given
+        Like like = new Like(2L, user, item);
+        Like like2 = new Like(3L, user, item2);
+
+        Like like3 = new Like(4L, other, item);
+        Like like4 = new Like(5L, other, item2);
+
+        item2.setDeleted(true);
+        itemRepository.save(item2);
+
+        likeRepository.saveAll(Lists.newArrayList(like, like2, like3, like4));
+
+        Sort sort = Sort.by("createdDate").descending();
+        PageRequest pageRequest = PageRequest.of(0, 10, sort);
+        // when
+        SliceResponse<LikeSearchResponseDto> likes =
+            likeRepository.findAllByUserId(user.getUserId(), pageRequest);
+        // then
+
+        assertThat(likes).isNotNull();
+        assertThat(likes.getContent().size()).isEqualTo(1);
+        assertThat(likes.getSize()).isEqualTo(pageRequest.getPageSize());
+        assertThat(likes.getSort().isSorted()).isTrue();
+
+        assertThat(likes.getContent().get(0).getItem().getNickname()).isEqualTo(other.getNickname());
+        assertThat(likes.getContent().get(0).getItem().getChatCount()).isEqualTo(1);
+        assertThat(likes.getContent().get(0).getItem().getLikeCount()).isEqualTo(2);
+    }
+
+    @Test
     @DisplayName("좋아요 취소하기")
     public void deleteLikesTest() {
         // given

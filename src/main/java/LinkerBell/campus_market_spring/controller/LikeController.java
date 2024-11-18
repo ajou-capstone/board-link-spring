@@ -1,7 +1,6 @@
 package LinkerBell.campus_market_spring.controller;
 
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
-import LinkerBell.campus_market_spring.dto.ItemSearchResponseDto;
 import LinkerBell.campus_market_spring.dto.LikeDeleteResponseDto;
 import LinkerBell.campus_market_spring.dto.LikeResponseDto;
 import LinkerBell.campus_market_spring.dto.LikeSearchResponseDto;

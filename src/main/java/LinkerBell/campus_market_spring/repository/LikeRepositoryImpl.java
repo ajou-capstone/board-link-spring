@@ -4,13 +4,9 @@ import LinkerBell.campus_market_spring.domain.QChatRoom;
 import LinkerBell.campus_market_spring.domain.QItem;
 import LinkerBell.campus_market_spring.domain.QLike;
 import LinkerBell.campus_market_spring.domain.QUser;
-import LinkerBell.campus_market_spring.dto.ItemSearchResponseDto;
 import LinkerBell.campus_market_spring.dto.LikeSearchResponseDto;
 import LinkerBell.campus_market_spring.dto.QItemSearchResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
-import com.google.firebase.database.core.utilities.Predicate;
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -55,6 +51,7 @@ public class LikeRepositoryImpl implements LikeRepositoryCustom {
             .leftJoin(like.item, item)
             .leftJoin(item.user, user)
             .leftJoin(chatRoom).on(chatRoom.item.eq(like.item))
+            .where(item.isDeleted.isFalse())
             .groupBy(like.likeId)
             .having(like.user.userId.eq(userId))
             .offset(pageable.getOffset())
