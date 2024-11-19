@@ -1,9 +1,7 @@
 package LinkerBell.campus_market_spring.dto;
 
-import LinkerBell.campus_market_spring.domain.Role;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 
 @Getter
@@ -11,13 +9,11 @@ public class AuthUserDto {
 
     private Long userId;
     private String loginEmail;
-    private Role role;
 
     @Builder
-    public AuthUserDto(Long userId, String loginEmail, Role role) {
+    public AuthUserDto(Long userId, String loginEmail) {
         this.userId = userId;
         this.loginEmail = loginEmail;
-        this.role = role;
     }
 
 }
