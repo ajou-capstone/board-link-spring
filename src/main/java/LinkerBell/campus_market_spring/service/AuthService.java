@@ -9,6 +9,7 @@ import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -55,15 +56,43 @@ public class AuthService {
         return userRepository.save(newUser);
     }
 
-    @Transactional(readOnly = true)
-    public AuthUserDto getUserByLoginEmail(String loginEmail) {
-        User user = userRepository.findByLoginEmail(loginEmail)
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    private String getEmailFromGoogleIdToken(GoogleIdToken idToken) {
+        GoogleIdToken.Payload payload = idToken.getPayload();
+
+        boolean emailVerified = payload.getEmailVerified();
+        if (!emailVerified) {
+            throw new CustomException(ErrorCode.NOT_VERIFIED_EMAIL);
+        }
+
+        return payload.getEmail();
+    }
+
+    private GoogleIdToken getGoogleIdToken(String googleToken) {
+        GoogleIdToken idToken = null;
+        try {
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
+                GoogleNetHttpTransport.newTrustedTransport(),
+                GsonFactory.getDefaultInstance())
+                .setAudience(Collections.singletonList(GOOGLE_CLIENT_ID))
+                .build();
+            idToken = verifier.verify(googleToken);
+
+        } catch (GeneralSecurityException | IOException e) {
+            throw new CustomException(ErrorCode.UNVERIFIED_GOOGLE_TOKEN);
+        } catch (IllegalArgumentException e) {
+            log.error("IllegalArgumentException");
+            throw new CustomException(ErrorCode.INVALID_GOOGLE_TOKEN);
+        }
+        return idToken;
+    }
+
+    public AuthUserDto getUserByJwt(String token) {
+        String email = jwtUtils.getEmail(token);
+        Long userId = jwtUtils.getUserId(token);
 
         return AuthUserDto.builder()
-            .userId(user.getUserId())
-            .loginEmail(user.getLoginEmail())
-            .role(user.getRole())
+            .userId(userId)
+            .loginEmail(email)
             .build();
     }
 

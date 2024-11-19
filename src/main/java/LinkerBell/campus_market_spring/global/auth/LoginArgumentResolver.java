@@ -39,8 +39,7 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
 
         String token = jwtUtils.resolveToken(httpServletRequest);
         if (jwtUtils.validateToken(token)) {
-            String email = jwtUtils.getEmail(token);
-            return authService.getUserByLoginEmail(email);
+            return authService.getUserByJwt(token);
         }
         throw new CustomException(ErrorCode.INVALID_JWT);
     }
