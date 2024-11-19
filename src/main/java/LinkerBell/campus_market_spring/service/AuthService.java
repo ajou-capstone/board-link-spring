@@ -16,7 +16,6 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -122,15 +121,13 @@ public class AuthService {
         return idToken;
     }
 
-    @Transactional(readOnly = true)
-    public AuthUserDto getUserByLoginEmail(String loginEmail) {
-        User user = userRepository.findByLoginEmail(loginEmail)
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    public AuthUserDto getUserByJwt(String token) {
+        String email = jwtUtils.getEmail(token);
+        Long userId = jwtUtils.getUserId(token);
 
         return AuthUserDto.builder()
-            .userId(user.getUserId())
-            .loginEmail(user.getLoginEmail())
-            .role(user.getRole())
+            .userId(userId)
+            .loginEmail(email)
             .build();
     }
 
