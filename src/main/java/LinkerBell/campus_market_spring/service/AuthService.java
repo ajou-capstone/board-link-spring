@@ -2,29 +2,18 @@ package LinkerBell.campus_market_spring.service;
 
 import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
-import LinkerBell.campus_market_spring.domain.UserFcmToken;
 import LinkerBell.campus_market_spring.dto.AuthResponseDto;
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
-import LinkerBell.campus_market_spring.repository.UserFcmTokenRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.Collections;
 
 @Slf4j
 @Service
@@ -32,23 +21,13 @@ import java.util.Collections;
 @Transactional
 public class AuthService {
 
-    @Value("${google.client}")
-    private String GOOGLE_CLIENT_ID;
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
-    private final UserFcmTokenRepository userFcmTokenRepository;
+    private final FcmService fcmService;
+    private final GoogleAuthService googleAuthService;
 
-    public AuthResponseDto googleLogin(String googleToken, String firebaseToken) {
-        log.info("google Token: " + googleToken);
-        log.info("firebase Token: " + firebaseToken);
-        GoogleIdToken idToken = getGoogleIdToken(googleToken);
-
-        if (idToken == null) {
-            log.error("idToken is null");
-            throw new CustomException(ErrorCode.INVALID_GOOGLE_TOKEN);
-        }
-
-        String email = getEmailFromGoogleIdToken(idToken);
+    public AuthResponseDto userLogin(String googleToken, String firebaseToken) {
+        String email = googleAuthService.getEmailWithVerifyIdToken(googleToken);
 
         User user = userRepository.findByLoginEmail(email)
             .orElseGet(() -> createNewUser(email));
@@ -61,31 +40,17 @@ public class AuthService {
         user.setRefreshToken(refreshToken);
         userRepository.save(user);
 
-        saveUserFcmToken(firebaseToken, user);
+        fcmService.saveUserFcmToken(firebaseToken, user);
 
         return AuthResponseDto.builder()
             .accessToken(accessToken)
             .refreshToken(refreshToken).build();
     }
 
-    private void saveUserFcmToken(String firebaseToken, User user) {
-        userFcmTokenRepository.findByFcmToken(firebaseToken).ifPresentOrElse(userFcmToken -> {
-                log.info("already exist.");
-                userFcmToken.setLastModifiedDate(LocalDateTime.now());
-                userFcmTokenRepository.save(userFcmToken);
-            },
-            () -> {
-                log.info("not exist.");
-                UserFcmToken userFcmToken = UserFcmToken.builder().fcmToken(firebaseToken)
-                    .user(user).build();
-                userFcmTokenRepository.save(userFcmToken);
-            });
-    }
-
     private User createNewUser(String email) {
         User newUser = User.builder()
             .loginEmail(email)
-            .role(Role.GUEST)
+            .role(Role.USER)
             .build();
 
         return userRepository.save(newUser);
