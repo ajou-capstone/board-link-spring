@@ -35,11 +35,9 @@ public class ChatMessage extends BaseEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    @Column(nullable = false, length = 2000)
+    @Column(length = 2000)
     private String content;
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private ContentType contentType;
-    @Column(nullable = false)
     private boolean isRead;
 }

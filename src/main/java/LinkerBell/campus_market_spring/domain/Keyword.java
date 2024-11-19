@@ -26,9 +26,9 @@ public class Keyword extends BaseEntity {
     private Long keywordId;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String keywordName;
 
 }

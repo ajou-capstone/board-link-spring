@@ -35,7 +35,7 @@ public class User extends BaseEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "campus_id")
     private Campus campus;
-    @Column(nullable = false, length = 100)
+    @Column(length = 100)
     private String loginEmail;
     @Column(length = 100)
     private String schoolEmail;
@@ -48,14 +48,12 @@ public class User extends BaseEntity {
     @Column(length = 600)
     private String refreshToken;
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Role role;
     @Lob
     @Column(columnDefinition = "json")
     private String timetable;
 
     @Builder.Default
-    @Column(nullable = false)
     private boolean isDeleted = false;
 
     public void setTimetableFromJson(Object timetableObject) {

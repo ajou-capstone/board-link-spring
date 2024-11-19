@@ -28,16 +28,14 @@ public class ChatProperties extends BaseEntity {
     private Long chatPropertiesId;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "chat_room_id", nullable = false)
+    @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
-    @Column(nullable = false)
     private boolean isAlarm;
-    @Column(nullable = false, length = 150)
+    @Column(length = 150)
     private String title;
-    @Column(nullable = false)
     private boolean isExited;
 }

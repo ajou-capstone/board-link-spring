@@ -20,10 +20,9 @@ public class Terms extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long termsId;
-    @Column(nullable = false, length = 100)
+    @Column(length = 100)
     private String title;
-    @Column(nullable = false, length = 1050)
+    @Column(length = 1050)
     private String termsUrl;
-    @Column(nullable = false)
     private boolean isRequired;
 }

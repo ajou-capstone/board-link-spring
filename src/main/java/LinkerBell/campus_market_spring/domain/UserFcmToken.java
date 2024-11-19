@@ -26,8 +26,8 @@ public class UserFcmToken extends BaseEntity {
     private Long userFcmTokenId;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
-    @Column(nullable = false, length = 1050)
+    @Column(length = 1050)
     private String fcmToken;
 }

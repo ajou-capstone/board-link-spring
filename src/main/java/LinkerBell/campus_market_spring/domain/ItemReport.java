@@ -20,17 +20,15 @@ public class ItemReport extends BaseEntity {
     private Long itemReportId;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "item_id", nullable = false)
+    @JoinColumn(name = "item_id")
     private Item item;
-    @Column(nullable = false, length = 1000)
+    @Column(length = 1000)
     private String description;
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private ItemReportCategory category;
-    @Column(nullable = false)
     private boolean isCompleted;
 }

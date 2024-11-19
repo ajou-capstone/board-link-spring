@@ -26,9 +26,9 @@ public class ItemPhotos extends BaseEntity {
     private Long itemPhotosId;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "item_id", nullable = false)
+    @JoinColumn(name = "item_id")
     private Item item;
-    @Column(nullable = false, length = 1050)
+    @Column(length = 1050)
     private String imageAddress;
 
 

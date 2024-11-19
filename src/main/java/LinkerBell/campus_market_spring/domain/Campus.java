@@ -22,11 +22,11 @@ public class Campus extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long campusId;
-    @Column(nullable = false, length = 100)
+    @Column(length = 100)
     private String universityName;
-    @Column(nullable = false, length = 100)
+    @Column(length = 100)
     private String region;
-    @Column(nullable = false, length = 35)
+    @Column(length = 35)
     private String email;
 
 }

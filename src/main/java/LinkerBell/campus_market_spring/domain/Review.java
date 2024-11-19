@@ -18,14 +18,13 @@ public class Review extends BaseEntity {
     private Long reviewId;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "item_id", nullable = false)
+    @JoinColumn(name = "item_id")
     private Item item;
-    @Column(nullable = false, length = 1000)
+    @Column(length = 1000)
     private String description;
-    @Column(nullable = false)
     private int rating;
 }

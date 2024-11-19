@@ -21,8 +21,7 @@ public class Blacklist extends BaseEntity {
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    @Column(nullable = false, length = 1000)
+    @Column(length = 1000)
     private String reason;
-    @Column(nullable = false)
     private LocalDateTime endDate;
 }

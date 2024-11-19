@@ -30,34 +30,31 @@ public class Item extends BaseEntity {
     private Long itemId;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "campus_id", nullable = false)
+    @JoinColumn(name = "campus_id")
     private Campus campus;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_buyer_id", nullable = true)
     private User userBuyer;
-    @Column(nullable = false, length = 100)
+    @Column(length = 100)
     private String title;
-    @Column(nullable = false, length = 2000)
+    @Column(length = 2000)
     private String description;
-    @Column(nullable = false)
     private int price;
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Category category;
 
     @Builder.Default
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private ItemStatus itemStatus = ItemStatus.FORSALE;
-    @Column(nullable = false, length = 1050)
+    @Column(length = 1050)
     private String thumbnail;
 
     @Builder.Default
-    @Column(nullable = false)
     private boolean isDeleted = false;
 
 }

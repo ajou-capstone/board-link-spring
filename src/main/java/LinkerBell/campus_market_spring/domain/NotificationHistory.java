@@ -18,17 +18,17 @@ public class NotificationHistory extends BaseEntity {
     private Long notificationHistoryId;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "item_id", nullable = false)
+    @JoinColumn(name = "item_id")
     private Item item;
-    @Column(nullable = false, length = 100)
+    @Column(length = 100)
     private String title;
-    @Column(nullable = false, length = 200)
+    @Column(length = 200)
     private String description;
-    @Column(nullable = false, length = 200)
+    @Column(length = 200)
     private String deeplink;
 }
 
