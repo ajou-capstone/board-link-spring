@@ -57,7 +57,7 @@ class AuthServiceTest {
 
         assertThat(userDto.getUserId()).isEqualTo(1L);
         assertThat(userDto.getLoginEmail()).isEqualTo("abc@gmail.com");
-        assertThat(userDto.getRole()).isEqualTo(Role.GUEST);
+        assertThat(userDto.getRole()).isEqualTo(Role.USER);
     }
 
     @Test
@@ -96,7 +96,7 @@ class AuthServiceTest {
         return User.builder()
             .userId(1L)
             .loginEmail("abc@gmail.com")
-            .role(Role.GUEST)
+            .role(Role.USER)
             .build();
     }
 }
