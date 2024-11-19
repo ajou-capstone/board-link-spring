@@ -232,7 +232,7 @@ class ProfileServiceTest {
             .profileImage("old_url")
             .schoolEmail("abc@ajou.ac.kr")
             .rating(0.0)
-            .role(Role.USER).build();
+            .role(Role.GUEST).build();
     }
 
     private Campus createDiffCampus() {
@@ -246,7 +246,7 @@ class ProfileServiceTest {
     private User createOther() {
         return User.builder().userId(11L).schoolEmail("test2.example2.com")
             .profileImage("other's profile image").rating(5.2).nickname("I'm other")
-            .role(Role.USER).build();
+            .role(Role.GUEST).build();
     }
 
 }
