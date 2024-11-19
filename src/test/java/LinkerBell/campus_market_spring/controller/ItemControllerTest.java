@@ -1,6 +1,7 @@
 package LinkerBell.campus_market_spring.controller;
 
 import static LinkerBell.campus_market_spring.global.error.ErrorCode.DUPLICATE_ITEM_PHOTOS;
+import static LinkerBell.campus_market_spring.global.error.ErrorCode.EMPTY_ITEM_THUMBNAIL;
 import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_CATEGORY;
 import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_DESCRIPTION;
 import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_ITEM_BUYER;
@@ -388,7 +389,7 @@ class ItemControllerTest {
               "price": "20",
               "description": "testDescription",
               "category": "ELECTRONICS_IT",
-              "thumbnail": "",
+              "thumbnail": "https://www.thumbnail.com",
               "images" : []
             }
             """;
@@ -529,6 +530,30 @@ class ItemControllerTest {
                     MethodArgumentNotValidException.class))
             .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
             .andExpect(jsonPath("$.code").value(INVALID_THUMBNAIL.getCode()));
+    }
+
+    @Test
+    @DisplayName("빈 썸네일 일때 등록 테스트")
+    public void EmptyThumbnailItemRegisterTest() throws Exception {
+        String itemRequestJson = """
+            {
+              "title": "testTitle",
+              "price": "10",
+              "description": "testDescription",
+              "category": null,
+              "thumbnail": ""
+            }
+            """;
+
+        mockMvc.perform(post("/api/v1/items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(itemRequestJson))
+            .andDo(print())
+            .andExpect(
+                result -> assertThat(result.getResolvedException().getClass()).isAssignableFrom(
+                    CustomException.class))
+            .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.code").value(EMPTY_ITEM_THUMBNAIL.getCode()));
     }
 
     @Test

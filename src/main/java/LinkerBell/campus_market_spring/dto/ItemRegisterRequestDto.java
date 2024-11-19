@@ -16,7 +16,7 @@ import java.util.List;
 public class ItemRegisterRequestDto {
 
     @NotBlank
-    @Size(min = 2, max = 50)
+    @Size(min = 1, max = 50)
     private String title;
 
     @NotBlank

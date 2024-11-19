@@ -43,3 +43,4 @@ src/test/resources/*
 
 *.csv
 *.json
+**/generated

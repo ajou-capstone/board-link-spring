@@ -46,6 +46,7 @@ public enum ErrorCode {
     NOT_MATCH_USER_CAMPUS(HttpStatus.FORBIDDEN, 4039, "캠퍼스가 일치하지 않는 사용자입니다."),
     INVALID_CONTENT_TYPE(HttpStatus.BAD_REQUEST, 4040, "잘못된 메시지 conentType입니다."),
     DUPLICATE_CHATROOM(HttpStatus.BAD_REQUEST, 4041, "같은 판매자와 아이템을 가진 채팅방이 이미 있습니다."),
+    EMPTY_ITEM_THUMBNAIL(HttpStatus.BAD_REQUEST, 4042, "빈 썸네일은 등록할 수 없습니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다."),
 
