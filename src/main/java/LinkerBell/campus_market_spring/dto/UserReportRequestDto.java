@@ -1,6 +1,6 @@
 package LinkerBell.campus_market_spring.dto;
 
-import LinkerBell.campus_market_spring.domain.ItemReportCategory;
+import LinkerBell.campus_market_spring.domain.UserReportCategory;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -10,12 +10,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ItemReportRequestDto {
+public class UserReportRequestDto {
 
     @NotNull
-    private ItemReportCategory category;
+    private UserReportCategory category;
 
     @NotBlank
     @Min(2) @Max(1000)
     private String description;
+
 }
