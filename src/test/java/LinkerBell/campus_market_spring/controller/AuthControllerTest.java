@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -24,6 +25,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.web.client.RequestMatcher;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -60,7 +63,7 @@ class AuthControllerTest {
         RequestDto requestDto = new RequestDto("googleToken", "firebaseToken");
         AuthResponseDto authResponseDto = AuthResponseDto.builder().accessToken("testAccessToken")
             .refreshToken("testRefreshToken").build();
-        given(authService.userLogin(requestDto.getIdToken(), requestDto.getFirebaseToken()))
+        given(authService.googleLogin(requestDto.getIdToken(), requestDto.getFirebaseToken()))
             .willReturn(authResponseDto);
 
         // when
@@ -74,7 +77,7 @@ class AuthControllerTest {
             .andExpect(status().isOk()).andDo(print()).andReturn();
 
         then(authService).should(times(1))
-            .userLogin(assertArg(g-> assertThat(g).isEqualTo(requestDto.getIdToken())),
+            .googleLogin(assertArg(g-> assertThat(g).isEqualTo(requestDto.getIdToken())),
                 assertArg(f -> assertThat(f).isEqualTo(requestDto.getFirebaseToken())));
     }
 

@@ -27,9 +27,8 @@ public class SecurityConfig {
             .sessionManagement(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests((auth) -> {
                 auth
-                    .requestMatchers("/api/v1/auth/login", "/admin/api/v1/login").permitAll()
+                    .requestMatchers("/api/v1/auth/**", "/api/v1/auth/*").permitAll()
                     .requestMatchers("/ws/**").permitAll()
-                    .requestMatchers("/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated();
             })
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

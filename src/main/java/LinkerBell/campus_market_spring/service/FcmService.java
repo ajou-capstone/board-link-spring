@@ -2,11 +2,8 @@ package LinkerBell.campus_market_spring.service;
 
 import LinkerBell.campus_market_spring.domain.Item;
 import LinkerBell.campus_market_spring.domain.Keyword;
-import LinkerBell.campus_market_spring.domain.User;
-import LinkerBell.campus_market_spring.domain.UserFcmToken;
 import LinkerBell.campus_market_spring.dto.FcmMessageDto;
 import LinkerBell.campus_market_spring.repository.UserFcmTokenRepository;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,20 +47,6 @@ public class FcmService {
             .body("등록하신 " + sendingKeyword.getKeywordName() + " 키워드에 대한 아이템이 등록되었어요.")
             .deeplinkUrl(deeplinkKeywordUrl + savedItem.getItemId())
             .build();
-    }
-
-    public void saveUserFcmToken(String firebaseToken, User user) {
-        userFcmTokenRepository.findByFcmToken(firebaseToken).ifPresentOrElse(userFcmToken -> {
-                log.info("already exist.");
-                userFcmToken.setLastModifiedDate(LocalDateTime.now());
-                userFcmTokenRepository.save(userFcmToken);
-            },
-            () -> {
-                log.info("not exist.");
-                UserFcmToken userFcmToken = UserFcmToken.builder().fcmToken(firebaseToken)
-                    .user(user).build();
-                userFcmTokenRepository.save(userFcmToken);
-            });
     }
 
 }

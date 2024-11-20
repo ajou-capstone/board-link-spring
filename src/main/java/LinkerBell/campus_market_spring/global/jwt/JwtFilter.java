@@ -29,9 +29,6 @@ public class JwtFilter extends OncePerRequestFilter {
         FilterChain filterChain) throws ServletException, IOException {
         try {
             String token = jwtUtils.resolveToken(request);
-            if (token == null) {
-                token = jwtUtils.resolveRefreshToken(request);
-            }
             if (jwtUtils.validateToken(token)) {
                 Authentication authentication = jwtUtils.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -47,8 +44,8 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return path.startsWith("/api/v1/auth/login") || path.startsWith("/ws")
-            || path.startsWith("/admin/api/v1/login");
+        return path.startsWith("/api/v1/auth/login") || path.startsWith("/api/v1/auth/refresh")
+            || path.startsWith("/ws");
 
     }
 

@@ -105,7 +105,7 @@ class UserRepositoryTest {
     private User createUser() {
         return User.builder()
                 .loginEmail("abc@gmail.com")
-                .role(Role.USER)
+                .role(Role.GUEST)
                 .build();
     }
 
@@ -119,7 +119,7 @@ class UserRepositoryTest {
     private User createSchoolUser() {
         return User.builder()
             .loginEmail("abc@gmail.com")
-            .role(Role.USER)
+            .role(Role.GUEST)
             .schoolEmail("test@school.com")
             .build();
     }

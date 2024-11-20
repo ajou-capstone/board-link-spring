@@ -205,7 +205,7 @@ class LikeRepositoryTest {
     private User createUser(Long id) {
         return User.builder()
             .userId(id)
-            .role(Role.USER)
+            .role(Role.GUEST)
             .loginEmail("user" + id + "@example.com")
             .schoolEmail("user" + id + "@ajou.ac.kr")
             .nickname("i'm user" + id)
