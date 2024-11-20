@@ -1,5 +1,6 @@
 package LinkerBell.campus_market_spring.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,11 +22,11 @@ public class Campus extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long campusId;
-
+    @Column(length = 100)
     private String universityName;
-
+    @Column(length = 100)
     private String region;
-
+    @Column(length = 35)
     private String email;
 
 }

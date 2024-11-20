@@ -32,20 +32,20 @@ public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
-    @ManyToOne (fetch = LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "campus_id")
     private Campus campus;
-
+    @Column(length = 100)
     private String loginEmail;
-
+    @Column(length = 100)
     private String schoolEmail;
-
+    @Column(length = 20, unique = true)
     private String nickname;
-
+    @Column(length = 1050)
     private String profileImage;
 
     private double rating;
-
+    @Column(length = 600)
     private String refreshToken;
     @Enumerated(EnumType.STRING)
     private Role role;

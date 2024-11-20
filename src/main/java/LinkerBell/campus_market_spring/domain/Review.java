@@ -1,8 +1,14 @@
 package LinkerBell.campus_market_spring.domain;
 
-import jakarta.persistence.*;
-
 import static jakarta.persistence.FetchType.LAZY;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Review extends BaseEntity {
@@ -18,8 +24,7 @@ public class Review extends BaseEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "item_id")
     private Item item;
-
+    @Column(length = 1000)
     private String description;
-
     private int rating;
 }

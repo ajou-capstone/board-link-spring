@@ -1,8 +1,16 @@
 package LinkerBell.campus_market_spring.domain;
 
-import jakarta.persistence.*;
+import static jakarta.persistence.FetchType.LAZY;
 
-import static jakarta.persistence.FetchType.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class ItemReport extends BaseEntity {
@@ -18,6 +26,9 @@ public class ItemReport extends BaseEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "item_id")
     private Item item;
-
+    @Column(length = 1000)
     private String description;
+    @Enumerated(EnumType.STRING)
+    private ItemReportCategory category;
+    private boolean isCompleted;
 }
