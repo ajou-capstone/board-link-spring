@@ -4,6 +4,7 @@ import LinkerBell.campus_market_spring.dto.AuthUserDto;
 import LinkerBell.campus_market_spring.dto.ReviewRequestDto;
 import LinkerBell.campus_market_spring.global.auth.Login;
 import LinkerBell.campus_market_spring.service.ReviewService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +22,7 @@ public class ReviewController {
     @PostMapping("/api/v1/users/{userId}/reviews")
     public ResponseEntity<Void> postReview(
         @Login AuthUserDto authUserDto, @PathVariable Long userId,
-        @RequestBody ReviewRequestDto reviewRequestDto) {
+        @Valid @RequestBody ReviewRequestDto reviewRequestDto) {
 
         reviewService.postReview(authUserDto.getUserId(), userId, reviewRequestDto);
 
