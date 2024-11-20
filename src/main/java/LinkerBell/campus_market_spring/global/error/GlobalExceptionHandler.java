@@ -1,5 +1,6 @@
 package LinkerBell.campus_market_spring.global.error;
 
+import LinkerBell.campus_market_spring.dto.ReviewRequestDto;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Objects;
@@ -50,6 +51,23 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> validException(MethodArgumentNotValidException ex)
         throws MethodArgumentNotValidException {
 
+        String fieldName = Objects.requireNonNull(ex.getFieldError()).getField();
+
+        if (fieldName.equals("description")) {
+            if (ex.getBindingResult().getTarget() instanceof ReviewRequestDto) {
+                ErrorResponse errorResponse = new ErrorResponse(
+                    ErrorCode.INVALID_REVIEW_DESCRIPTION);
+                log.error(ErrorCode.INVALID_REVIEW_DESCRIPTION.getMessage());
+                return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
+            }
+        } else if (fieldName.equals("rating")) {
+            if (ex.getBindingResult().getTarget() instanceof ReviewRequestDto) {
+                ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_REVIEW_RATING);
+                log.error(ErrorCode.INVALID_REVIEW_RATING.getMessage());
+                return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatus());
+            }
+        }
+
         if (Objects.requireNonNull(ex.getFieldError()).getField().equals("title")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_TITLE);
             log.error(ErrorCode.INVALID_TITLE.getMessage());
@@ -85,7 +103,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> notReadableException(HttpMessageNotReadableException ex) {
-        if(ex.getCause() != null) {
+        if (ex.getCause() != null) {
             if (ex.getCause().getMessage()
                 .contains("LinkerBell.campus_market_spring.domain.Category")) {
                 ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_CATEGORY);

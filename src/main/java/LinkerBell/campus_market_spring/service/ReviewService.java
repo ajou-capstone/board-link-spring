@@ -33,6 +33,8 @@ public class ReviewService {
         Item item = itemRepository.findById(reviewRequestDto.getItemId())
             .orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
 
+        int reviewCount = reviewRepository.countReview(user);
+
         Review review = Review.builder()
             .user(writer)
             .item(item)
@@ -44,7 +46,6 @@ public class ReviewService {
 
         // 리뷰 저장 이후 유저 평균 별점을 다시 계산
         double userRating = user.getRating();
-        int reviewCount = reviewRepository.countReview(user);
         double newUserRating =
             ((userRating * reviewCount) + (reviewRequestDto.getRating())) / (reviewCount + 1);
         user.setRating(newUserRating);
