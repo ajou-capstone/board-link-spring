@@ -1,5 +1,6 @@
 package LinkerBell.campus_market_spring.service;
 
+import LinkerBell.campus_market_spring.domain.Campus;
 import LinkerBell.campus_market_spring.domain.Item;
 import LinkerBell.campus_market_spring.domain.ItemReport;
 import LinkerBell.campus_market_spring.domain.ItemReportCategory;
@@ -17,6 +18,7 @@ import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.utils.StringUtils;
 
 @Service
 @Slf4j
@@ -36,9 +38,7 @@ public class ReportService {
         Item item = itemRepository.findById(itemId)
             .orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
 
-        if (user.getCampus() != item.getUser().getCampus()) {
-            throw new CustomException(ErrorCode.NOT_MATCH_USER_CAMPUS_WITH_ITEM_CAMPUS);
-        }
+        validateEqualUniversity(user.getCampus(), item.getCampus());
 
         ItemReport itemReport = ItemReport.builder()
             .item(item).description(description)
@@ -58,6 +58,8 @@ public class ReportService {
         User target = userRepository.findById(targetId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
+        validateEqualUniversity(user.getCampus(), target.getCampus());
+
         UserReport userReport = UserReport.builder()
             .user(user).target(target)
             .category(category)
@@ -65,5 +67,14 @@ public class ReportService {
             .isCompleted(false).build();
 
         userReportRepository.save(userReport);
+    }
+
+    private void validateEqualUniversity(Campus userCampus, Campus targetCampus) {
+        if (userCampus == null || targetCampus == null) {
+            throw new CustomException(ErrorCode.CAMPUS_NOT_FOUND);
+        }
+        if (!StringUtils.equals(userCampus.getUniversityName(), targetCampus.getUniversityName())) {
+            throw new CustomException(ErrorCode.NOT_MATCH_USER_CAMPUS);
+        }
     }
 }
