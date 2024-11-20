@@ -8,10 +8,12 @@ import LinkerBell.campus_market_spring.domain.Item;
 import LinkerBell.campus_market_spring.domain.ItemReportCategory;
 import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
+import LinkerBell.campus_market_spring.domain.UserReportCategory;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.repository.ItemReportRepository;
 import LinkerBell.campus_market_spring.repository.ItemRepository;
+import LinkerBell.campus_market_spring.repository.UserReportRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +37,8 @@ class ReportServiceTest {
     private ItemRepository itemRepository;
     @Mock
     private ItemReportRepository itemReportRepository;
+    @Mock
+    private UserReportRepository userReportRepository;
 
     private User user;
     private User other;
@@ -76,6 +80,7 @@ class ReportServiceTest {
         // given
         other.setCampus(otherCampus);
         item.setUser(other);
+        item.setCampus(other.getCampus());
         given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(user));
         given(itemRepository.findById(anyLong())).willReturn(Optional.ofNullable(item));
 
@@ -83,7 +88,52 @@ class ReportServiceTest {
         assertThatThrownBy(() -> reportService.reportItem(user.getUserId(), item.getItemId(),
             "test reason", ItemReportCategory.FRAUD))
             .isInstanceOf(CustomException.class)
-            .hasMessageContaining(ErrorCode.NOT_MATCH_USER_CAMPUS_WITH_ITEM_CAMPUS.getMessage());
+            .hasMessageContaining(ErrorCode.NOT_MATCH_USER_CAMPUS.getMessage());
+    }
+
+    @Test
+    @DisplayName("사용자 신고 테스트")
+    public void reportUserTest() {
+        // given
+        given(userRepository.findById(user.getUserId())).willReturn(Optional.ofNullable(user));
+        given(userRepository.findById(other.getUserId())).willReturn(Optional.ofNullable(other));
+        // when
+        reportService.reportUser(user.getUserId(), other.getUserId(), "test reason",
+            UserReportCategory.FRAUD);
+        // then
+        then(userReportRepository).should(times(1)).save(assertArg(report -> {
+            assertThat(report).isNotNull();
+            assertThat(report.getTarget()).isEqualTo(other);
+            assertThat(report.getUser()).isEqualTo(user);
+            assertThat(report.getCategory()).isEqualTo(UserReportCategory.FRAUD);
+        }));
+    }
+
+    @Test
+    @DisplayName("다른 대학교 사용자 신고 에러 테스트")
+    public void reportOtherUnivUserErrorTest() {
+        // given
+        other.setCampus(otherCampus);
+        given(userRepository.findById(user.getUserId())).willReturn(Optional.ofNullable(user));
+        given(userRepository.findById(other.getUserId())).willReturn(Optional.ofNullable(other));
+
+        // when & then
+        assertThatThrownBy(() -> reportService.reportUser(user.getUserId(), other.getUserId(),
+            "test reason", UserReportCategory.FRAUD))
+            .isInstanceOf(CustomException.class)
+            .hasMessageContaining(ErrorCode.NOT_MATCH_USER_CAMPUS.getMessage());
+    }
+
+    @Test
+    @DisplayName("자기 자신 신고 에러 테스트")
+    public void reportOwnErrorTest() {
+        // given
+
+        // when & then
+        assertThatThrownBy(() -> reportService.reportUser(user.getUserId(), user.getUserId(),
+            "test reason", UserReportCategory.FRAUD))
+            .isInstanceOf(CustomException.class)
+            .hasMessageContaining(ErrorCode.NOT_REPORT_OWN.getMessage());
     }
 
     private Campus createCampus(Long campusId) {

@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import LinkerBell.campus_market_spring.controller.AuthControllerTest.MockLoginArgumentResolver;
 import LinkerBell.campus_market_spring.domain.ItemReportCategory;
+import LinkerBell.campus_market_spring.domain.UserReportCategory;
 import LinkerBell.campus_market_spring.global.error.GlobalExceptionHandler;
 import LinkerBell.campus_market_spring.service.ReportService;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +45,7 @@ class ReportControllerTest {
     public void itemReportTest() throws Exception {
         // given
         Long itemId = 1L;
-        String desc = "사기 같아요";
+        String desc = "사기 같아요. 확인해주세요.";
         ItemReportCategory reportCategory = ItemReportCategory.FRAUD;
         String request = String.format("""
             {
@@ -52,6 +53,7 @@ class ReportControllerTest {
                 "category" : "%s"
             }
             """, desc, reportCategory.name());
+
         // when
         mockMvc.perform(post("/api/v1/items/" + itemId + "/report")
             .contentType(MediaType.APPLICATION_JSON)
@@ -60,6 +62,34 @@ class ReportControllerTest {
         // then
         then(reportService).should(times(1)).reportItem(anyLong(), assertArg(id -> {
             assertThat(id).isEqualTo(itemId);
+        }), assertArg(description -> {
+            assertThat(description).isEqualTo(desc);
+        }), assertArg(category -> {
+            assertThat(category).isEqualTo(reportCategory);
+        }));
+    }
+
+    @Test
+    @DisplayName("사용자 신고 테스트")
+    public void userReportTest() throws Exception {
+        // given
+        Long userId = 3L;
+        String desc = "사기 같아요. 확인해주세요.";
+        UserReportCategory reportCategory = UserReportCategory.FRAUD;
+        String request = String.format("""
+            {
+                "description" : "%s",
+                "category" : "%s"
+            }
+            """, desc, reportCategory.name());
+        // when
+        mockMvc.perform(post("/api/v1/users/" + userId + "/report")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(request))
+            .andDo(print());
+        // then
+        then(reportService).should(times(1)).reportUser(anyLong(), assertArg(id -> {
+            assertThat(id).isEqualTo(userId);
         }), assertArg(description -> {
             assertThat(description).isEqualTo(desc);
         }), assertArg(category -> {
