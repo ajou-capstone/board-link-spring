@@ -83,7 +83,7 @@ class AuthServiceTest {
         return User.builder()
             .userId(1L)
             .loginEmail("abc@gmail.com")
-            .role(Role.GUEST)
+            .role(Role.USER)
             .build();
     }
 }
