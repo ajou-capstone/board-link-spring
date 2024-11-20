@@ -5,6 +5,7 @@ import static org.mockito.BDDMockito.*;
 
 import LinkerBell.campus_market_spring.domain.Campus;
 import LinkerBell.campus_market_spring.domain.Item;
+import LinkerBell.campus_market_spring.domain.ItemReportCategory;
 import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
@@ -57,13 +58,15 @@ class ReportServiceTest {
         given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(user));
         given(itemRepository.findById(anyLong())).willReturn(Optional.ofNullable(item));
         // when
-        reportService.reportItem(user.getUserId(), item.getItemId(), "test reason");
+        reportService.reportItem(user.getUserId(), item.getItemId(), "test reason",
+            ItemReportCategory.PROHIBITED_ITEM);
         // then
         then(itemReportRepository).should(times(1)).save(assertArg(report -> {
             assertThat(report).isNotNull();
             assertThat(report.getItem()).isEqualTo(item);
             assertThat(report.getUser()).isEqualTo(user);
             assertThat(report.getItem().getUser()).isEqualTo(other);
+            assertThat(report.getCategory()).isEqualTo(ItemReportCategory.PROHIBITED_ITEM);
         }));
     }
 
@@ -77,7 +80,8 @@ class ReportServiceTest {
         given(itemRepository.findById(anyLong())).willReturn(Optional.ofNullable(item));
 
         // when & then
-        assertThatThrownBy(() -> reportService.reportItem(user.getUserId(), item.getItemId(), "test reason"))
+        assertThatThrownBy(() -> reportService.reportItem(user.getUserId(), item.getItemId(),
+            "test reason", ItemReportCategory.FRAUD))
             .isInstanceOf(CustomException.class)
             .hasMessageContaining(ErrorCode.NOT_MATCH_USER_CAMPUS_WITH_ITEM_CAMPUS.getMessage());
     }

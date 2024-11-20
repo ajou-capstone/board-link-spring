@@ -2,6 +2,7 @@ package LinkerBell.campus_market_spring.service;
 
 import LinkerBell.campus_market_spring.domain.Item;
 import LinkerBell.campus_market_spring.domain.ItemReport;
+import LinkerBell.campus_market_spring.domain.ItemReportCategory;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
@@ -23,7 +24,8 @@ public class ReportService {
     private final ItemRepository itemRepository;
     private final ItemReportRepository itemReportRepository;
 
-    public void reportItem(Long userId, Long itemId, String description) {
+    public void reportItem(Long userId, Long itemId, String description,
+        ItemReportCategory category) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Item item = itemRepository.findById(itemId)
@@ -34,7 +36,9 @@ public class ReportService {
         }
 
         ItemReport itemReport = ItemReport.builder()
-            .item(item).description(description).user(user).build();
+            .item(item).description(description)
+            .category(category).user(user)
+            .isCompleted(false).build();
 
         itemReportRepository.save(itemReport);
     }

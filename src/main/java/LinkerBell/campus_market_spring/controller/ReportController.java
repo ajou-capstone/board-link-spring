@@ -22,7 +22,8 @@ public class ReportController {
     @PostMapping("/items/{itemId}/report")
     public ResponseEntity<?> reportItem(@Login AuthUserDto user, @PathVariable("itemId") Long itemId,
         @RequestBody ItemReportRequestDto requestDto) {
-        reportService.reportItem(user.getUserId(), itemId, requestDto.getDescription());
+        reportService.reportItem(user.getUserId(), itemId,
+            requestDto.getDescription(), requestDto.getCategory());
         return ResponseEntity.noContent().build();
     }
 }

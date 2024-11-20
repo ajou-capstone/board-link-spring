@@ -48,7 +48,7 @@ class ItemReportRepositoryTest {
     public void saveItemReportTest() {
         // given
         ItemReport itemReport = ItemReport.builder()
-            .user(user).item(item).description("test reason").build();
+            .user(user).item(item).description("test reason").isCompleted(false).build();
 
         // when
         ItemReport findItemReport = itemReportRepository.save(itemReport);
