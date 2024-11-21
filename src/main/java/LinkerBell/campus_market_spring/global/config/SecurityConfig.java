@@ -1,5 +1,6 @@
 package LinkerBell.campus_market_spring.global.config;
 
+import LinkerBell.campus_market_spring.global.auth.CustomAccessDeniedHandler;
 import LinkerBell.campus_market_spring.global.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -31,6 +33,10 @@ public class SecurityConfig {
                     .requestMatchers("/ws/**").permitAll()
                     .requestMatchers("/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated();
+            })
+            .exceptionHandling(exception -> {
+                exception
+                    .accessDeniedHandler(accessDeniedHandler);
             })
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
