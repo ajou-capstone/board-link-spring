@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class QaController {
 
     @GetMapping("/questions")
-    public ResponseEntity<?> getQaCategory() {
+    public ResponseEntity<QaCategoryResponseDto> getQaCategory() {
         return ResponseEntity.ok(new QaCategoryResponseDto(QaCategory.values()));
     }
 }
