@@ -38,6 +38,10 @@ public class ReportService {
         Item item = itemRepository.findById(itemId)
             .orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
 
+        if (Objects.equals(userId, item.getUser().getUserId())) {
+            throw new CustomException(ErrorCode.NOT_REPORT_OWN);
+        }
+
         validateEqualUniversity(user.getCampus(), item.getCampus());
 
         ItemReport itemReport = ItemReport.builder()

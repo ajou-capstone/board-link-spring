@@ -92,6 +92,20 @@ class ReportServiceTest {
     }
 
     @Test
+    @DisplayName("자기 자신의 상품 신고 에러 테스트")
+    public void reportOwnItemErrorTest() {
+        // given
+        Item newItem = createItem(user);
+        given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(user));
+        given(itemRepository.findById(anyLong())).willReturn(Optional.ofNullable(newItem));
+        // when & then
+        assertThatThrownBy(() -> reportService.reportItem(user.getUserId(), newItem.getItemId(),
+            "test reason", ItemReportCategory.FRAUD))
+            .isInstanceOf(CustomException.class)
+            .hasMessageContaining(ErrorCode.NOT_REPORT_OWN.getMessage());
+    }
+
+    @Test
     @DisplayName("사용자 신고 테스트")
     public void reportUserTest() {
         // given
