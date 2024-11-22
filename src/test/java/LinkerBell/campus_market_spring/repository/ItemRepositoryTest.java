@@ -1,5 +1,6 @@
 package LinkerBell.campus_market_spring.repository;
 
+import static LinkerBell.campus_market_spring.global.error.ErrorCode.NOT_MATCH_USER_UNIVERSITY_WITH_ITEM_UNIVERSITY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -294,7 +295,7 @@ class ItemRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
         SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
-            userId,campusId, name, category, minPrice, maxPrice, pageRequest);
+            userId, campusId, name, category, minPrice, maxPrice, pageRequest);
 
         //then
         assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
@@ -342,7 +343,7 @@ class ItemRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
         SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
-            userId,campusId, name, category, minPrice, maxPrice, pageRequest);
+            userId, campusId, name, category, minPrice, maxPrice, pageRequest);
 
         //then
         assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
@@ -390,7 +391,7 @@ class ItemRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
         SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
-            userId,campusId, name, category, minPrice, maxPrice, pageRequest);
+            userId, campusId, name, category, minPrice, maxPrice, pageRequest);
 
         //then
         assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
@@ -438,7 +439,7 @@ class ItemRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
         SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
-            userId,campusId, name, category, minPrice, maxPrice, pageRequest);
+            userId, campusId, name, category, minPrice, maxPrice, pageRequest);
 
         //then
         assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
@@ -486,7 +487,7 @@ class ItemRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
         SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
-            userId,campusId, name, category, minPrice, maxPrice, pageRequest);
+            userId, campusId, name, category, minPrice, maxPrice, pageRequest);
 
         //then
         assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
@@ -685,12 +686,13 @@ class ItemRepositoryTest {
         Item item = items.get(5);
 
         assertThatThrownBy(() -> {
-            if (user.getCampus().getCampusId() != item.getCampus().getCampusId()) {
-                throw new CustomException(ErrorCode.NOT_MATCH_USER_CAMPUS_WITH_ITEM_CAMPUS);
+            if (!user.getCampus().getUniversityName()
+                .equals(item.getCampus().getUniversityName())) {
+                throw new CustomException(NOT_MATCH_USER_UNIVERSITY_WITH_ITEM_UNIVERSITY);
             }
         })
             .isInstanceOf(CustomException.class)
-            .hasMessageContaining("아이템의 캠퍼스와 일치하지 않는 캠퍼스입니다.");
+            .hasMessageContaining(NOT_MATCH_USER_UNIVERSITY_WITH_ITEM_UNIVERSITY.getMessage());
         //then
     }
 

@@ -32,7 +32,8 @@ public enum ErrorCode {
     DUPLICATE_ITEM_PHOTOS(HttpStatus.BAD_REQUEST, 4025, "중복된 이미지가 있습니다."),
     INVALID_ITEM_ID(HttpStatus.BAD_REQUEST, 4026, "잘못된 아이템 값입니다."),
     DELETED_ITEM_ID(HttpStatus.FORBIDDEN, 4027, "삭제된 아이템입니다."),
-    NOT_MATCH_USER_CAMPUS_WITH_ITEM_CAMPUS(HttpStatus.FORBIDDEN, 4028, "아이템의 캠퍼스와 일치하지 않는 캠퍼스입니다."),
+    NOT_MATCH_USER_UNIVERSITY_WITH_ITEM_UNIVERSITY(HttpStatus.FORBIDDEN, 4028,
+        "아이템의 대학과 일치하지 않는 대학입니다."),
     USER_TERMS_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, 4029, "사용자 약관 동의 정보가 없습니다."),
     DUPLICATE_SCHOOL_EMAIL(HttpStatus.BAD_REQUEST, 4030, "중복된 학교 이메일입니다."),
     NOT_MATCH_USER_ID_WITH_ITEM_USER_ID(HttpStatus.FORBIDDEN, 4031, "해당 아이템 게시글의 작성자가 아닙니다."),
@@ -52,6 +53,11 @@ public enum ErrorCode {
     NOT_AUTHORIZED(HttpStatus.FORBIDDEN, 4045, "해당 요청에 권한이 없습니다."),
     INVALID_REVIEW_DESCRIPTION(HttpStatus.BAD_REQUEST, 4046, "리뷰 내용은 200자 이하여야 합니다."),
     INVALID_REVIEW_RATING(HttpStatus.BAD_REQUEST, 4047, "리뷰 별점은 0이상 10이하여야 합니다."),
+    INVALID_PAGEABLE_PAGE(HttpStatus.BAD_REQUEST, 4048, "잘못된 페이지 값입니다."),
+    INVALID_PAGEABLE_SIZE(HttpStatus.BAD_REQUEST, 4049, "잘못된 사이즈 값입니다."),
+    INVALID_NOTIFICATION_ID(HttpStatus.BAD_REQUEST, 4050, "존재하지 않는 알람 히스토리입니다."),
+    NOT_MATCH_USER_ID_WITH_NOTIFICATION_USER_ID(HttpStatus.FORBIDDEN, 4051,
+        "해당 알람 히스토리의 당사자가 아닙니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다."),
 

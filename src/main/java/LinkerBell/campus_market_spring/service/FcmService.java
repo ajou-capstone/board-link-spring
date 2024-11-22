@@ -46,8 +46,8 @@ public class FcmService {
         Item savedItem) {
         return FcmMessageDto.builder()
             .targetToken(fcmToken)
-            .title("키워드 알람 알림")
-            .body("등록하신 " + sendingKeyword.getKeywordName() + " 키워드에 대한 아이템이 등록되었어요.")
+            .title(sendingKeyword.getKeywordName() + " 키워드 알림")
+            .body(savedItem.getTitle())
             .deeplinkUrl(deeplinkKeywordUrl + savedItem.getItemId())
             .build();
     }
