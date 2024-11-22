@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,9 +42,7 @@ public class ItemService {
     private final S3Service s3Service;
     private final FcmService fcmService;
     private final KeywordService keywordService;
-
-    @Value("${path.default_item_thumbnail}")
-    private String defaultItemThumbnail;
+    private final NotificationHistoryService notificationHistoryService;
 
     @Transactional(readOnly = true)
     public SliceResponse<ItemSearchResponseDto> itemSearch(Long userId,
@@ -73,7 +70,7 @@ public class ItemService {
 
         List<Keyword> sendingKeywords = keywordService.findKeywordsWithSameItemCampusAndTitle(
             savedItem);
-
+        notificationHistoryService.saveNotificationHistory(sendingKeywords, savedItem);
         fcmService.sendFcmMessageWithKeywords(sendingKeywords, savedItem);
 
         return new ItemRegisterResponseDto(savedItem.getItemId());
@@ -90,8 +87,8 @@ public class ItemService {
             throw new CustomException(ErrorCode.DELETED_ITEM_ID);
         }
 
-        if (UserCampusIsMatchedByItemCampus(user, item)) {
-            throw new CustomException(ErrorCode.NOT_MATCH_USER_CAMPUS_WITH_ITEM_CAMPUS);
+        if (UserCampusUniversityIsMatchedByItemCampusUniversity(user, item)) {
+            throw new CustomException(ErrorCode.NOT_MATCH_USER_UNIVERSITY_WITH_ITEM_UNIVERSITY);
         }
 
         return itemRepository.findByItemDetails(userId, itemId);
@@ -108,8 +105,8 @@ public class ItemService {
             throw new CustomException(ErrorCode.DELETED_ITEM_ID);
         }
 
-        if (UserCampusIsMatchedByItemCampus(user, item)) {
-            throw new CustomException(ErrorCode.NOT_MATCH_USER_CAMPUS_WITH_ITEM_CAMPUS);
+        if (UserCampusUniversityIsMatchedByItemCampusUniversity(user, item)) {
+            throw new CustomException(ErrorCode.NOT_MATCH_USER_UNIVERSITY_WITH_ITEM_UNIVERSITY);
         }
 
         if (userIsNotEqualsToItemUser(user, item)) {
@@ -138,8 +135,8 @@ public class ItemService {
             throw new CustomException(ErrorCode.DELETED_ITEM_ID);
         }
 
-        if (UserCampusIsMatchedByItemCampus(user, item)) {
-            throw new CustomException(ErrorCode.NOT_MATCH_USER_CAMPUS_WITH_ITEM_CAMPUS);
+        if (UserCampusUniversityIsMatchedByItemCampusUniversity(user, item)) {
+            throw new CustomException(ErrorCode.NOT_MATCH_USER_UNIVERSITY_WITH_ITEM_UNIVERSITY);
         }
 
         if (userIsNotEqualsToItemUser(user, item)) {
@@ -159,8 +156,8 @@ public class ItemService {
             throw new CustomException(ErrorCode.DELETED_ITEM_ID);
         }
 
-        if (UserCampusIsMatchedByItemCampus(user, item)) {
-            throw new CustomException(ErrorCode.NOT_MATCH_USER_CAMPUS_WITH_ITEM_CAMPUS);
+        if (UserCampusUniversityIsMatchedByItemCampusUniversity(user, item)) {
+            throw new CustomException(ErrorCode.NOT_MATCH_USER_UNIVERSITY_WITH_ITEM_UNIVERSITY);
         }
 
         if (userIsNotEqualsToItemUser(user, item)) {
@@ -233,8 +230,8 @@ public class ItemService {
         return !Objects.equals(user.getUserId(), item.getUser().getUserId());
     }
 
-    private boolean UserCampusIsMatchedByItemCampus(User user, Item item) {
-        return !Objects.equals(user.getCampus().getCampusId(), item.getCampus().getCampusId());
+    private boolean UserCampusUniversityIsMatchedByItemCampusUniversity(User user, Item item) {
+        return !(user.getCampus().getUniversityName().equals(item.getCampus().getUniversityName()));
     }
 
     private Item getItem(Long itemId) {
