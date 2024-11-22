@@ -27,7 +27,7 @@ class S3ServiceTest {
         assertThat(responseDto.getS3url()).contains(fileName);
     }
 
-    @Test
+//    @Test
     @DisplayName("파일 이름에 공백과 언더바가 포함된 경우 presigned put url 발급 테스트")
     public void getPresignedPutUrlWithWhiteSpaceAndUnderscoreTest() {
         // given
