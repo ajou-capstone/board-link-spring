@@ -2,6 +2,7 @@ package LinkerBell.campus_market_spring.repository;
 
 import static LinkerBell.campus_market_spring.domain.QItem.item;
 
+import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
 import LinkerBell.campus_market_spring.domain.Category;
 import LinkerBell.campus_market_spring.domain.Item;
 import LinkerBell.campus_market_spring.domain.Like;
@@ -18,6 +19,7 @@ import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.JPAExpressions;
@@ -138,6 +140,64 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
 
         return itemDetailsToItemDetailsViewResponseDto(itemEntity, images, chatCount, likeCount,
             isLiked);
+    }
+
+    @Override
+    public SliceResponse<AdminItemSearchResponseDto> adminItemSearch(Long userId, String name,
+        Category category, Integer minPrice, Integer maxPrice, Pageable pageable) {
+        QItem item = QItem.item;
+        QUser user = QUser.user;
+        QChatRoom chatRoom = QChatRoom.chatRoom;
+        QLike like = QLike.like;
+
+        JPAQuery<AdminItemSearchResponseDto> query = queryFactory
+            .select(Projections.constructor(AdminItemSearchResponseDto.class,
+                item.itemId,
+                item.user.userId,
+                item.user.nickname,
+                item.thumbnail,
+                item.title,
+                item.price,
+                chatRoom.countDistinct().intValue(),
+                like.countDistinct().intValue(),
+                item.itemStatus,
+                new CaseBuilder()
+                    .when(
+                        JPAExpressions.selectFrom(like)
+                            .where(like.user.userId.eq(userId)
+                                .and(like.item.eq(item)))
+                            .exists()
+                    ).then(true)
+                    .otherwise(false)
+                    .as("isLiked"),
+                item.campus.universityName,
+                item.campus.region,
+                item.campus.campusId
+            ))
+            .from(item)
+            .leftJoin(item.user, user)
+            .leftJoin(chatRoom).on(chatRoom.item.eq(item))
+            .leftJoin(like).on(like.item.eq(item))
+            .where(
+                itemNameContains(name),
+                itemCategoryEq(category),
+                itemPriceBetween(minPrice, maxPrice)
+            )
+            .groupBy(item.itemId)
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize() + 1)
+            .orderBy(itemSearchSort(pageable));
+
+        List<AdminItemSearchResponseDto> content = query.fetch();
+
+        boolean hasNext = false;
+        if (content.size() > pageable.getPageSize()) {
+            content.remove(content.size() - 1);
+            hasNext = true;
+        }
+        return new SliceResponse<AdminItemSearchResponseDto>(
+            new SliceImpl<>(content, pageable, hasNext));
+
     }
 
     private ItemDetailsViewResponseDto itemDetailsToItemDetailsViewResponseDto(Item itemEntity,

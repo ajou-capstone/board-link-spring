@@ -3,6 +3,7 @@ package LinkerBell.campus_market_spring.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
 import LinkerBell.campus_market_spring.domain.Campus;
 import LinkerBell.campus_market_spring.domain.Category;
 import LinkerBell.campus_market_spring.domain.ChatRoom;
@@ -898,6 +899,30 @@ class ItemRepositoryTest {
         //then
         assertThat(updatedItem.getItemStatus()).isEqualTo(itemStatus);
         assertThat(updatedItem.getUserBuyer()).isEqualTo(userBuyer);
+    }
+
+    @Test
+    @DisplayName("관리자 상품 검색 테스트")
+    public void adminItemSearchTest() {
+        // given
+        User user = User.builder().userId(999L).loginEmail("admin@example.com").role(Role.ADMIN).build();
+        user = userRepository.save(user);
+        String name = null;
+        Category category = null;
+        Integer minPrice = null;
+        Integer maxPrice = null;
+        Sort sort = Sort.by("createdDate").descending();
+        PageRequest pageRequest = PageRequest.of(0, 100, sort);
+        //when
+        SliceResponse<AdminItemSearchResponseDto> response = itemRepository.adminItemSearch(
+            user.getUserId(), name, category, minPrice, maxPrice, pageRequest);
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getContent().size()).isEqualTo(items.size());
+        assertThat(response.getContent().get(0).itemId())
+            .isEqualTo(items.get(items.size() - 1).getItemId());
+        assertThat(response.getContent().get(0).universityName())
+            .isEqualTo(items.get(items.size() - 1).getCampus().getUniversityName());
     }
 
     private void updateItemPhotos(List<ItemPhotos> existingItemPhotos,
