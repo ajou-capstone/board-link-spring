@@ -18,7 +18,7 @@ import lombok.Setter;
 public class ReviewRequestDto {
 
     private Long itemId;
-    @Size(max = 500)
+    @Size(max = 200)
     private String description;
     @Min(0)
     @Max(10)

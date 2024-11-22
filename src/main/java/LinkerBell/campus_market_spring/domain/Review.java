@@ -34,7 +34,7 @@ public class Review extends BaseEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "item_id")
     private Item item;
-    @Column(length = 1000)
+    @Column(length = 400)
     private String description;
 
     private int rating;

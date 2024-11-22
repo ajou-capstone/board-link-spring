@@ -48,14 +48,14 @@ class ReviewControllerTest {
     }
 
     @Test
-    @DisplayName("POST /api/v1/users/{userId}/reviews - 유효하지 않은 리뷰 요청: description이 500자를 초과함")
+    @DisplayName("POST /api/v1/users/{userId}/reviews - 유효하지 않은 리뷰 요청: description이 200자를 초과함")
     void postReview_InvalidDescriptionTooLong() throws Exception {
         // Given
-        String longDescription = "A".repeat(501); // 501자를 넘는 설명
+        String longDescription = "A".repeat(201); // 201자를 넘는 설명
 
         ReviewRequestDto invalidRequest = ReviewRequestDto.builder()
             .itemId(1L)
-            .description(longDescription) // 500자를 초과한 설명
+            .description(longDescription)
             .rating(5)
             .build();
 
@@ -63,7 +63,7 @@ class ReviewControllerTest {
         mockMvc.perform(post("/api/v1/users/1/reviews")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidRequest)))
-            .andExpect(status().isBadRequest()); // 500자를 초과하면 BadRequest 응답 예상
+            .andExpect(status().isBadRequest());
     }
 
 
