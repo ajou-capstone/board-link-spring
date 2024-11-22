@@ -1,5 +1,6 @@
 package LinkerBell.campus_market_spring.global.error;
 
+import LinkerBell.campus_market_spring.dto.ReviewRequestDto;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Objects;
@@ -50,6 +51,25 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> validException(MethodArgumentNotValidException ex)
         throws MethodArgumentNotValidException {
 
+        String fieldName = Objects.requireNonNull(ex.getFieldError()).getField();
+
+        if (fieldName.equals("description")) {
+            if (ex.getBindingResult().getTarget() instanceof ReviewRequestDto) {
+                ErrorResponse errorResponse = new ErrorResponse(
+                    ErrorCode.INVALID_REVIEW_DESCRIPTION);
+                log.error(ErrorCode.INVALID_REVIEW_DESCRIPTION.getMessage());
+                return new ResponseEntity<>(errorResponse,
+                    ErrorCode.INVALID_REVIEW_DESCRIPTION.getHttpStatus());
+            }
+        } else if (fieldName.equals("rating")) {
+            if (ex.getBindingResult().getTarget() instanceof ReviewRequestDto) {
+                ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_REVIEW_RATING);
+                log.error(ErrorCode.INVALID_REVIEW_RATING.getMessage());
+                return new ResponseEntity<>(errorResponse,
+                    ErrorCode.INVALID_REVIEW_RATING.getHttpStatus());
+            }
+        }
+
         if (Objects.requireNonNull(ex.getFieldError()).getField().equals("title")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_TITLE);
             log.error(ErrorCode.INVALID_TITLE.getMessage());
@@ -61,7 +81,8 @@ public class GlobalExceptionHandler {
         } else if (Objects.requireNonNull(ex.getFieldError()).getField().equals("description")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_DESCRIPTION);
             log.error(ErrorCode.INVALID_DESCRIPTION.getMessage());
-            return new ResponseEntity<>(errorResponse, ErrorCode.INVALID_DESCRIPTION.getHttpStatus());
+            return new ResponseEntity<>(errorResponse,
+                ErrorCode.INVALID_DESCRIPTION.getHttpStatus());
         } else if (Objects.requireNonNull(ex.getFieldError()).getField().equals("thumbnail")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_THUMBNAIL);
             log.error(ErrorCode.INVALID_THUMBNAIL.getMessage());
@@ -69,15 +90,18 @@ public class GlobalExceptionHandler {
         } else if (Objects.requireNonNull(ex.getFieldError()).getField().startsWith("images")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_PHOTOS);
             log.error(ErrorCode.INVALID_ITEM_PHOTOS.getMessage());
-            return new ResponseEntity<>(errorResponse, ErrorCode.INVALID_ITEM_PHOTOS.getHttpStatus());
+            return new ResponseEntity<>(errorResponse,
+                ErrorCode.INVALID_ITEM_PHOTOS.getHttpStatus());
         } else if (Objects.requireNonNull(ex.getFieldError()).getField().equals("itemStatus")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_STATUS);
             log.error(ErrorCode.INVALID_ITEM_STATUS.getMessage());
-            return new ResponseEntity<>(errorResponse, ErrorCode.INVALID_ITEM_STATUS.getHttpStatus());
+            return new ResponseEntity<>(errorResponse,
+                ErrorCode.INVALID_ITEM_STATUS.getHttpStatus());
         } else if (Objects.requireNonNull(ex.getFieldError()).getField().equals("buyerId")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_BUYER);
             log.error(ErrorCode.INVALID_ITEM_BUYER.getMessage());
-            return new ResponseEntity<>(errorResponse, ErrorCode.INVALID_ITEM_BUYER.getHttpStatus());
+            return new ResponseEntity<>(errorResponse,
+                ErrorCode.INVALID_ITEM_BUYER.getHttpStatus());
         }
 
         throw ex;
@@ -85,17 +109,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> notReadableException(HttpMessageNotReadableException ex) {
-        if(ex.getCause() != null) {
+        if (ex.getCause() != null) {
             if (ex.getCause().getMessage()
                 .contains("LinkerBell.campus_market_spring.domain.Category")) {
                 ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_CATEGORY);
                 log.error(ErrorCode.INVALID_CATEGORY.getMessage());
-                return new ResponseEntity<>(errorResponse, ErrorCode.INVALID_CATEGORY.getHttpStatus());
+                return new ResponseEntity<>(errorResponse,
+                    ErrorCode.INVALID_CATEGORY.getHttpStatus());
             } else if (ex.getCause().getMessage()
                 .contains("LinkerBell.campus_market_spring.domain.ItemStatus")) {
                 ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_STATUS);
                 log.error(ErrorCode.INVALID_ITEM_STATUS.getMessage());
-                return new ResponseEntity<>(errorResponse, ErrorCode.INVALID_ITEM_STATUS.getHttpStatus());
+                return new ResponseEntity<>(errorResponse,
+                    ErrorCode.INVALID_ITEM_STATUS.getHttpStatus());
             }
         }
         throw ex;
@@ -110,7 +136,8 @@ public class GlobalExceptionHandler {
             request.getRequestURI());
         if (ex.getMethod().getName().equals("getPresignedPutUrl")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_FILE_NAME);
-            return ResponseEntity.status(ErrorCode.INVALID_FILE_NAME.getHttpStatus()).body(errorResponse);
+            return ResponseEntity.status(ErrorCode.INVALID_FILE_NAME.getHttpStatus())
+                .body(errorResponse);
         }
 
         return ResponseEntity.status(ex.getStatusCode()).body(new ErrorResponse(ex.getMessage()));
@@ -125,7 +152,8 @@ public class GlobalExceptionHandler {
             request.getRequestURI());
         if (ex.getMethodParameter().getMethod().getName().equals("getPresignedPutUrl")) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_FILE_NAME);
-            return ResponseEntity.status(ErrorCode.INVALID_FILE_NAME.getHttpStatus()).body(errorResponse);
+            return ResponseEntity.status(ErrorCode.INVALID_FILE_NAME.getHttpStatus())
+                .body(errorResponse);
         }
 
         return ResponseEntity.status(ex.getStatusCode()).body(new ErrorResponse(ex.getMessage()));
