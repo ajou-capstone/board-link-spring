@@ -10,6 +10,7 @@ import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.repository.NotificationHistoryRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -34,11 +35,13 @@ public class NotificationHistoryService {
     private String deeplinkKeywordUrl;
 
     public void saveNotificationHistory(List<Keyword> sendingKeywords, Item savedItem) {
+        List<NotificationHistory> notificationHistories = new ArrayList<>();
         for (Keyword sendingKeyword : sendingKeywords) {
             NotificationHistory notificationHistory = createNotificationHistory(sendingKeyword,
                 savedItem);
-            notificationHistoryRepository.save(notificationHistory);
+            notificationHistories.add(notificationHistory);
         }
+        notificationHistoryRepository.saveAll(notificationHistories);
     }
 
     @Transactional(readOnly = true)

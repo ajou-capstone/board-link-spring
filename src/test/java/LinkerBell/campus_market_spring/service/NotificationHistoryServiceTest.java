@@ -4,7 +4,7 @@ import static LinkerBell.campus_market_spring.global.error.ErrorCode.INVALID_NOT
 import static LinkerBell.campus_market_spring.global.error.ErrorCode.NOT_MATCH_USER_ID_WITH_NOTIFICATION_USER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -53,21 +53,21 @@ class NotificationHistoryServiceTest {
         Item item = Item.builder().itemId(1L).title("testItem").build();
         Keyword keyword = Keyword.builder().keywordName("testKeyword").user(user).build();
         List<Keyword> keywords = List.of(keyword);
+        List<NotificationHistory> notificationHistories = keywords.stream()
+            .map(k -> NotificationHistory.builder()
+                .user(k.getUser())
+                .item(item)
+                .title(k.getKeywordName() + " 키워드 알림")
+                .description(item.getTitle())
+                .deeplink(deeplinkKeywordUrl + item.getItemId())
+                .build())
+            .toList();
 
-        NotificationHistory notificationHistory = NotificationHistory.builder()
-            .user(user)
-            .item(item)
-            .title(keyword.getKeywordName() + " 키워드 알림")
-            .description(item.getTitle())
-            .deeplink(deeplinkKeywordUrl + item.getItemId())
-            .build();
-
-        when(notificationHistoryRepository.save(any(NotificationHistory.class)))
-            .thenReturn(notificationHistory);
+        when(notificationHistoryRepository.saveAll(anyList())).thenReturn(notificationHistories);
 
         notificationHistoryService.saveNotificationHistory(keywords, item);
 
-        verify(notificationHistoryRepository, times(1)).save(any(NotificationHistory.class));
+        verify(notificationHistoryRepository, times(1)).saveAll(anyList());
     }
 
     @Test
