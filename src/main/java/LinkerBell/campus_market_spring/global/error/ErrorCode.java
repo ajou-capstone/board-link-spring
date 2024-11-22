@@ -52,6 +52,8 @@ public enum ErrorCode {
     NOT_AUTHORIZED(HttpStatus.FORBIDDEN, 4045, "해당 요청에 권한이 없습니다."),
     INVALID_REVIEW_DESCRIPTION(HttpStatus.BAD_REQUEST, 4046, "리뷰 내용은 200자 이하여야 합니다."),
     INVALID_REVIEW_RATING(HttpStatus.BAD_REQUEST, 4047, "리뷰 별점은 0이상 10이하여야 합니다."),
+    INVALID_QUESTION_DESCRIPTION(HttpStatus.BAD_REQUEST, 4048, "문의 내용은 2자이상 500자 이하여야 합니다."),
+    INVALID_QUESTION_TITLE(HttpStatus.BAD_REQUEST, 4049, "문의 제목은 2자이상 500자 이하여야 합니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다."),
 

@@ -1,5 +1,6 @@
 package LinkerBell.campus_market_spring.global.error;
 
+import LinkerBell.campus_market_spring.dto.QaRequestDto;
 import LinkerBell.campus_market_spring.dto.ReviewRequestDto;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -61,12 +62,28 @@ public class GlobalExceptionHandler {
                 return new ResponseEntity<>(errorResponse,
                     ErrorCode.INVALID_REVIEW_DESCRIPTION.getHttpStatus());
             }
+
+            if (ex.getBindingResult().getTarget() instanceof QaRequestDto) {
+                ErrorResponse errorResponse = new ErrorResponse(
+                    ErrorCode.INVALID_QUESTION_DESCRIPTION);
+                log.error(ErrorCode.INVALID_QUESTION_DESCRIPTION.getMessage());
+                return new ResponseEntity<>(errorResponse,
+                    ErrorCode.INVALID_QUESTION_DESCRIPTION.getHttpStatus());
+            }
         } else if (fieldName.equals("rating")) {
             if (ex.getBindingResult().getTarget() instanceof ReviewRequestDto) {
                 ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_REVIEW_RATING);
                 log.error(ErrorCode.INVALID_REVIEW_RATING.getMessage());
                 return new ResponseEntity<>(errorResponse,
                     ErrorCode.INVALID_REVIEW_RATING.getHttpStatus());
+            }
+        } else if (fieldName.equals("title")) {
+            if (ex.getBindingResult().getTarget() instanceof QaRequestDto) {
+                ErrorResponse errorResponse = new ErrorResponse(
+                    ErrorCode.INVALID_QUESTION_TITLE);
+                log.error(ErrorCode.INVALID_QUESTION_TITLE.getMessage());
+                return new ResponseEntity<>(errorResponse,
+                    ErrorCode.INVALID_QUESTION_TITLE.getHttpStatus());
             }
         }
 
