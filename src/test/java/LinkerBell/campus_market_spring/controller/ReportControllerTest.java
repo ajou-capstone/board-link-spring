@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import LinkerBell.campus_market_spring.controller.AuthControllerTest.MockLoginArgumentResolver;
 import LinkerBell.campus_market_spring.domain.ItemReportCategory;
@@ -95,5 +97,29 @@ class ReportControllerTest {
         }), assertArg(category -> {
             assertThat(category).isEqualTo(reportCategory);
         }));
+    }
+
+    @Test
+    @DisplayName("상품 신고 카테고리 요청 테스트")
+    public void itemReportCategoryTest() throws Exception {
+        // when & then
+        mockMvc.perform(get("/api/v1/items/report"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.categories").isNotEmpty())
+            .andExpect(jsonPath("$.categories").isArray())
+            .andExpect(jsonPath("$.categories[0]").isString())
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("사용자 신고 카테고리 요청 테스트")
+    public void userReportCategoryTest() throws Exception {
+        // when & then
+        mockMvc.perform(get("/api/v1/users/report"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.categories").isNotEmpty())
+            .andExpect(jsonPath("$.categories").isArray())
+            .andExpect(jsonPath("$.categories[0]").isString())
+            .andDo(print());
     }
 }

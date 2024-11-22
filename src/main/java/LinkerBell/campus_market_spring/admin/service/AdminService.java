@@ -5,11 +5,18 @@ import LinkerBell.campus_market_spring.domain.ItemReport;
 import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.dto.AuthResponseDto;
+import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
+import LinkerBell.campus_market_spring.domain.Category;
+import LinkerBell.campus_market_spring.domain.Role;
+import LinkerBell.campus_market_spring.domain.User;
+import LinkerBell.campus_market_spring.dto.AuthResponseDto;
+import LinkerBell.campus_market_spring.dto.ItemSearchResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
 import LinkerBell.campus_market_spring.repository.ItemReportRepository;
+import LinkerBell.campus_market_spring.repository.ItemRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import LinkerBell.campus_market_spring.service.GoogleAuthService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +35,7 @@ public class AdminService {
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
     private final ItemReportRepository itemReportRepository;
+    private final ItemRepository itemRepository;
 
     public AuthResponseDto adminLogin(String idToken) {
         String email = googleAuthService.getEmailWithVerifyIdToken(idToken);
@@ -54,5 +62,10 @@ public class AdminService {
         Slice<ItemReport> itemReports = itemReportRepository.findItemReports(pageable);
 
         return new SliceResponse<>(itemReports.map(ItemReportSearchResponseDto::new));
+    }
+  
+    public SliceResponse<AdminItemSearchResponseDto> getAllItems(Long userId, String name,
+        Category category, Integer minPrice, Integer maxPrice, Pageable pageable) {
+        return itemRepository.adminItemSearch(userId, name, category, minPrice, maxPrice, pageable);
     }
 }
