@@ -50,7 +50,7 @@ public enum ErrorCode {
     NOT_ADMINISTRATOR(HttpStatus.FORBIDDEN, 4043, "관리자 권한이 없는 사용자입니다."),
     NOT_REPORT_OWN(HttpStatus.BAD_REQUEST, 4044, "자기 자신을 신고할 수 없습니다."),
     NOT_AUTHORIZED(HttpStatus.FORBIDDEN, 4045, "해당 요청에 권한이 없습니다."),
-    INVALID_REVIEW_DESCRIPTION(HttpStatus.BAD_REQUEST, 4046, "리뷰 내용은 1000자 이하여야 합니다."),
+    INVALID_REVIEW_DESCRIPTION(HttpStatus.BAD_REQUEST, 4046, "리뷰 내용은 200자 이하여야 합니다."),
     INVALID_REVIEW_RATING(HttpStatus.BAD_REQUEST, 4047, "리뷰 별점은 0이상 10이하여야 합니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다."),
