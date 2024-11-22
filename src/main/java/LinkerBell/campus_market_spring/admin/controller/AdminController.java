@@ -2,6 +2,7 @@ package LinkerBell.campus_market_spring.admin.controller;
 
 import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminLoginRequestDto;
+import LinkerBell.campus_market_spring.admin.dto.ItemReportSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.service.AdminService;
 import LinkerBell.campus_market_spring.domain.Category;
 import LinkerBell.campus_market_spring.dto.AuthResponseDto;
@@ -11,6 +12,7 @@ import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.global.auth.Login;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -52,5 +54,13 @@ public class AdminController {
     @GetMapping("/test")
     public ResponseEntity<String> test(@Login AuthUserDto user) {
         return ResponseEntity.ok("Hello Admin! " + user.getLoginEmail());
+    }
+
+    @GetMapping("/items/report")
+    public ResponseEntity< SliceResponse<ItemReportSearchResponseDto>> getItemReports(
+        @PageableDefault(page = 0, size = 0, sort = "createDate",
+        direction = Direction.DESC)Pageable pageable) {
+        SliceResponse<ItemReportSearchResponseDto> response = adminService.getItemReports(pageable);
+        return ResponseEntity.ok(response);
     }
 }
