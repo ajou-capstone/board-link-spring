@@ -21,7 +21,7 @@ public class ReviewController {
     // 리뷰 작성하기
     @PostMapping("/api/v1/users/{userId}/reviews")
     public ResponseEntity<Void> postReview(
-        @Login AuthUserDto authUserDto, @PathVariable Long userId,
+        @Login AuthUserDto authUserDto, @PathVariable("userId") Long userId,
         @Valid @RequestBody ReviewRequestDto reviewRequestDto) {
 
         reviewService.postReview(authUserDto.getUserId(), userId, reviewRequestDto);
