@@ -6,6 +6,7 @@ import LinkerBell.campus_market_spring.dto.QaCategoryResponseDto;
 import LinkerBell.campus_market_spring.dto.QaRequestDto;
 import LinkerBell.campus_market_spring.global.auth.Login;
 import LinkerBell.campus_market_spring.service.QaService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +29,7 @@ public class QaController {
 
     @PostMapping("/questions")
     public ResponseEntity<?> postQuestion(@Login AuthUserDto user,
-        @RequestBody QaRequestDto requestDto) {
+        @Valid @RequestBody QaRequestDto requestDto) {
         qaService.postQuestion(user.getUserId(), requestDto.title(), requestDto.description(),
             requestDto.category());
         return ResponseEntity.noContent().build();
