@@ -62,7 +62,7 @@ class AdminControllerTest {
         then(adminService).should().getItemReports(assertArg(p -> {
             assertThat(p).isNotNull();
             assertThat(p.getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "createdDate")
-                .and(Sort.by(Sort.Direction.ASC, "itemReportId")));
+                .and(Sort.by(Sort.Direction.DESC, "itemReportId")));
         }));
     }
 
@@ -77,7 +77,7 @@ class AdminControllerTest {
         then(adminService).should().getUserReports(assertArg(p -> {
             assertThat(p).isNotNull();
             assertThat(p.getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "createdDate")
-                .and(Sort.by(Sort.Direction.ASC, "userReportId")));
+                .and(Sort.by(Sort.Direction.DESC, "userReportId")));
         }));
     }
 

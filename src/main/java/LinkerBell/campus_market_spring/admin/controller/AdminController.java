@@ -50,7 +50,7 @@ public class AdminController {
         @PageableDefault(page = 0, size = 10)
         @SortDefaults({
             @SortDefault(sort = "createdDate", direction = Direction.DESC),
-            @SortDefault(sort = "itemId", direction = Direction.ASC)}) Pageable pageable) {
+            @SortDefault(sort = "itemId", direction = Direction.DESC)}) Pageable pageable) {
         SliceResponse<AdminItemSearchResponseDto> response =
             adminService.getAllItems(user.getUserId(), name, category, minPrice, maxPrice,
                 pageable);
@@ -68,7 +68,7 @@ public class AdminController {
         @PageableDefault(page = 0, size = 10)
         @SortDefaults({
             @SortDefault(sort = "createdDate", direction = Direction.DESC),
-            @SortDefault(sort = "itemReportId", direction = Direction.ASC)}) Pageable pageable) {
+            @SortDefault(sort = "itemReportId", direction = Direction.DESC)}) Pageable pageable) {
         SliceResponse<ItemReportSearchResponseDto> response = adminService.getItemReports(pageable);
         return ResponseEntity.ok(response);
     }
@@ -78,7 +78,7 @@ public class AdminController {
         @PageableDefault(page = 0, size = 10)
         @SortDefaults({
             @SortDefault(sort = "createdDate", direction = Direction.DESC),
-            @SortDefault(sort = "userReportId", direction = Direction.ASC)}) Pageable pageable) {
+            @SortDefault(sort = "userReportId", direction = Direction.DESC)}) Pageable pageable) {
         SliceResponse<UserReportSearchResponseDto> response = adminService.getUserReports(pageable);
         return ResponseEntity.ok(response);
     }

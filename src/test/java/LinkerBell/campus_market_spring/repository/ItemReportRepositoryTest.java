@@ -101,7 +101,7 @@ class ItemReportRepositoryTest {
     public void getItemReportListTest() {
         // given
         Sort sort = Sort.by(Direction.DESC, "createdDate")
-            .and(Sort.by(Direction.ASC, "itemReportId"));
+            .and(Sort.by(Direction.DESC, "itemReportId"));
         Pageable pageable = PageRequest.of(0, 20, sort);
         // when
         Slice<ItemReport> slice = itemReportRepository.findItemReports(pageable);
