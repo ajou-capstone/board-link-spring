@@ -43,6 +43,21 @@ public class GlobalExceptionHandler {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_ID);
             log.error(ErrorCode.INVALID_ITEM_ID.getMessage());
             return new ResponseEntity<>(errorResponse, ErrorCode.INVALID_ITEM_ID.getHttpStatus());
+        } else if (ex.getName().equals("page")) {
+            ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_PAGEABLE_PAGE);
+            log.error(ErrorCode.INVALID_PAGEABLE_PAGE.getMessage());
+            return new ResponseEntity<>(errorResponse,
+                ErrorCode.INVALID_PAGEABLE_PAGE.getHttpStatus());
+        } else if (ex.getName().equals("size")) {
+            ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_PAGEABLE_SIZE);
+            log.error(ErrorCode.INVALID_PAGEABLE_SIZE.getMessage());
+            return new ResponseEntity<>(errorResponse,
+                ErrorCode.INVALID_PAGEABLE_SIZE.getHttpStatus());
+        } else if (ex.getName().equals("notificationId")) {
+            ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_PAGEABLE_SIZE);
+            log.error(ErrorCode.INVALID_PAGEABLE_SIZE.getMessage());
+            return new ResponseEntity<>(errorResponse,
+                ErrorCode.INVALID_PAGEABLE_SIZE.getHttpStatus());
         }
 
         throw ex;
