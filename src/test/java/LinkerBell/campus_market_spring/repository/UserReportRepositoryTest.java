@@ -4,19 +4,16 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import LinkerBell.campus_market_spring.domain.Campus;
-import LinkerBell.campus_market_spring.domain.Item;
-import LinkerBell.campus_market_spring.domain.ItemReport;
-import LinkerBell.campus_market_spring.domain.ItemReportCategory;
 import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.domain.UserReport;
 import LinkerBell.campus_market_spring.domain.UserReportCategory;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -103,8 +100,27 @@ class UserReportRepositoryTest {
         // then
         assertThat(slice).isNotNull();
         assertThat(slice.getContent().size()).isEqualTo(10);
-        assertThat(slice.getContent().get(0).getCategory()).isEqualTo(UserReportCategory.values()[0]);
-        assertThat(slice.getContent().get(0).getCreatedDate()).isAfter(slice.getContent().get(1).getCreatedDate());
+        assertThat(slice.getContent().get(0).getCategory())
+            .isEqualTo(UserReportCategory.values()[0]);
+        assertThat(slice.getContent().get(0).getCreatedDate())
+            .isAfter(slice.getContent().get(1).getCreatedDate());
+    }
+
+    @Test
+    @DisplayName("사용자 신고 찾기 테스트")
+    public void findUserReportTest() {
+        // given
+        String description =  UserReportCategory.FRAUD.getDescription();
+        UserReportCategory category = UserReportCategory.FRAUD;
+        UserReport userReport = UserReport.builder()
+            .user(user).target(other).description(description).category(category).build();
+        userReport = userReportRepository.save(userReport);
+        // when
+        Optional<UserReport> findUserReportOpt = userReportRepository.findById(userReport.getUserReportId());
+        // then
+        assertThat(findUserReportOpt).isPresent();
+        UserReport findUserReport = findUserReportOpt.get();
+        assertThat(findUserReport.getDescription()).isEqualTo(description);
     }
 
     private Campus createCampus() {
@@ -125,6 +141,4 @@ class UserReportRepositoryTest {
             .schoolEmail("testSchool")
             .nickname("user" + userId).build();
     }
-
-
 }
