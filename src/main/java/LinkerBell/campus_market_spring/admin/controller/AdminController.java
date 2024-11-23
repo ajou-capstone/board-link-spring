@@ -2,7 +2,9 @@ package LinkerBell.campus_market_spring.admin.controller;
 
 import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminLoginRequestDto;
+import LinkerBell.campus_market_spring.admin.dto.ItemReportResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportSearchResponseDto;
+import LinkerBell.campus_market_spring.admin.dto.UserReportResponseDto;
 import LinkerBell.campus_market_spring.admin.service.AdminService;
 import LinkerBell.campus_market_spring.domain.Category;
 import LinkerBell.campus_market_spring.dto.AuthResponseDto;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,6 +64,20 @@ public class AdminController {
         @PageableDefault(page = 0, size = 0, sort = "createDate",
         direction = Direction.DESC)Pageable pageable) {
         SliceResponse<ItemReportSearchResponseDto> response = adminService.getItemReports(pageable);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/items/report/{itemReportId}")
+    public ResponseEntity<ItemReportResponseDto> getItemReportDetails(
+        @PathVariable("itemReportId") Long itemReportId) {
+        ItemReportResponseDto response = adminService.getItemReport(itemReportId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/users/report/{userReportId}")
+    public ResponseEntity<UserReportResponseDto> getUserReportDetails(
+        @PathVariable("userReportId") Long userReportId) {
+        UserReportResponseDto response = adminService.getUserReport(userReportId);
         return ResponseEntity.ok(response);
     }
 }

@@ -10,6 +10,7 @@ import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.domain.UserReport;
 import LinkerBell.campus_market_spring.domain.UserReportCategory;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,6 +53,23 @@ class UserReportRepositoryTest {
         // then
         assertThat(findUserReportDto).isNotNull();
         assertThat(findUserReportDto.getDescription()).isEqualTo(description);
+    }
+
+    @Test
+    @DisplayName("사용자 신고 찾기 테스트")
+    public void findUserReportTest() {
+        // given
+        String description =  UserReportCategory.FRAUD.getDescription();
+        UserReportCategory category = UserReportCategory.FRAUD;
+        UserReport userReport = UserReport.builder()
+            .user(user).target(other).description(description).category(category).build();
+        userReport = userReportRepository.save(userReport);
+        // when
+        Optional<UserReport> findUserReportOpt = userReportRepository.findById(userReport.getUserReportId());
+        // then
+        assertThat(findUserReportOpt).isPresent();
+        UserReport findUserReport = findUserReportOpt.get();
+        assertThat(findUserReport.getDescription()).isEqualTo(description);
     }
 
     private Campus createCampus() {

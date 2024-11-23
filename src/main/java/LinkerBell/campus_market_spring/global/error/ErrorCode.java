@@ -58,6 +58,8 @@ public enum ErrorCode {
     INVALID_NOTIFICATION_ID(HttpStatus.BAD_REQUEST, 4050, "존재하지 않는 알람 히스토리입니다."),
     NOT_MATCH_USER_ID_WITH_NOTIFICATION_USER_ID(HttpStatus.FORBIDDEN, 4051,
         "해당 알람 히스토리의 당사자가 아닙니다."),
+    ITEM_REPORT_NOT_FOUND(HttpStatus.NOT_ACCEPTABLE, 4052 , "해당 상품 신고를 찾을 수 없습니다." ),
+    USER_REPORT_NOT_FOUND(HttpStatus.NOT_ACCEPTABLE, 4053 , "해당 사용자 신고를 찾을 수 없습니다." ),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다."),
 

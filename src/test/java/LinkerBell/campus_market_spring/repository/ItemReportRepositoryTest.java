@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -93,6 +94,21 @@ class ItemReportRepositoryTest {
         assertThat(slice).isNotNull();
         assertThat(slice.getContent().size()).isEqualTo(10);
         assertThat(slice.getContent().get(0).getCategory()).isEqualTo(ItemReportCategory.values()[0]);
+    }
+
+    @Test
+    @DisplayName("상품 신고 찾기 테스트")
+    public void findItemReportTest() {
+        // given
+        ItemReport itemReport = ItemReport.builder()
+            .user(user).item(item).description("test reason").isCompleted(false).build();
+        itemReport = itemReportRepository.save(itemReport);
+        // when
+        Optional<ItemReport> itemReportOpt = itemReportRepository.findById(itemReport.getItemReportId());
+        // then
+        assertThat(itemReportOpt).isPresent();
+        ItemReport findItemReport = itemReportOpt.get();
+        assertThat(findItemReport.getDescription()).isEqualTo(itemReport.getDescription());
     }
 
     private Campus createCampus() {
