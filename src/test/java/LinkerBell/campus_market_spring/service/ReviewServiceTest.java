@@ -4,11 +4,14 @@ import LinkerBell.campus_market_spring.domain.Item;
 import LinkerBell.campus_market_spring.domain.Review;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.dto.ReviewRequestDto;
+import LinkerBell.campus_market_spring.dto.ReviewResponseDto;
+import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.repository.ItemRepository;
 import LinkerBell.campus_market_spring.repository.ReviewRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
+import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +20,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.SliceImpl;
+import org.springframework.http.MediaType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -128,4 +135,24 @@ class ReviewServiceTest {
             .isInstanceOf(CustomException.class)
             .hasMessage(ErrorCode.ITEM_NOT_FOUND.getMessage());
     }
+
+    @Test
+    @DisplayName("getReviews - 리뷰가 없을 때 빈 리스트 반환")
+    void getReviews_ShouldReturnEmptyListWhenNoReviews() {
+        // given
+        Long userId = 1L;
+        Pageable pageable = PageRequest.of(0, 10);
+
+        // 빈 리뷰 리스트 반환을 Mocking
+        SliceResponse<ReviewResponseDto> mockResponse = new SliceResponse<>(new SliceImpl<>(
+            Collections.emptyList(), pageable, false)); // 빈 리스트 설정
+        when(reviewRepository.findAllByUserId(userId, pageable)).thenReturn(mockResponse);
+
+        // when
+        SliceResponse<ReviewResponseDto> result = reviewService.getReviews(userId, pageable);
+
+        // then
+        assertThat(result.getContent()).isEmpty(); // 리뷰 내용이 빈 리스트인지를 확인
+    }
+
 }
