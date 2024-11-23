@@ -98,4 +98,16 @@ public class AdminService {
 
         return new UserReportResponseDto(userReport);
     }
+
+    public void receiveItemReport(Long itemReportId, boolean isDeleted) {
+        ItemReport itemReport = itemReportRepository.findById(itemReportId)
+            .orElseThrow(() -> new CustomException(ErrorCode.ITEM_REPORT_NOT_FOUND));
+
+        if (itemReport.getItem() == null) {
+            throw new CustomException(ErrorCode.ITEM_NOT_FOUND);
+        }
+        itemReport.getItem().setDeleted(isDeleted);
+        itemReport.setCompleted(true);
+        itemReportRepository.save(itemReport);
+    }
 }

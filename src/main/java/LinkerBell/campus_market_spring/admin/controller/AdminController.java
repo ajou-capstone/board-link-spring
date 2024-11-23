@@ -1,5 +1,6 @@
 package LinkerBell.campus_market_spring.admin.controller;
 
+import LinkerBell.campus_market_spring.admin.dto.AdminItemReportRequestDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminLoginRequestDto;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportResponseDto;
@@ -20,6 +21,7 @@ import org.springframework.data.web.SortDefault;
 import org.springframework.data.web.SortDefault.SortDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -96,5 +98,12 @@ public class AdminController {
         @PathVariable("userReportId") Long userReportId) {
         UserReportResponseDto response = adminService.getUserReport(userReportId);
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/items/report/{itemReportId}")
+    public ResponseEntity<?> receiveItemReport(@PathVariable("itemReportId") Long itemReportId,
+        @RequestBody AdminItemReportRequestDto requestDto) {
+        adminService.receiveItemReport(itemReportId, requestDto.isDeleted());
+        return ResponseEntity.noContent().build();
     }
 }

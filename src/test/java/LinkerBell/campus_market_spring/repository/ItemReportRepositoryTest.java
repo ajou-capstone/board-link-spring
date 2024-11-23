@@ -144,6 +144,32 @@ class ItemReportRepositoryTest {
         assertThat(findItemReport.getDescription()).isEqualTo(itemReport.getDescription());
     }
 
+    @Test
+    @DisplayName("상품 신고 삭제 처리 테스트")
+    public void receiveItemReportTest() {
+        // given
+        ItemReport itemReport = ItemReport.builder()
+            .user(user).item(item).description("test reason").isCompleted(false).build();
+        itemReport = itemReportRepository.save(itemReport);
+        // when
+        ItemReport findItemReport = itemReportRepository.findById(itemReport.getItemReportId()).orElse(null);
+        assertThat(findItemReport).isNotNull();
+
+        findItemReport.getItem().setDeleted(true);
+        findItemReport.setCompleted(true);
+        findItemReport = itemReportRepository.save(findItemReport);
+
+        Item deletedItem = itemRepository.findById(itemReport.getItem().getItemId()).orElse(null);
+        ItemReport completedItemReport = itemReportRepository.findById(itemReport.getItemReportId()).orElse(null);
+        // then
+        assertThat(deletedItem).isNotNull();
+        assertThat(deletedItem.getTitle()).isEqualTo(findItemReport.getItem().getTitle());
+        assertThat(deletedItem.isDeleted()).isTrue();
+
+        assertThat(completedItemReport).isNotNull();
+        assertThat(completedItemReport.isCompleted()).isTrue();
+    }
+
     private Campus createCampus() {
         return Campus.builder()
             .campusId(1L)
