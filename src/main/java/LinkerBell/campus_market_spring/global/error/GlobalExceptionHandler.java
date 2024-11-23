@@ -58,6 +58,11 @@ public class GlobalExceptionHandler {
             log.error(ErrorCode.INVALID_PAGEABLE_SIZE.getMessage());
             return new ResponseEntity<>(errorResponse,
                 ErrorCode.INVALID_PAGEABLE_SIZE.getHttpStatus());
+        } else if (ex.getName().equals("keywordId")) {
+            ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_KEYWORD_ID);
+            log.error(ErrorCode.INVALID_KEYWORD_ID.getMessage());
+            return new ResponseEntity<>(errorResponse,
+                ErrorCode.INVALID_KEYWORD_ID.getHttpStatus());
         }
 
         throw ex;
@@ -134,6 +139,11 @@ public class GlobalExceptionHandler {
             log.error(ErrorCode.INVALID_ITEM_BUYER.getMessage());
             return new ResponseEntity<>(errorResponse,
                 ErrorCode.INVALID_ITEM_BUYER.getHttpStatus());
+        } else if (Objects.requireNonNull(ex.getFieldError()).getField().equals("keywordName")) {
+            ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_KEYWORD_NAME);
+            log.error(ErrorCode.INVALID_KEYWORD_NAME.getMessage());
+            return new ResponseEntity<>(errorResponse,
+                ErrorCode.INVALID_KEYWORD_NAME.getHttpStatus());
         }
 
         throw ex;
