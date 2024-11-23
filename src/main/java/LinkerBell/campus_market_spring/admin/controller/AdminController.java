@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
+import org.springframework.data.web.SortDefault.SortDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,9 +47,13 @@ public class AdminController {
         @RequestParam(required = false) Category category,
         @RequestParam(required = false) Integer minPrice,
         @RequestParam(required = false) Integer maxPrice,
-        @PageableDefault(page = 0, size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
+        @PageableDefault(page = 0, size = 10)
+        @SortDefaults({
+            @SortDefault(sort = "createdDate", direction = Direction.DESC),
+            @SortDefault(sort = "itemId", direction = Direction.ASC)}) Pageable pageable) {
         SliceResponse<AdminItemSearchResponseDto> response =
-            adminService.getAllItems(user.getUserId(), name, category, minPrice, maxPrice, pageable);
+            adminService.getAllItems(user.getUserId(), name, category, minPrice, maxPrice,
+                pageable);
 
         return ResponseEntity.ok(response);
     }
@@ -59,16 +65,20 @@ public class AdminController {
 
     @GetMapping("/items/report")
     public ResponseEntity<SliceResponse<ItemReportSearchResponseDto>> getItemReports(
-        @PageableDefault(page = 0, size = 10, sort = "createDate",
-        direction = Direction.DESC)Pageable pageable) {
+        @PageableDefault(page = 0, size = 10)
+        @SortDefaults({
+            @SortDefault(sort = "createdDate", direction = Direction.DESC),
+            @SortDefault(sort = "itemReportId", direction = Direction.ASC)}) Pageable pageable) {
         SliceResponse<ItemReportSearchResponseDto> response = adminService.getItemReports(pageable);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/users/report")
     public ResponseEntity<SliceResponse<UserReportSearchResponseDto>> getUserReports(
-        @PageableDefault(page = 0, size = 10, sort = "createDate",
-        direction = Direction.DESC) Pageable pageable) {
+        @PageableDefault(page = 0, size = 10)
+        @SortDefaults({
+            @SortDefault(sort = "createdDate", direction = Direction.DESC),
+            @SortDefault(sort = "userReportId", direction = Direction.ASC)}) Pageable pageable) {
         SliceResponse<UserReportSearchResponseDto> response = adminService.getUserReports(pageable);
         return ResponseEntity.ok(response);
     }
