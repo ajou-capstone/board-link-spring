@@ -4,12 +4,16 @@ import LinkerBell.campus_market_spring.domain.Item;
 import LinkerBell.campus_market_spring.domain.Review;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.dto.ReviewRequestDto;
+import LinkerBell.campus_market_spring.dto.ReviewResponseDto;
+import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.repository.ItemRepository;
 import LinkerBell.campus_market_spring.repository.ReviewRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,5 +53,11 @@ public class ReviewService {
         double newUserRating =
             ((userRating * reviewCount) + (reviewRequestDto.getRating())) / (reviewCount + 1);
         user.setRating(newUserRating);
+    }
+
+    // 리뷰 가져오기
+    @Transactional(readOnly = true)
+    public SliceResponse<ReviewResponseDto> getReviews(Long userId, Pageable pageable) {
+        return reviewRepository.findAllByUserId(userId, pageable);
     }
 }
