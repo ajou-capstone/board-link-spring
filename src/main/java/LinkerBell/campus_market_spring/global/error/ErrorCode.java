@@ -60,6 +60,11 @@ public enum ErrorCode {
         "해당 알람 히스토리의 당사자가 아닙니다."),
     INVALID_QUESTION_DESCRIPTION(HttpStatus.BAD_REQUEST, 4052, "문의 내용은 2자이상 500자 이하여야 합니다."),
     INVALID_QUESTION_TITLE(HttpStatus.BAD_REQUEST, 4053, "문의 제목은 2자이상 50자 이하여야 합니다."),
+    INVALID_KEYWORD_NAME(HttpStatus.BAD_REQUEST, 4054, "키워드는 1자에서 25자 이하만 가능합니다."),
+    INVALID_KEYWORD_COUNT(HttpStatus.BAD_REQUEST, 4055, "키워드는 20개 이하만 등록 가능합니다."),
+    DUPLICATE_KEYWORD_NAME(HttpStatus.BAD_REQUEST, 4056, "이미 등록된 키워드입니다."),
+    INVALID_KEYWORD_ID(HttpStatus.BAD_REQUEST, 4057, "존재하지 않는 키워드입니다."),
+    NOT_MATCH_USER_AND_KEYWORD_USER(HttpStatus.BAD_REQUEST, 4058, "키워드의 작성자가 아닙니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다."),
 

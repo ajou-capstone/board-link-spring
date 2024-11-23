@@ -17,7 +17,6 @@ import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.repository.ChatRoomRepository;
 import LinkerBell.campus_market_spring.repository.ItemPhotosRepository;
 import LinkerBell.campus_market_spring.repository.ItemRepository;
-import LinkerBell.campus_market_spring.repository.UserFcmTokenRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +36,6 @@ public class ItemService {
     private final UserRepository userRepository;
     private final ItemPhotosRepository itemPhotosRepository;
     private final ChatRoomRepository chatRoomRepository;
-    private final UserFcmTokenRepository userFcmTokenRepository;
 
     private final S3Service s3Service;
     private final FcmService fcmService;

@@ -2,6 +2,7 @@ package LinkerBell.campus_market_spring.repository;
 
 import LinkerBell.campus_market_spring.domain.Keyword;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -11,4 +12,7 @@ public interface KeywordRepository extends JpaRepository<Keyword, Long> {
         "join fetch k.user u " +
         "join fetch u.campus")
     List<Keyword> findKeywordsWithUserAndCampus();
+
+    List<Keyword> findKeywordByUser_UserId(Long userId);
+
 }
