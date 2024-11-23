@@ -13,6 +13,7 @@ import LinkerBell.campus_market_spring.dto.AuthResponseDto;
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.global.auth.Login;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
@@ -102,7 +103,7 @@ public class AdminController {
 
     @PatchMapping("/items/report/{itemReportId}")
     public ResponseEntity<?> receiveItemReport(@PathVariable("itemReportId") Long itemReportId,
-        @RequestBody AdminItemReportRequestDto requestDto) {
+        @Valid @RequestBody AdminItemReportRequestDto requestDto) {
         adminService.receiveItemReport(itemReportId, requestDto.isDeleted());
         return ResponseEntity.noContent().build();
     }

@@ -1,6 +1,7 @@
 package LinkerBell.campus_market_spring.global.error;
 
 import LinkerBell.campus_market_spring.dto.QaRequestDto;
+import LinkerBell.campus_market_spring.admin.dto.AdminItemReportRequestDto;
 import LinkerBell.campus_market_spring.dto.ReviewRequestDto;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -104,6 +105,12 @@ public class GlobalExceptionHandler {
                 log.error(ErrorCode.INVALID_QUESTION_TITLE.getMessage());
                 return new ResponseEntity<>(errorResponse,
                     ErrorCode.INVALID_QUESTION_TITLE.getHttpStatus());
+            }
+        } else if (fieldName.equals("isDeleted")) {
+            if (ex.getBindingResult().getTarget() instanceof AdminItemReportRequestDto) {
+                ErrorResponse errorResponse = new ErrorResponse(ErrorCode.REQUIRE_DELETE_OR_NOT);
+                return new ResponseEntity<>(errorResponse,
+                    ErrorCode.REQUIRE_DELETE_OR_NOT.getHttpStatus());
             }
         }
 

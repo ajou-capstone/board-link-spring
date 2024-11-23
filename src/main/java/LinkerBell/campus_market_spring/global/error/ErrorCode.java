@@ -65,8 +65,9 @@ public enum ErrorCode {
     DUPLICATE_KEYWORD_NAME(HttpStatus.BAD_REQUEST, 4056, "이미 등록된 키워드입니다."),
     INVALID_KEYWORD_ID(HttpStatus.BAD_REQUEST, 4057, "존재하지 않는 키워드입니다."),
     NOT_MATCH_USER_AND_KEYWORD_USER(HttpStatus.BAD_REQUEST, 4058, "키워드의 작성자가 아닙니다."),
-    ITEM_REPORT_NOT_FOUND(HttpStatus.BAD_REQUEST, 4059 , "해당 상품 신고를 찾을 수 없습니다." ),
-    USER_REPORT_NOT_FOUND(HttpStatus.BAD_REQUEST, 4060 , "해당 사용자 신고를 찾을 수 없습니다." ),
+    ITEM_REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, 4059 , "해당 상품 신고를 찾을 수 없습니다." ),
+    USER_REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, 4060 , "해당 사용자 신고를 찾을 수 없습니다." ),
+    REQUIRE_DELETE_OR_NOT(HttpStatus.BAD_REQUEST, 4061, "삭제 여부가 필요합니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다."),
 
