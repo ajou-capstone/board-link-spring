@@ -4,6 +4,8 @@ import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.UserReportSearchResponseDto;
 import LinkerBell.campus_market_spring.domain.Category;
+import LinkerBell.campus_market_spring.admin.dto.ItemReportResponseDto;
+import LinkerBell.campus_market_spring.admin.dto.UserReportResponseDto;
 import LinkerBell.campus_market_spring.domain.ItemReport;
 import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
@@ -23,10 +25,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class AdminService {
 
     private final GoogleAuthService googleAuthService;
@@ -59,6 +63,7 @@ public class AdminService {
             .refreshToken(refreshToken).build();
     }
 
+    @Transactional(readOnly = true)
     public SliceResponse<ItemReportSearchResponseDto> getItemReports(Pageable pageable) {
         Slice<ItemReport> itemReports = itemReportRepository.findItemReports(pageable);
 
@@ -71,8 +76,25 @@ public class AdminService {
         return new SliceResponse<>(userReports.map(UserReportSearchResponseDto::new));
     }
 
+    @Transactional(readOnly = true)
     public SliceResponse<AdminItemSearchResponseDto> getAllItems(Long userId, String name,
         Category category, Integer minPrice, Integer maxPrice, Pageable pageable) {
         return itemRepository.adminItemSearch(userId, name, category, minPrice, maxPrice, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public ItemReportResponseDto getItemReport(Long itemReportId) {
+        ItemReport itemReport = itemReportRepository.findById(itemReportId)
+            .orElseThrow(() -> new CustomException(ErrorCode.ITEM_REPORT_NOT_FOUND));
+
+        return new ItemReportResponseDto(itemReport);
+    }
+
+    @Transactional(readOnly = true)
+    public UserReportResponseDto getUserReport(Long userReportId) {
+        UserReport userReport = userReportRepository.findById(userReportId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_REPORT_NOT_FOUND));
+
+        return new UserReportResponseDto(userReport);
     }
 }

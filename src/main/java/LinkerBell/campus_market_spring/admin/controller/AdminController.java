@@ -2,24 +2,25 @@ package LinkerBell.campus_market_spring.admin.controller;
 
 import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminLoginRequestDto;
+import LinkerBell.campus_market_spring.admin.dto.ItemReportResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.UserReportSearchResponseDto;
+import LinkerBell.campus_market_spring.admin.dto.UserReportResponseDto;
 import LinkerBell.campus_market_spring.admin.service.AdminService;
 import LinkerBell.campus_market_spring.domain.Category;
 import LinkerBell.campus_market_spring.dto.AuthResponseDto;
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
-import LinkerBell.campus_market_spring.dto.ItemSearchResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.global.auth.Login;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.data.web.SortDefault.SortDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -80,6 +81,19 @@ public class AdminController {
             @SortDefault(sort = "createdDate", direction = Direction.DESC),
             @SortDefault(sort = "userReportId", direction = Direction.DESC)}) Pageable pageable) {
         SliceResponse<UserReportSearchResponseDto> response = adminService.getUserReports(pageable);
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/items/report/{itemReportId}")
+    public ResponseEntity<ItemReportResponseDto> getItemReportDetails(
+        @PathVariable("itemReportId") Long itemReportId) {
+        ItemReportResponseDto response = adminService.getItemReport(itemReportId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/users/report/{userReportId}")
+    public ResponseEntity<UserReportResponseDto> getUserReportDetails(
+        @PathVariable("userReportId") Long userReportId) {
+        UserReportResponseDto response = adminService.getUserReport(userReportId);
         return ResponseEntity.ok(response);
     }
 }
