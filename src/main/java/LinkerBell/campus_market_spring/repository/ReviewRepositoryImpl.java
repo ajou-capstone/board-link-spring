@@ -41,7 +41,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
             .where(review.user.userId.eq(userId))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize() + 1)
-            .orderBy(review.createdDate.desc());
+            .orderBy(review.createdDate.desc(), review.reviewId.desc());
 
         List<ReviewResponseDto> reviews = query.fetch();
         boolean hasNext = false;
