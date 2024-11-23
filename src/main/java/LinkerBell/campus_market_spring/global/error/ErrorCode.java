@@ -58,6 +58,8 @@ public enum ErrorCode {
     INVALID_NOTIFICATION_ID(HttpStatus.BAD_REQUEST, 4050, "존재하지 않는 알람 히스토리입니다."),
     NOT_MATCH_USER_ID_WITH_NOTIFICATION_USER_ID(HttpStatus.FORBIDDEN, 4051,
         "해당 알람 히스토리의 당사자가 아닙니다."),
+    INVALID_QUESTION_DESCRIPTION(HttpStatus.BAD_REQUEST, 4052, "문의 내용은 2자이상 500자 이하여야 합니다."),
+    INVALID_QUESTION_TITLE(HttpStatus.BAD_REQUEST, 4053, "문의 제목은 2자이상 50자 이하여야 합니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다."),
 
