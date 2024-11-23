@@ -56,7 +56,6 @@ public class AdminService {
             user.getRole());
 
         user.setRefreshToken(refreshToken);
-        userRepository.save(user);
 
         return AuthResponseDto.builder()
             .accessToken(accessToken)
@@ -108,6 +107,5 @@ public class AdminService {
         }
         itemReport.getItem().setDeleted(isDeleted);
         itemReport.setCompleted(true);
-        itemReportRepository.save(itemReport);
     }
 }
