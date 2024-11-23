@@ -31,4 +31,5 @@ public class Keyword extends BaseEntity {
     @Column(length = 50)
     private String keywordName;
 
+
 }

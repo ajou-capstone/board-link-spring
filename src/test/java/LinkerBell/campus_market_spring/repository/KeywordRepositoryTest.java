@@ -115,4 +115,19 @@ class KeywordRepositoryTest {
 
     }
 
+    @Test
+    @DisplayName("userId를 바탕으로 유저 별로 쓴 키워드 가져오는 함수 test")
+    public void findKeywordByUser_UserIdTest() throws Exception {
+        //given
+
+        //when
+        List<Keyword> keywordsByUserId = keywordRepository.findKeywordByUser_UserId(
+            users.get(0).getUserId());
+        //then
+        assertThat(keywordsByUserId.size()).isEqualTo(3);
+        assertThat(keywordsByUserId.get(0)).isEqualTo(keywords.get(0));
+        assertThat(keywordsByUserId.get(1)).isEqualTo(keywords.get(1));
+        assertThat(keywordsByUserId.get(2)).isEqualTo(keywords.get(2));
+    }
+
 }
