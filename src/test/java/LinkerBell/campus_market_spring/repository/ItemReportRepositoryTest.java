@@ -8,6 +8,8 @@ import LinkerBell.campus_market_spring.domain.ItemReport;
 import LinkerBell.campus_market_spring.domain.ItemReportCategory;
 import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
+import LinkerBell.campus_market_spring.domain.UserReport;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 @DataJpaTest
 class ItemReportRepositoryTest {
@@ -34,6 +38,8 @@ class ItemReportRepositoryTest {
     private CampusRepository campusRepository;
     @Autowired
     private ItemRepository itemRepository;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     private User user;
     private User other;
@@ -63,6 +69,16 @@ class ItemReportRepositoryTest {
             itemReports.add(itemReport);
         }
         itemReports = itemReportRepository.saveAll(itemReports);
+        int i = 0;
+        for(ItemReport itemReport : itemReports) {
+            LocalDateTime date = LocalDateTime.of(2023, LocalDate.now().getMonth(), 25 - i, 0 ,0);
+            Timestamp timestamp = Timestamp.valueOf(date);
+            String sql = "UPDATE item_report SET created_date=? WHERE item_report_id= ?;";
+            jdbcTemplate.update(sql, timestamp, itemReport.getItemReportId());
+            i += 1;
+            itemReport.setCreatedDate(date);
+            itemReportRepository.save(itemReport);
+        }
 
     }
 
@@ -84,7 +100,8 @@ class ItemReportRepositoryTest {
     @DisplayName("상품 신고 리스트 테스트")
     public void getItemReportListTest() {
         // given
-        Sort sort = Sort.by("createdDate").descending();
+        Sort sort = Sort.by(Direction.DESC, "createdDate")
+            .and(Sort.by(Direction.DESC, "itemReportId"));
         Pageable pageable = PageRequest.of(0, 20, sort);
         // when
         Slice<ItemReport> slice = itemReportRepository.findItemReports(pageable);
@@ -93,6 +110,7 @@ class ItemReportRepositoryTest {
         assertThat(slice).isNotNull();
         assertThat(slice.getContent().size()).isEqualTo(10);
         assertThat(slice.getContent().get(0).getCategory()).isEqualTo(ItemReportCategory.values()[0]);
+        assertThat(slice.getContent().get(0).getCreatedDate()).isAfter(slice.getContent().get(1).getCreatedDate());
     }
 
     private Campus createCampus() {

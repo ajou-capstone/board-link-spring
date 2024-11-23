@@ -1,29 +1,27 @@
 package LinkerBell.campus_market_spring.admin.service;
 
+import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportSearchResponseDto;
+import LinkerBell.campus_market_spring.admin.dto.UserReportSearchResponseDto;
+import LinkerBell.campus_market_spring.domain.Category;
 import LinkerBell.campus_market_spring.domain.ItemReport;
 import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
+import LinkerBell.campus_market_spring.domain.UserReport;
 import LinkerBell.campus_market_spring.dto.AuthResponseDto;
-import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
-import LinkerBell.campus_market_spring.domain.Category;
-import LinkerBell.campus_market_spring.domain.Role;
-import LinkerBell.campus_market_spring.domain.User;
-import LinkerBell.campus_market_spring.dto.AuthResponseDto;
-import LinkerBell.campus_market_spring.dto.ItemSearchResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
 import LinkerBell.campus_market_spring.repository.ItemReportRepository;
 import LinkerBell.campus_market_spring.repository.ItemRepository;
+import LinkerBell.campus_market_spring.repository.UserReportRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import LinkerBell.campus_market_spring.service.GoogleAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,6 +33,7 @@ public class AdminService {
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
     private final ItemReportRepository itemReportRepository;
+    private final UserReportRepository userReportRepository;
     private final ItemRepository itemRepository;
 
     public AuthResponseDto adminLogin(String idToken) {
@@ -47,8 +46,10 @@ public class AdminService {
             throw new CustomException(ErrorCode.NOT_ADMINISTRATOR);
         }
 
-        String accessToken = jwtUtils.generateAccessToken(user.getUserId(), user.getLoginEmail(), user.getRole());
-        String refreshToken = jwtUtils.generateRefreshToken(user.getUserId(), user.getLoginEmail(), user.getRole());
+        String accessToken = jwtUtils.generateAccessToken(user.getUserId(), user.getLoginEmail(),
+            user.getRole());
+        String refreshToken = jwtUtils.generateRefreshToken(user.getUserId(), user.getLoginEmail(),
+            user.getRole());
 
         user.setRefreshToken(refreshToken);
         userRepository.save(user);
@@ -63,7 +64,13 @@ public class AdminService {
 
         return new SliceResponse<>(itemReports.map(ItemReportSearchResponseDto::new));
     }
-  
+
+    public SliceResponse<UserReportSearchResponseDto> getUserReports(Pageable pageable) {
+        Slice<UserReport> userReports = userReportRepository.findUserReports(pageable);
+
+        return new SliceResponse<>(userReports.map(UserReportSearchResponseDto::new));
+    }
+
     public SliceResponse<AdminItemSearchResponseDto> getAllItems(Long userId, String name,
         Category category, Integer minPrice, Integer maxPrice, Pageable pageable) {
         return itemRepository.adminItemSearch(userId, name, category, minPrice, maxPrice, pageable);
