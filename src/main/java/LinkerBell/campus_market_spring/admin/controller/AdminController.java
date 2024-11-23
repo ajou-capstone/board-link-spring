@@ -83,6 +83,7 @@ public class AdminController {
         SliceResponse<UserReportSearchResponseDto> response = adminService.getUserReports(pageable);
         return ResponseEntity.ok(response);
     }
+
     @GetMapping("/items/report/{itemReportId}")
     public ResponseEntity<ItemReportResponseDto> getItemReportDetails(
         @PathVariable("itemReportId") Long itemReportId) {

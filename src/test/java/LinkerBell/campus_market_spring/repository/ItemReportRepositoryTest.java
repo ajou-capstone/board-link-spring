@@ -129,6 +129,21 @@ class ItemReportRepositoryTest {
         assertThat(findItemReport.getDescription()).isEqualTo(itemReport.getDescription());
     }
 
+    @Test
+    @DisplayName("상품 신고 찾기 테스트")
+    public void findItemReportTest() {
+        // given
+        ItemReport itemReport = ItemReport.builder()
+            .user(user).item(item).description("test reason").isCompleted(false).build();
+        itemReport = itemReportRepository.save(itemReport);
+        // when
+        Optional<ItemReport> itemReportOpt = itemReportRepository.findById(itemReport.getItemReportId());
+        // then
+        assertThat(itemReportOpt).isPresent();
+        ItemReport findItemReport = itemReportOpt.get();
+        assertThat(findItemReport.getDescription()).isEqualTo(itemReport.getDescription());
+    }
+
     private Campus createCampus() {
         return Campus.builder()
             .campusId(1L)

@@ -70,6 +70,7 @@ public class AdminService {
         return new SliceResponse<>(itemReports.map(ItemReportSearchResponseDto::new));
     }
 
+    @Transactional(readOnly = true)
     public SliceResponse<UserReportSearchResponseDto> getUserReports(Pageable pageable) {
         Slice<UserReport> userReports = userReportRepository.findUserReports(pageable);
 
