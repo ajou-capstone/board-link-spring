@@ -14,6 +14,7 @@ public enum ErrorCode {
     UNVERIFIED_GOOGLE_TOKEN(HttpStatus.UNAUTHORIZED, 4005, "Google idToken이 확인되지 않습니다."),
     NOT_VERIFIED_EMAIL(HttpStatus.UNAUTHORIZED, 4006, "Google email is not verified"),
     JWT_IS_NULL(HttpStatus.UNAUTHORIZED, 4007, "jwt의 값이 null입니다."),
+    BLACKLIST_USER(HttpStatus.FORBIDDEN, 4008, "정지된 사용자입니다."),
 
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, 4011, "사용자가 존재하지 않습니다."),
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, 4012, "아이템이 존재하지 않습니다."),
@@ -68,6 +69,7 @@ public enum ErrorCode {
     ITEM_REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, 4059 , "해당 상품 신고를 찾을 수 없습니다." ),
     USER_REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, 4060 , "해당 사용자 신고를 찾을 수 없습니다." ),
     REQUIRE_DELETE_OR_NOT(HttpStatus.BAD_REQUEST, 4061, "삭제 여부가 필요합니다."),
+    NOT_NULL_USER_REPORT_SUSPENDED_OR_NOT(HttpStatus.BAD_REQUEST, 4062, "사용자 신고의 정지 여부는 비울 수 없습니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다."),
 

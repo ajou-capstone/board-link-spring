@@ -1,5 +1,6 @@
 package LinkerBell.campus_market_spring.global.error;
 
+import LinkerBell.campus_market_spring.admin.dto.AdminUserReportRequestDto;
 import LinkerBell.campus_market_spring.dto.QaRequestDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminItemReportRequestDto;
 import LinkerBell.campus_market_spring.dto.ReviewRequestDto;
@@ -23,8 +24,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResponse> handleException(CustomException exception) {
         ErrorCode errorCode = exception.getErrorCode();
-        ErrorResponse errorResponse = new ErrorResponse(errorCode);
-        log.info("Error : " + errorResponse.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(exception.getMessage(), errorCode.getCode());
+        log.error("Error : {}", errorResponse.getMessage());
         return new ResponseEntity<>(errorResponse, errorCode.getHttpStatus());
     }
 
@@ -111,6 +112,14 @@ public class GlobalExceptionHandler {
                 ErrorResponse errorResponse = new ErrorResponse(ErrorCode.REQUIRE_DELETE_OR_NOT);
                 return new ResponseEntity<>(errorResponse,
                     ErrorCode.REQUIRE_DELETE_OR_NOT.getHttpStatus());
+            }
+        } else if (fieldName.equals("isSuspended")) {
+            if (ex.getBindingResult().getTarget() instanceof AdminUserReportRequestDto) {
+                ErrorResponse errorResponse = new ErrorResponse(
+                    ErrorCode.NOT_NULL_USER_REPORT_SUSPENDED_OR_NOT);
+                log.error(ErrorCode.INVALID_QUESTION_TITLE.getMessage());
+                return new ResponseEntity<>(errorResponse,
+                    ErrorCode.NOT_NULL_USER_REPORT_SUSPENDED_OR_NOT.getHttpStatus());
             }
         }
 
