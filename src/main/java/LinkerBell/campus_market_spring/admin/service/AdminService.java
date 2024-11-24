@@ -29,7 +29,6 @@ import LinkerBell.campus_market_spring.service.GoogleAuthService;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Admin;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -157,5 +156,14 @@ public class AdminService {
             .orElseThrow(() -> new CustomException(ErrorCode.QA_NOT_FOUND));
 
         return new AdminQaResponseDto(qa);
+    }
+
+    public void answerQuestion(Long qaId, String answer) {
+        QA qa = qaRepository.findById(qaId)
+            .orElseThrow(() -> new CustomException(ErrorCode.QA_NOT_FOUND));
+
+        qa.setCompleted(true);
+        qa.setAnswerDescription(answer);
+        qa.setAnswerDate(LocalDateTime.now());
     }
 }

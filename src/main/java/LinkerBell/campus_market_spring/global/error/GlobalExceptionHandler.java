@@ -1,6 +1,7 @@
 package LinkerBell.campus_market_spring.global.error;
 
 import LinkerBell.campus_market_spring.admin.dto.AdminUserReportRequestDto;
+import LinkerBell.campus_market_spring.admin.dto.AdminQaRequestDto;
 import LinkerBell.campus_market_spring.dto.QaRequestDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminItemReportRequestDto;
 import LinkerBell.campus_market_spring.dto.ReviewRequestDto;
@@ -120,6 +121,12 @@ public class GlobalExceptionHandler {
                 log.error(ErrorCode.INVALID_QUESTION_TITLE.getMessage());
                 return new ResponseEntity<>(errorResponse,
                     ErrorCode.NOT_NULL_USER_REPORT_SUSPENDED_OR_NOT.getHttpStatus());
+            }
+        } else if (fieldName.equals("answerDescription")) {
+            if (ex.getBindingResult().getTarget() instanceof AdminQaRequestDto) {
+                ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_QA_ANSWER);
+                return new ResponseEntity<>(errorResponse,
+                    ErrorCode.INVALID_QA_ANSWER.getHttpStatus());
             }
         }
 

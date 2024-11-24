@@ -122,6 +122,25 @@ class QaRepositoryTest {
         assertThat(qaOpt.get().getTitle()).isEqualTo(qa.getTitle());
     }
 
+    @Test
+    @DisplayName("문의 답변 작성 테스트")
+    public void answerQuestionTest() {
+        // given
+        QA qa = QA.builder()
+            .user(user).isCompleted(false).title("Test title")
+            .category(QaCategory.ACCOUNT_INQUIRY).description("Test description").build();
+        qa = qaRepository.save(qa);
+        // when
+        qa.setCompleted(true);
+        qa.setAnswerDescription("Test answer");
+        qa.setAnswerDate(LocalDateTime.now());
+        qa = qaRepository.save(qa);
+        QA answeredQa = qaRepository.findById(qa.getQaId()).orElse(null);
+        // then
+        assertThat(answeredQa).isNotNull();
+        assertThat(answeredQa.getAnswerDescription()).isEqualTo(qa.getAnswerDescription());
+    }
+
     private Campus createCampus() {
         return Campus.builder()
             .campusId(1L)

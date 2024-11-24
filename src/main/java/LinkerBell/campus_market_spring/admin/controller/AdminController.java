@@ -3,6 +3,7 @@ package LinkerBell.campus_market_spring.admin.controller;
 import LinkerBell.campus_market_spring.admin.dto.AdminItemReportRequestDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminLoginRequestDto;
+import LinkerBell.campus_market_spring.admin.dto.AdminQaRequestDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminQaResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminQaSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminUserReportRequestDto;
@@ -133,5 +134,12 @@ public class AdminController {
     public ResponseEntity<AdminQaResponseDto> getQuestionDetails(@PathVariable("qaId") Long qaId) {
         AdminQaResponseDto response = adminService.getQuestion(qaId);
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/qa/{qaId}")
+    public ResponseEntity<?> answerQuestion(@PathVariable("qaId") Long qaId,
+        @Valid @RequestBody AdminQaRequestDto requestDto) {
+        adminService.answerQuestion(qaId, requestDto.answerDescription());
+        return ResponseEntity.noContent().build();
     }
 }
