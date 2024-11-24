@@ -1,5 +1,6 @@
 package LinkerBell.campus_market_spring.admin.controller;
 
+import LinkerBell.campus_market_spring.admin.dto.AdminItemReportRequestDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminLoginRequestDto;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportResponseDto;
@@ -12,6 +13,7 @@ import LinkerBell.campus_market_spring.dto.AuthResponseDto;
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.global.auth.Login;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
@@ -20,6 +22,7 @@ import org.springframework.data.web.SortDefault;
 import org.springframework.data.web.SortDefault.SortDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -83,6 +86,7 @@ public class AdminController {
         SliceResponse<UserReportSearchResponseDto> response = adminService.getUserReports(pageable);
         return ResponseEntity.ok(response);
     }
+
     @GetMapping("/items/report/{itemReportId}")
     public ResponseEntity<ItemReportResponseDto> getItemReportDetails(
         @PathVariable("itemReportId") Long itemReportId) {
@@ -95,5 +99,12 @@ public class AdminController {
         @PathVariable("userReportId") Long userReportId) {
         UserReportResponseDto response = adminService.getUserReport(userReportId);
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/items/report/{itemReportId}")
+    public ResponseEntity<?> receiveItemReport(@PathVariable("itemReportId") Long itemReportId,
+        @Valid @RequestBody AdminItemReportRequestDto requestDto) {
+        adminService.receiveItemReport(itemReportId, requestDto.isDeleted());
+        return ResponseEntity.noContent().build();
     }
 }
