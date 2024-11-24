@@ -3,8 +3,6 @@ package LinkerBell.campus_market_spring.repository;
 import static org.assertj.core.api.Assertions.*;
 
 import LinkerBell.campus_market_spring.domain.Campus;
-import LinkerBell.campus_market_spring.domain.ItemReport;
-import LinkerBell.campus_market_spring.domain.ItemReportCategory;
 import LinkerBell.campus_market_spring.domain.QA;
 import LinkerBell.campus_market_spring.domain.QaCategory;
 import LinkerBell.campus_market_spring.domain.Role;
