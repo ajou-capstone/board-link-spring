@@ -1,6 +1,8 @@
 package LinkerBell.campus_market_spring.admin.service;
 
 import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
+import LinkerBell.campus_market_spring.admin.dto.AdminQaResponseDto;
+import LinkerBell.campus_market_spring.admin.dto.AdminQaSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.UserReportSearchResponseDto;
 import LinkerBell.campus_market_spring.domain.Blacklist;
@@ -8,6 +10,7 @@ import LinkerBell.campus_market_spring.domain.Category;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.UserReportResponseDto;
 import LinkerBell.campus_market_spring.domain.ItemReport;
+import LinkerBell.campus_market_spring.domain.QA;
 import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.domain.UserReport;
@@ -19,12 +22,14 @@ import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
 import LinkerBell.campus_market_spring.repository.BlacklistRepository;
 import LinkerBell.campus_market_spring.repository.ItemReportRepository;
 import LinkerBell.campus_market_spring.repository.ItemRepository;
+import LinkerBell.campus_market_spring.repository.QaRepository;
 import LinkerBell.campus_market_spring.repository.UserReportRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import LinkerBell.campus_market_spring.service.GoogleAuthService;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Admin;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -43,6 +48,7 @@ public class AdminService {
     private final UserReportRepository userReportRepository;
     private final ItemRepository itemRepository;
     private final BlacklistRepository blacklistRepository;
+    private final QaRepository qaRepository;
 
     public AuthResponseDto adminLogin(String idToken) {
         String email = googleAuthService.getEmailWithVerifyIdToken(idToken);
@@ -136,5 +142,20 @@ public class AdminService {
         }
 
         blacklistRepository.save(blacklist);
+    }
+
+    @Transactional(readOnly = true)
+    public SliceResponse<AdminQaSearchResponseDto> getQuestions(Pageable pageable) {
+        Slice<QA> qas = qaRepository.findQAs(pageable);
+
+        return new SliceResponse<>(qas.map(AdminQaSearchResponseDto::new));
+    }
+
+    @Transactional(readOnly = true)
+    public AdminQaResponseDto getQuestion(Long questionId) {
+        QA qa = qaRepository.findById(questionId)
+            .orElseThrow(() -> new CustomException(ErrorCode.QA_NOT_FOUND));
+
+        return new AdminQaResponseDto(qa);
     }
 }

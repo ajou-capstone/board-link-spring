@@ -3,6 +3,8 @@ package LinkerBell.campus_market_spring.admin.controller;
 import LinkerBell.campus_market_spring.admin.dto.AdminItemReportRequestDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminLoginRequestDto;
+import LinkerBell.campus_market_spring.admin.dto.AdminQaResponseDto;
+import LinkerBell.campus_market_spring.admin.dto.AdminQaSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminUserReportRequestDto;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportSearchResponseDto;
@@ -115,5 +117,21 @@ public class AdminController {
         adminService.receiveUserReport(userReportId, requestDto.isSuspended(),
             requestDto.suspendReason(), requestDto.suspendPeriod());
        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/qa")
+    public ResponseEntity<SliceResponse<AdminQaSearchResponseDto>> getQuestions(
+        @PageableDefault(page = 0, size = 10)
+        @SortDefaults({
+            @SortDefault(sort = "createdDate", direction = Direction.DESC),
+            @SortDefault(sort = "qaId", direction = Direction.DESC)}) Pageable pageable) {
+        SliceResponse<AdminQaSearchResponseDto> response = adminService.getQuestions(pageable);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/qa/{qaId}")
+    public ResponseEntity<AdminQaResponseDto> getQuestionDetails(@PathVariable("qaId") Long qaId) {
+        AdminQaResponseDto response = adminService.getQuestion(qaId);
+        return ResponseEntity.ok(response);
     }
 }

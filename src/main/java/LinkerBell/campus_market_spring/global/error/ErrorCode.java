@@ -70,6 +70,7 @@ public enum ErrorCode {
     USER_REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, 4060 , "해당 사용자 신고를 찾을 수 없습니다." ),
     REQUIRE_DELETE_OR_NOT(HttpStatus.BAD_REQUEST, 4061, "삭제 여부가 필요합니다."),
     NOT_NULL_USER_REPORT_SUSPENDED_OR_NOT(HttpStatus.BAD_REQUEST, 4062, "사용자 신고의 정지 여부는 비울 수 없습니다."),
+    QA_NOT_FOUND(HttpStatus.NOT_FOUND, 4063, "해당 문의를 찾을 수 없습니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다."),
 
