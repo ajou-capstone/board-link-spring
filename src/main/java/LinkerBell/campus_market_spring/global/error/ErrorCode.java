@@ -72,6 +72,7 @@ public enum ErrorCode {
     NOT_NULL_USER_REPORT_SUSPENDED_OR_NOT(HttpStatus.BAD_REQUEST, 4062, "사용자 신고의 정지 여부는 비울 수 없습니다."),
     QA_NOT_FOUND(HttpStatus.NOT_FOUND, 4063, "해당 문의를 찾을 수 없습니다."),
     INVALID_QA_ANSWER(HttpStatus.BAD_REQUEST, 4064, "문의 답변은 2자 이상 500자 이하여야 합니다."),
+    NOT_MATCH_QA_USER(HttpStatus.BAD_REQUEST, 4065, "해당 문의 작성자가 아닙니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다."),
 

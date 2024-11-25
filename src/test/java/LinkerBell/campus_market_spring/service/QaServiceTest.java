@@ -85,7 +85,5 @@ class QaServiceTest {
         assertThatThrownBy(() -> qaService.getAnswerDetails(123123L, qa.getQaId()))
             .isInstanceOf(CustomException.class)
             .hasMessageContaining(ErrorCode.NOT_MATCH_QA_USER.getMessage());
-
     }
-
 }
