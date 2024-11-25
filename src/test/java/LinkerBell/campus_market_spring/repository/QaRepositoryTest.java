@@ -3,8 +3,6 @@ package LinkerBell.campus_market_spring.repository;
 import static org.assertj.core.api.Assertions.*;
 
 import LinkerBell.campus_market_spring.domain.Campus;
-import LinkerBell.campus_market_spring.domain.ItemReport;
-import LinkerBell.campus_market_spring.domain.ItemReportCategory;
 import LinkerBell.campus_market_spring.domain.QA;
 import LinkerBell.campus_market_spring.domain.QaCategory;
 import LinkerBell.campus_market_spring.domain.Role;
@@ -108,8 +106,8 @@ class QaRepositoryTest {
     }
 
     @Test
-    @DisplayName("관리자용 문의 내용 가져오기 테스트")
-    public void getQuestionDetailsForAdminTest() {
+    @DisplayName("문의 내용 가져오기 테스트")
+    public void getQuestionDetailsTest() {
         // given
         QA qa = QA.builder()
             .user(user).isCompleted(false).title("Test title")
@@ -139,6 +137,22 @@ class QaRepositoryTest {
         // then
         assertThat(answeredQa).isNotNull();
         assertThat(answeredQa.getAnswerDescription()).isEqualTo(qa.getAnswerDescription());
+    }
+
+    @Test
+    @DisplayName("작성한 문의 리스트 가져오기 테스트")
+    public void getQuestionListTest() {
+        // given
+        Sort sort = Sort.by(Direction.DESC, "createdDate")
+            .and(Sort.by(Direction.DESC, "qaId"));
+        Pageable pageable = PageRequest.of(0, 20, sort);
+        // when
+        Slice<QA> slice = qaRepository.findQASByUser(user, pageable);
+        // then
+        assertThat(slice).isNotNull();
+        assertThat(slice.getContent().size()).isEqualTo(20);
+        assertThat(slice.getContent().get(0).getCategory()).isEqualTo(QaCategory.values()[0]);
+        assertThat(slice.getContent().get(0).getCreatedDate()).isAfter(slice.getContent().get(1).getCreatedDate());
     }
 
     private Campus createCampus() {
