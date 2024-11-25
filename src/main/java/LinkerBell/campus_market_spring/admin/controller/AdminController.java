@@ -3,6 +3,7 @@ package LinkerBell.campus_market_spring.admin.controller;
 import LinkerBell.campus_market_spring.admin.dto.AdminItemReportRequestDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminLoginRequestDto;
+import LinkerBell.campus_market_spring.admin.dto.AdminUserReportRequestDto;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.UserReportSearchResponseDto;
@@ -106,5 +107,13 @@ public class AdminController {
         @Valid @RequestBody AdminItemReportRequestDto requestDto) {
         adminService.receiveItemReport(itemReportId, requestDto.isDeleted());
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/users/report/{userReportId}")
+    public ResponseEntity<?> receiveUserReport(@PathVariable("userReportId") Long userReportId,
+        @Valid @RequestBody AdminUserReportRequestDto requestDto) {
+        adminService.receiveUserReport(userReportId, requestDto.isSuspended(),
+            requestDto.suspendReason(), requestDto.suspendPeriod());
+       return ResponseEntity.noContent().build();
     }
 }

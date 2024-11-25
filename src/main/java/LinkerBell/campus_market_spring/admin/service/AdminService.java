@@ -3,6 +3,7 @@ package LinkerBell.campus_market_spring.admin.service;
 import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.UserReportSearchResponseDto;
+import LinkerBell.campus_market_spring.domain.Blacklist;
 import LinkerBell.campus_market_spring.domain.Category;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.UserReportResponseDto;
@@ -15,11 +16,13 @@ import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
+import LinkerBell.campus_market_spring.repository.BlacklistRepository;
 import LinkerBell.campus_market_spring.repository.ItemReportRepository;
 import LinkerBell.campus_market_spring.repository.ItemRepository;
 import LinkerBell.campus_market_spring.repository.UserReportRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import LinkerBell.campus_market_spring.service.GoogleAuthService;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +42,7 @@ public class AdminService {
     private final ItemReportRepository itemReportRepository;
     private final UserReportRepository userReportRepository;
     private final ItemRepository itemRepository;
+    private final BlacklistRepository blacklistRepository;
 
     public AuthResponseDto adminLogin(String idToken) {
         String email = googleAuthService.getEmailWithVerifyIdToken(idToken);
@@ -107,5 +111,30 @@ public class AdminService {
         }
         itemReport.getItem().setDeleted(isDeleted);
         itemReport.setCompleted(true);
+    }
+
+    public void receiveUserReport(Long userReportId, boolean isSuspended,
+        String suspendReason, int suspendPeriod) {
+        UserReport userReport = userReportRepository.findById(userReportId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        userReport.setCompleted(true);
+
+        if (!isSuspended) {
+            return;
+        }
+        LocalDateTime period = LocalDateTime.now().plusDays(suspendPeriod);
+        User target = userReport.getTarget();
+        Blacklist blacklist = blacklistRepository.findByUser(target)
+            .orElseGet(() -> Blacklist.builder().reason(suspendReason)
+                .user(target).endDate(period).build());
+
+        if (blacklist.getEndDate().isBefore(period)) {
+            blacklist.setEndDate(period);
+            blacklist.setReason(suspendReason);
+            // TODO: 로그아웃 시키기
+        }
+
+        blacklistRepository.save(blacklist);
     }
 }

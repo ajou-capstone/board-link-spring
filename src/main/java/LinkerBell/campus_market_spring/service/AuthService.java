@@ -7,8 +7,10 @@ import LinkerBell.campus_market_spring.dto.AuthUserDto;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
+import LinkerBell.campus_market_spring.repository.BlacklistRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class AuthService {
     private final JwtUtils jwtUtils;
     private final FcmService fcmService;
     private final GoogleAuthService googleAuthService;
+    private final BlacklistRepository blacklistRepository;
 
     public AuthResponseDto userLogin(String googleToken, String firebaseToken) {
         String email = googleAuthService.getEmailWithVerifyIdToken(googleToken);
@@ -31,7 +34,7 @@ public class AuthService {
         User user = userRepository.findByLoginEmail(email)
             .orElseGet(() -> createNewUser(email));
 
-        // TODO: check logout and blacklist
+        checkBlacklist(user);
 
         String accessToken = jwtUtils.generateAccessToken(user.getUserId(), user.getLoginEmail(), user.getRole());
         String refreshToken = jwtUtils.generateRefreshToken(user.getUserId(), user.getLoginEmail(), user.getRole());
@@ -44,6 +47,16 @@ public class AuthService {
         return AuthResponseDto.builder()
             .accessToken(accessToken)
             .refreshToken(refreshToken).build();
+    }
+
+    private void checkBlacklist(User user) {
+        blacklistRepository.findByUser(user).ifPresent(blacklist -> {
+            String formattedDate = blacklist.getEndDate()
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            String message = String.format("이용 제한 사유: %s\n 기간: %s까지",
+                blacklist.getReason(), formattedDate);
+            throw new CustomException(ErrorCode.BLACKLIST_USER, message);
+        });
     }
 
     private User createNewUser(String email) {
