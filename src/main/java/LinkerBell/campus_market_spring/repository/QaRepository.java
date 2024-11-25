@@ -1,6 +1,7 @@
 package LinkerBell.campus_market_spring.repository;
 
 import LinkerBell.campus_market_spring.domain.QA;
+import LinkerBell.campus_market_spring.domain.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,4 +14,6 @@ public interface QaRepository extends JpaRepository<QA, Long> {
     @Query(value = "select q from QA q "
         + "where q.isCompleted=false ")
     Slice<QA> findQAs(Pageable pageable);
+
+    Slice<QA> findQASByUser(User user, Pageable pageable);
 }
