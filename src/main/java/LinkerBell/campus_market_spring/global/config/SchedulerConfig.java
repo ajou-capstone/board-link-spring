@@ -20,13 +20,13 @@ public class SchedulerConfig {
 
     @Scheduled(cron = "${cron.recovery}")
     public void recoveryUser() {
-        log.debug("recovery scheduled start...");
+        log.info("recovery scheduled start...");
         LocalDateTime now = LocalDateTime.now();
         List<Blacklist> blacklists = blacklistRepository.findAll();
         List<Blacklist> userList = blacklists.stream().filter(blacklist -> {
             return blacklist.getEndDate().isBefore(now);
         }).toList();
         blacklistRepository.deleteAll(userList);
-        log.debug("recovery scheduled finish...");
+        log.info("recovery scheduled finish...");
     }
 }
