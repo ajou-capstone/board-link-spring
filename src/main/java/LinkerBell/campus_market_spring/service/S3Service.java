@@ -29,31 +29,10 @@ public class S3Service {
     private final AwsProperties awsProperties;
 
     public S3ResponseDto createPreSignedPutUrl(String fileName) {
-        LocalDateTime now = LocalDateTime.now();
-        String date = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String encodedTime = getEncodedTime(now).substring(0, 6);
+        String keyName = createKeyName(fileName);
 
-        fileName = fileName.trim()
-            .replaceAll("\\s+", "-")
-            .replaceAll("_", "-");
+        String presignedUrl = createPresignedUrl(keyName);
 
-        String keyName = String.format("%s/%s%s%s",
-            awsProperties.folder(), encodedTime, date, fileName);
-
-        log.info("keyName: [{}]", keyName);
-        
-        PutObjectRequest objectRequest = PutObjectRequest.builder()
-            .key(keyName)
-            .bucket(awsProperties.bucket()).build();
-
-        PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
-            .signatureDuration(Duration.ofMinutes(10L))
-            .putObjectRequest(objectRequest).build();
-
-        PresignedPutObjectRequest presignedPutObjectRequest =
-            s3Presigner.presignPutObject(presignRequest);
-
-        String presignedUrl = presignedPutObjectRequest.url().toExternalForm();
         String s3url = getS3Url(keyName);
 
         return S3ResponseDto.builder()
@@ -70,6 +49,37 @@ public class S3Service {
             .build();
 
         s3Client.deleteObject(objectRequest);
+    }
+
+    private String createKeyName(String fileName) {
+        LocalDateTime now = LocalDateTime.now();
+        String date = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String encodedTime = getEncodedTime(now).substring(0, 6);
+
+        String keyName = String.format("%s/%s%s%s",
+            awsProperties.folder(), encodedTime, date, fileName);
+
+        keyName = keyName.trim()
+            .replaceAll("\\s+", "-")
+            .replaceAll("_", "-");
+
+        return keyName;
+    }
+
+    private String createPresignedUrl(String keyName) {
+        PutObjectRequest objectRequest = PutObjectRequest.builder()
+            .key(keyName)
+            .bucket(awsProperties.bucket()).build();
+
+        PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
+            .signatureDuration(Duration.ofMinutes(10L))
+            .putObjectRequest(objectRequest).build();
+
+        PresignedPutObjectRequest presignedPutObjectRequest =
+            s3Presigner.presignPutObject(presignRequest);
+
+        String presignedUrl = presignedPutObjectRequest.url().toExternalForm();
+        return presignedUrl;
     }
 
     private String getKeyName(String s3Url) {

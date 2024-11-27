@@ -24,6 +24,7 @@ import org.springframework.util.CollectionUtils;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 @Slf4j
 public class TermsService {
 
@@ -31,7 +32,6 @@ public class TermsService {
     private final UserAndTermsRepository userAndTermsRepository;
     private final UserRepository userRepository;
 
-    @Transactional
     public List<TermsResponseDto> getTermsAndUserAgreementInfo(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(
             ErrorCode.USER_NOT_FOUND));
@@ -54,7 +54,6 @@ public class TermsService {
         return createTermsResponseDto(updatedUserAndTerms);
     }
 
-    @Transactional
     public void agreeTerms(Long userId, List<TermsRequestDto> terms) {
         List<UserAndTerms> userAndTerms = userAndTermsRepository.findAllByUserId(userId);
 
@@ -64,7 +63,6 @@ public class TermsService {
 
         for (TermsRequestDto term : terms) {
             for (UserAndTerms ut : userAndTerms) {
-                log.info("[{}], [{}]", term.getTermId(), ut.getTerms().getTermsId());
                 if (Objects.equals(term.getTermId(), ut.getTerms().getTermsId())) {
                     ut.setAgree(term.isAgree());
                 }
@@ -84,14 +82,18 @@ public class TermsService {
                 userAndTerms.add(UserAndTerms.builder().user(user).terms(term).isAgree(false).build());
             }
             else if (term.getLastModifiedDate().isAfter(recentAgreementDate)) {
-                userAndTerms.forEach(ut -> {
-                    if (StringUtils.equals(ut.getTerms().getTermsUrl(), term.getTermsUrl())) {
-                        ut.setAgree(false);
-                    }
-                });
+                findSameTermAndUpdate(userAndTerms, term);
             }
         }
         return userAndTerms;
+    }
+
+    private void findSameTermAndUpdate(List<UserAndTerms> userAndTerms, Terms term) {
+        userAndTerms.forEach(ut -> {
+            if (StringUtils.equals(ut.getTerms().getTermsUrl(), term.getTermsUrl())) {
+                ut.setAgree(false);
+            }
+        });
     }
 
     private List<UserAndTerms> createUserAndNotAgreementTerms(List<Terms> terms, User user) {
