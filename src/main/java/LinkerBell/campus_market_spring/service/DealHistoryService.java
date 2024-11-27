@@ -29,7 +29,7 @@ public class DealHistoryService {
         User requestedUser = userRepository.findById(requestedUserId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (loginUserId != requestedUserId) {
+        if (!loginUserId.equals(requestedUserId)) {
             throw new CustomException(ErrorCode.NOT_MATCH_LOGIN_USER_AND_REQUESTED_USER);
         }
 
@@ -54,7 +54,7 @@ public class DealHistoryService {
         User requestedUser = userRepository.findById(requestedUserId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (loginUserId != requestedUserId) {
+        if (!loginUserId.equals(requestedUserId)) {
             throw new CustomException(ErrorCode.NOT_MATCH_LOGIN_USER_AND_REQUESTED_USER);
         }
 
