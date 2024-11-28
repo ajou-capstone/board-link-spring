@@ -2,6 +2,11 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.4'
     id 'io.spring.dependency-management' version '1.1.6'
+    id 'jacoco'
+}
+
+jacoco {
+    toolVersion = "0.8.8"
 }
 
 group = 'LinkerBell'
@@ -24,6 +29,7 @@ repositories {
 }
 
 dependencies {
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -74,4 +80,75 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
+
+// jacoco start
+jacocoTestReport {
+    dependsOn test
+
+    reports {
+        xml.required = true // for github actions
+        html.required = true // for us
+        csv.required = false // for sonarQube
+    }
+
+    def QDomainList = []
+    for (qPattern in '**/QA'..'**/QZ') { // QClass 대응
+        QDomainList.add(qPattern + '*')
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(
+                files(classDirectories.files.collect {
+                    fileTree(dir: it, excludes: [
+                            '**/*Application*',
+                            '**/dto/**',
+                            '**/domain/**',
+                            '**/global/**',
+                    ] + QDomainList)
+                })
+        )
+    }
+    finalizedBy jacocoTestCoverageVerification    // rule 수행
+}
+
+jacocoTestCoverageVerification {
+    def QDomainList = []
+    for (qPattern in '*.QA'..'*.QZ') { // QClass 대응
+        QDomainList.add(qPattern + '*')
+    }
+    violationRules {
+        rule {
+            enabled = true // 활성화
+            element = 'CLASS' // 클래스 단위로 커버리지 체크
+            // includes = []
+
+            // 코드 커버리지를 측정할 때 사용되는 지표
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.00
+            }
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.00
+            }
+
+            excludes = [
+                    '**/*Application*',
+                    '**/dto/**',
+                    '**/domain/**',
+                    '**/global/**',
+            ] + QDomainList
+        }
+
+        // 여러 개의 rule 정의 가능
+        rule {
+        }
+    }
+}
+// jacoco end
+// ---------------- Test End
