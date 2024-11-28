@@ -66,4 +66,19 @@ public class FcmService {
             });
     }
 
+    public void sendFcmMessageWithChat(Long userId, Long chatRoomId, String title, String content) {
+        List<String> fcmTokens = userFcmTokenRepository.findFcmTokenByUser_UserId(userId);
+
+        for (String fcmToken : fcmTokens) {
+            FcmMessageDto fcmMessageDto = FcmMessageDto.builder()
+                .targetToken(fcmToken)
+                .title(title)
+                .body(content)
+                .deeplinkUrl(deeplinkKeywordUrl + chatRoomId)
+                .build();
+
+            fcmNotificationService.sendNotification(fcmMessageDto);
+        }
+    }
+
 }

@@ -1,6 +1,7 @@
 package LinkerBell.campus_market_spring.service;
 
 import LinkerBell.campus_market_spring.domain.ChatMessage;
+import LinkerBell.campus_market_spring.domain.ChatProperties;
 import LinkerBell.campus_market_spring.domain.ChatRoom;
 import LinkerBell.campus_market_spring.domain.ContentType;
 import LinkerBell.campus_market_spring.domain.User;
@@ -9,6 +10,7 @@ import LinkerBell.campus_market_spring.dto.ChattingResponseDto;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.repository.ChatMessageRepository;
+import LinkerBell.campus_market_spring.repository.ChatPropertiesRepository;
 import LinkerBell.campus_market_spring.repository.ChatRoomRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,9 @@ public class ChattingService {
 
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatPropertiesRepository chatPropertiesRepository;
     private final UserRepository userRepository;
+    private final FcmService fcmService;
 
     @Transactional
     public ChattingResponseDto makeChattingResponseDto(Long userId, Long chatRoomId,
@@ -71,5 +75,33 @@ public class ChattingService {
             .build();
 
         return chattingResponseDto;
+    }
+
+    @Transactional(readOnly = true)
+    public void sendNotification(Long userId, Long chatRoomId,
+        ChattingRequestDto chattingRequestDto) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+            .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
+
+        ChatProperties chatProperties = chatPropertiesRepository.findByUserAndChatRoom(user,
+            chatRoom);
+
+        if (!chatProperties.isAlarm()) {
+            return;
+        }
+
+        String title;
+        if (chatRoom.getUser().getUserId().equals(userId)) { // 내가 구매자
+            title = chatRoom.getItem().getUser().getNickname();
+        } else { // 내가 판매자
+            title = chatRoom.getUser().getNickname();
+        }
+
+        String content = chattingRequestDto.getContent();
+
+        fcmService.sendFcmMessageWithChat(userId, chatRoomId, title, content);
     }
 }
