@@ -8,11 +8,13 @@ import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.repository.ItemRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -30,6 +32,7 @@ public class DealHistoryService {
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if (!loginUserId.equals(requestedUserId)) {
+            log.error("loginUserId : {}, requestedUserId : {}", loginUserId, requestedUserId);
             throw new CustomException(ErrorCode.NOT_MATCH_LOGIN_USER_AND_REQUESTED_USER);
         }
 
@@ -55,6 +58,7 @@ public class DealHistoryService {
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if (!loginUserId.equals(requestedUserId)) {
+            log.error("loginUserId : {}, requestedUserId : {}", loginUserId, requestedUserId);
             throw new CustomException(ErrorCode.NOT_MATCH_LOGIN_USER_AND_REQUESTED_USER);
         }
 
