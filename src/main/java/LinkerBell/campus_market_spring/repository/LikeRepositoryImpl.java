@@ -51,7 +51,10 @@ public class LikeRepositoryImpl implements LikeRepositoryCustom {
             .leftJoin(like.item, item)
             .leftJoin(item.user, user)
             .leftJoin(chatRoom).on(chatRoom.item.eq(like.item))
-            .where(item.isDeleted.isFalse())
+            .where(
+                like.user.userId.eq(userId),
+                item.isDeleted.isFalse()
+            )
             .groupBy(like.likeId)
             .having(like.user.userId.eq(userId))
             .offset(pageable.getOffset())
