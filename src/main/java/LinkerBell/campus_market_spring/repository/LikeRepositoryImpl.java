@@ -56,7 +56,6 @@ public class LikeRepositoryImpl implements LikeRepositoryCustom {
                 item.isDeleted.isFalse()
             )
             .groupBy(like.likeId)
-            .having(like.user.userId.eq(userId))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize() + 1)
             .orderBy(like.createdDate.desc());
