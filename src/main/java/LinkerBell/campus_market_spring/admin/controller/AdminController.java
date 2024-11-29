@@ -15,6 +15,7 @@ import LinkerBell.campus_market_spring.admin.service.AdminService;
 import LinkerBell.campus_market_spring.domain.Category;
 import LinkerBell.campus_market_spring.dto.AuthResponseDto;
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
+import LinkerBell.campus_market_spring.dto.ItemDetailsViewResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.global.auth.Login;
 import jakarta.validation.Valid;
@@ -26,6 +27,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.data.web.SortDefault.SortDefaults;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -138,6 +140,19 @@ public class AdminController {
     public ResponseEntity<?> answerQuestion(@PathVariable("qaId") Long qaId,
         @Valid @RequestBody AdminQaRequestDto requestDto) {
         adminService.answerQuestion(qaId, requestDto.answerDescription());
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/items/{itemId}")
+    public ResponseEntity<ItemDetailsViewResponseDto> getItemDetails(@Login AuthUserDto user,
+        @PathVariable("itemId") Long itemId) {
+        ItemDetailsViewResponseDto response = adminService.getItemDetails(itemId, user.getUserId());
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/items/{itemId}")
+    public ResponseEntity<?> deleteItem(@PathVariable("itemId") Long itemId) {
+        adminService.deleteItem(itemId);
         return ResponseEntity.noContent().build();
     }
 }

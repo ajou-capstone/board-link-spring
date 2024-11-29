@@ -9,12 +9,14 @@ import LinkerBell.campus_market_spring.domain.Blacklist;
 import LinkerBell.campus_market_spring.domain.Category;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.UserReportResponseDto;
+import LinkerBell.campus_market_spring.domain.Item;
 import LinkerBell.campus_market_spring.domain.ItemReport;
 import LinkerBell.campus_market_spring.domain.QA;
 import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.domain.UserReport;
 import LinkerBell.campus_market_spring.dto.AuthResponseDto;
+import LinkerBell.campus_market_spring.dto.ItemDetailsViewResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
@@ -165,5 +167,20 @@ public class AdminService {
         qa.setCompleted(true);
         qa.setAnswerDescription(answer);
         qa.setAnswerDate(LocalDateTime.now());
+    }
+
+    @Transactional(readOnly = true)
+    public ItemDetailsViewResponseDto getItemDetails(Long itemId, Long userId) {
+        Item item = itemRepository.findById(itemId)
+            .orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
+
+        return itemRepository.findByItemDetails(userId, itemId);
+    }
+
+    public void deleteItem(Long itemId) {
+        Item item = itemRepository.findById(itemId)
+            .orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
+
+        item.setDeleted(true);
     }
 }
