@@ -137,7 +137,7 @@ public class AdminService {
         if (blacklist.getEndDate().isBefore(period)) {
             blacklist.setEndDate(period);
             blacklist.setReason(suspendReason);
-            // TODO: 로그아웃 시키기
+            target.setRefreshToken(null);
         }
 
         blacklistRepository.save(blacklist);

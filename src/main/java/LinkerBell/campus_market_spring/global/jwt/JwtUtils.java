@@ -6,6 +6,7 @@ import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -103,6 +104,11 @@ public class JwtUtils {
         UserDetails principal = new User(claims.get("userId").toString(), "", authorities);
 
         return UsernamePasswordAuthenticationToken.authenticated(principal, null, authorities);
+    }
+
+    public Long getExpirationTime(String token) {
+        Date date = new Date();
+        return getClaims(token).getExpiration().getTime() - date.getTime();
     }
 
     private boolean isExpired(String token) {

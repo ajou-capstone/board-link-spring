@@ -3,6 +3,7 @@ package LinkerBell.campus_market_spring.global.jwt;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.ErrorResponse;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
+import LinkerBell.campus_market_spring.global.redis.RedisService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import org.thymeleaf.util.StringUtils;
 
 @Component
 @RequiredArgsConstructor
@@ -23,6 +25,7 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
+    private final RedisService redisService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -32,6 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
             if (token == null) {
                 token = jwtUtils.resolveRefreshToken(request);
             }
+            checkLogout(token);
             if (jwtUtils.validateToken(token)) {
                 Authentication authentication = jwtUtils.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -62,5 +66,12 @@ public class JwtFilter extends OncePerRequestFilter {
         response.setCharacterEncoding("UTF-8");
 
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+    }
+
+    private void checkLogout(String token) {
+        String value = redisService.getLogout(token);
+        if (StringUtils.equals(value, "logout")) {
+            throw new CustomException(ErrorCode.LOGOUT_JWT);
+        }
     }
 }

@@ -9,7 +9,9 @@ import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.dto.AuthResponseDto;
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
 import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
+import LinkerBell.campus_market_spring.global.redis.RedisService;
 import LinkerBell.campus_market_spring.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,6 +36,9 @@ class AuthServiceTest {
 
     @InjectMocks
     AuthService authService;
+
+    @Mock
+    RedisService redisService;
 
     private User user;
 
@@ -77,6 +82,27 @@ class AuthServiceTest {
         assertThat(authResponseDto.getRefreshToken()).isNotNull();
 
         assertThat(authResponseDto.getRefreshToken()).isEqualTo(user.getRefreshToken());
+    }
+
+    @Test
+    @DisplayName("로그아웃 테스트")
+    public void logoutTest() {
+        // given
+        String accessToken = jwtUtils.generateAccessToken(user.getUserId(),
+            user.getLoginEmail(), user.getRole());
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+        mockRequest.addHeader("Authorization", "Bearer " + accessToken);
+
+        given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(user));
+        // when
+        authService.logout(user.getUserId(), mockRequest);
+        // then
+        assertThat(user).isNotNull();
+        assertThat(user.getRefreshToken()).isNull();
+        then(redisService).should(times(1)).setLogout(assertArg(token -> {
+            assertThat(token).isNotNull();
+            assertThat(token).isEqualTo(accessToken);
+        }));
     }
 
     private  User getUser() {

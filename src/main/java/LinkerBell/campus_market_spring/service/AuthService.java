@@ -7,6 +7,7 @@ import LinkerBell.campus_market_spring.dto.AuthUserDto;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
+import LinkerBell.campus_market_spring.global.redis.RedisService;
 import LinkerBell.campus_market_spring.repository.BlacklistRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +28,7 @@ public class AuthService {
     private final FcmService fcmService;
     private final GoogleAuthService googleAuthService;
     private final BlacklistRepository blacklistRepository;
+    private final RedisService redisService;
 
     public AuthResponseDto userLogin(String googleToken, String firebaseToken) {
         String email = googleAuthService.getEmailWithVerifyIdToken(googleToken);
@@ -112,5 +114,19 @@ public class AuthService {
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         user.setSchoolEmail(schoolEmail);
+    }
+
+    public void logout(Long userId, HttpServletRequest request) {
+        String accessToken = jwtUtils.resolveToken(request);
+
+        if (!jwtUtils.validateToken(accessToken)) {
+            throw new CustomException(ErrorCode.INVALID_JWT);
+        }
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        user.setRefreshToken(null);
+        redisService.setLogout(accessToken);
     }
 }
