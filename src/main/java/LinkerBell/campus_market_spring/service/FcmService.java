@@ -25,6 +25,8 @@ public class FcmService {
 
     @Value("${deeplink.keyword_url}")
     private String deeplinkKeywordUrl;
+    @Value("${deeplink.chat_url}")
+    private String deeplinkChatUrl;
 
     public void sendFcmMessageWithKeywords(List<Keyword> sendingKeywords, Item savedItem) {
         for (Keyword sendingKeyword : sendingKeywords) {
@@ -74,7 +76,7 @@ public class FcmService {
                 .targetToken(fcmToken)
                 .title(title)
                 .body(content)
-                .deeplinkUrl(deeplinkKeywordUrl + chatRoomId)
+                .deeplinkUrl(deeplinkChatUrl + chatRoomId)
                 .build();
 
             fcmNotificationService.sendNotification(fcmMessageDto);
