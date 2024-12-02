@@ -35,7 +35,7 @@ public class FcmNotificationService {
         Message message = messageBuilder.build();
         try {
             String response = FirebaseMessaging.getInstance().sendAsync(message).get();
-            log.debug("Successfully sent message with deeplink: {}", response);
+            log.info("Successfully sent message with deeplink: {}", response);
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             if (cause instanceof FirebaseMessagingException messagingException) {
@@ -48,6 +48,8 @@ public class FcmNotificationService {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.error("Notification sending was interrupted", e);
+        } catch (Throwable e) {
+            log.error("invalid error={}", e.getMessage());
         }
     }
 
