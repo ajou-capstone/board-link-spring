@@ -32,8 +32,9 @@ public class FcmService {
         for (Keyword sendingKeyword : sendingKeywords) {
             List<String> fcmTokens = userFcmTokenRepository.findFcmTokenByUser_UserId(
                 sendingKeyword.getUser().getUserId());
-
+            log.info("fcmTokens size={}", fcmTokens.size());
             for (String fcmToken : fcmTokens) {
+                log.info("send fcmToken={}", fcmToken);
                 FcmMessageDto sendingKeywordMessage = createKeywordFcmMessage(sendingKeyword,
                     fcmToken,
                     savedItem);
