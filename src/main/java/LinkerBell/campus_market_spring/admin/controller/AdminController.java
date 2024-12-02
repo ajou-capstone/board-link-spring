@@ -16,6 +16,7 @@ import LinkerBell.campus_market_spring.domain.Category;
 import LinkerBell.campus_market_spring.dto.AuthResponseDto;
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
 import LinkerBell.campus_market_spring.dto.ItemDetailsViewResponseDto;
+import LinkerBell.campus_market_spring.dto.OtherProfileResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.global.auth.Login;
 import jakarta.validation.Valid;
@@ -117,7 +118,7 @@ public class AdminController {
         @Valid @RequestBody AdminUserReportRequestDto requestDto) {
         adminService.receiveUserReport(userReportId, requestDto.isSuspended(),
             requestDto.suspendReason(), requestDto.suspendPeriod());
-       return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/qa")
@@ -154,5 +155,12 @@ public class AdminController {
     public ResponseEntity<?> deleteItem(@PathVariable("itemId") Long itemId) {
         adminService.deleteItem(itemId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/profile/{userId}")
+    public ResponseEntity<OtherProfileResponseDto> getUserProfile(
+        @PathVariable("userId") Long userId) {
+        OtherProfileResponseDto response = adminService.getUserProfile(userId);
+        return ResponseEntity.ok(response);
     }
 }
