@@ -25,6 +25,8 @@ public class FcmService {
 
     @Value("${deeplink.keyword_url}")
     private String deeplinkKeywordUrl;
+    @Value("${deeplink.chat_url}")
+    private String deeplinkChatUrl;
 
     public void sendFcmMessageWithKeywords(List<Keyword> sendingKeywords, Item savedItem) {
         for (Keyword sendingKeyword : sendingKeywords) {
@@ -64,6 +66,21 @@ public class FcmService {
                     .user(user).build();
                 userFcmTokenRepository.save(userFcmToken);
             });
+    }
+
+    public void sendFcmMessageWithChat(Long userId, Long chatRoomId, String title, String content) {
+        List<String> fcmTokens = userFcmTokenRepository.findFcmTokenByUser_UserId(userId);
+
+        for (String fcmToken : fcmTokens) {
+            FcmMessageDto fcmMessageDto = FcmMessageDto.builder()
+                .targetToken(fcmToken)
+                .title(title)
+                .body(content)
+                .deeplinkUrl(deeplinkChatUrl + chatRoomId)
+                .build();
+
+            fcmNotificationService.sendNotification(fcmMessageDto);
+        }
     }
 
 }
