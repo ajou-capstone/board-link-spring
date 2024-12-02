@@ -114,7 +114,8 @@ public class ProfileService {
             .id(user.getUserId())
             .nickname(user.getNickname())
             .profileImage(user.getProfileImage())
-            .rating(user.getRating()).build();
+            .rating(user.getRating())
+            .isDeleted(user.isDeleted()).build();
     }
 
     private List<Campus> findCampusList(String schoolEmail) {
