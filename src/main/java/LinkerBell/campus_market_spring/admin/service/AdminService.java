@@ -17,6 +17,7 @@ import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.domain.UserReport;
 import LinkerBell.campus_market_spring.dto.AuthResponseDto;
 import LinkerBell.campus_market_spring.dto.ItemDetailsViewResponseDto;
+import LinkerBell.campus_market_spring.dto.OtherProfileResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
@@ -182,5 +183,18 @@ public class AdminService {
             .orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
 
         item.setDeleted(true);
+    }
+
+    @Transactional(readOnly = true)
+    public OtherProfileResponseDto getUserProfile(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return OtherProfileResponseDto.builder()
+            .id(user.getUserId())
+            .nickname(user.getNickname())
+            .profileImage(user.getProfileImage())
+            .rating(user.getRating())
+            .isDeleted(user.isDeleted()).build();
     }
 }
