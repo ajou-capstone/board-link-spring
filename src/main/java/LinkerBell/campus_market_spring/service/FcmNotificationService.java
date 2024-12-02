@@ -31,7 +31,7 @@ public class FcmNotificationService {
         if (fcmMessageDto.getDeeplinkUrl() != null) {
             messageBuilder.putData("deeplink", fcmMessageDto.getDeeplinkUrl());
         }
-
+        log.info("fcm deeplink={}", fcmMessageDto.getDeeplinkUrl());
         Message message = messageBuilder.build();
         try {
             String response = FirebaseMessaging.getInstance().sendAsync(message).get();
