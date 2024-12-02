@@ -19,14 +19,14 @@ public interface ItemRepository extends JpaRepository<Item, Long>, ItemRepositor
     void updateCreatedDate(@Param("itemId") Long itemId,
         @Param("createdDate") LocalDateTime createdDate);
 
-    @Query("SELECT i FROM Item i WHERE i.user = :requestedUser OR i.userBuyer = :requestedUser")
+    @Query("SELECT i FROM Item i WHERE (i.user = :requestedUser AND i.isDeleted = false) OR i.userBuyer = :requestedUser")
     Slice<Item> findAllHistoryByUser(@Param("requestedUser") User requestedUser, Pageable pageable);
 
     @Query("SELECT i FROM Item i WHERE i.userBuyer = :requestedUser")
     Slice<Item> findPurchaseHistoryByUser(@Param("requestedUser") User requestedUser,
         Pageable pageable);
 
-    @Query("SELECT i FROM Item i WHERE i.user = :requestedUser")
+    @Query("SELECT i FROM Item i WHERE i.user = :requestedUser AND i.isDeleted = false")
     Slice<Item> findSalesHistoryByUser(@Param("requestedUser") User requestedUser,
         Pageable pageable);
 }
