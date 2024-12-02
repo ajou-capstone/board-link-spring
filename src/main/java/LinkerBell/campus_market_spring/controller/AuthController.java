@@ -53,4 +53,10 @@ public class AuthController {
         authService.saveSchoolEmail(user.getUserId(), email);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@Login AuthUserDto user, HttpServletRequest request) {
+        authService.logout(user.getUserId(), request);
+        return ResponseEntity.noContent().build();
+    }
 }

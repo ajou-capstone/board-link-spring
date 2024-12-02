@@ -65,6 +65,9 @@ dependencies {
     implementation platform('software.amazon.awssdk:bom:2.27.24')
     implementation 'software.amazon.awssdk:s3'
 
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
@@ -75,6 +78,9 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0' // Or a compatible version
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.9.0'
+
+    // testcontainer
+    testImplementation "org.testcontainers:junit-jupiter:1.20.4"
 
 }
 
