@@ -80,6 +80,8 @@ public class ChattingService {
     @Transactional(readOnly = true)
     public void sendNotification(Long userId, Long chatRoomId,
         ChattingRequestDto chattingRequestDto) {
+        log.info("send notification");
+
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
@@ -90,6 +92,7 @@ public class ChattingService {
             chatRoom);
 
         if (!chatProperties.isAlarm()) {
+            log.info("isAlarm is false");
             return;
         }
 
