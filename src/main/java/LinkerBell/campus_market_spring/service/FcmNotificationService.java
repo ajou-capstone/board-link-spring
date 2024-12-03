@@ -27,7 +27,10 @@ public class FcmNotificationService {
                 .setTitle(fcmMessageDto.getTitle())
                 .setBody(fcmMessageDto.getBody())
                 .build());
-
+        log.info("sendNotification fcm token={}", fcmMessageDto.getTargetToken());
+        log.info("sendNotification title={}", fcmMessageDto.getTitle());
+        log.info("sendNotification body={}", fcmMessageDto.getBody());
+        log.info("sendNotification deeplink={}", fcmMessageDto.getDeeplinkUrl());
         if (fcmMessageDto.getDeeplinkUrl() != null) {
             messageBuilder.putData("deeplink", fcmMessageDto.getDeeplinkUrl());
         }
