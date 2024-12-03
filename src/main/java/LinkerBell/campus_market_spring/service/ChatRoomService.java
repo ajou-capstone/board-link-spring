@@ -103,6 +103,7 @@ public class ChatRoomService {
                     .userId(chatRoom.getItem().getUser().getUserId())
                     .itemId(chatRoom.getItem().getItemId())
                     .title(chatRoom.getItem().getUser().getNickname()) // 판매자의 닉네임이 제목에 보이게
+                    .thumbnail(chatRoom.getItem().getThumbnail())
                     .isAlarm(
                         chatPropertiesRepository.findByUserAndChatRoom(user, chatRoom).isAlarm())
                     .messageId(messageId).build();
@@ -114,6 +115,7 @@ public class ChatRoomService {
                     .chatRoomId(chatRoom.getChatRoomId()).userId(chatRoom.getUser().getUserId())
                     .itemId(chatRoom.getItem().getItemId())
                     .title(chatRoom.getUser().getNickname()) // 구매자의 닉네임이 제목에 보이게
+                    .thumbnail(chatRoom.getItem().getThumbnail())
                     .isAlarm(
                         chatPropertiesRepository.findByUserAndChatRoom(user, chatRoom).isAlarm())
                     .messageId(messageId).build();
@@ -170,6 +172,7 @@ public class ChatRoomService {
                 .userId(chatRoom.getItem().getUser().getUserId())
                 .itemId(chatRoom.getItem().getItemId())
                 .title(chatRoom.getItem().getUser().getNickname()) // 판매자의 닉네임이 제목에 보이게
+                .thumbnail(chatRoom.getItem().getThumbnail())
                 .isAlarm(
                     chatPropertiesRepository.findByUserAndChatRoom(user, chatRoom).isAlarm())
                 .messageId(messageId).build();
@@ -178,6 +181,7 @@ public class ChatRoomService {
                 .chatRoomId(chatRoom.getChatRoomId()).userId(chatRoom.getUser().getUserId())
                 .itemId(chatRoom.getItem().getItemId())
                 .title(chatRoom.getUser().getNickname()) // 구매자의 닉네임이 제목에 보이게
+                .thumbnail(chatRoom.getItem().getThumbnail())
                 .isAlarm(
                     chatPropertiesRepository.findByUserAndChatRoom(user, chatRoom).isAlarm())
                 .messageId(messageId).build();

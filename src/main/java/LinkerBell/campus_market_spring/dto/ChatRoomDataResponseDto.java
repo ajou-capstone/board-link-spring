@@ -12,6 +12,7 @@ public class ChatRoomDataResponseDto {
     private Long userId;
     private Long itemId;
     private String title;
+    private String thumbnail;
     @JsonProperty(value = "isAlarm")
     private Boolean isAlarm;
     private Long messageId;
