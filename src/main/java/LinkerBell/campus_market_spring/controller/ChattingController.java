@@ -37,8 +37,6 @@ public class ChattingController {
         ChattingResponseDto chattingResponseDto = chattingService.makeChattingResponseDto(
             userId, chatRoomId, chattingRequestDto);
 
-        log.info("chattingResponseDto = " + chattingResponseDto);
-
         messagingTemplate.convertAndSend("/sub/chat/" + chatRoomId, chattingResponseDto);
 
         chattingService.sendNotification(userId, chatRoomId, chattingRequestDto);

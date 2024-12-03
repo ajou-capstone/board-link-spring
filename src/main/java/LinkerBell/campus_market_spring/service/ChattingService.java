@@ -32,8 +32,6 @@ public class ChattingService {
     @Transactional
     public ChattingResponseDto makeChattingResponseDto(Long userId, Long chatRoomId,
         ChattingRequestDto chattingRequestDto) {
-        log.info("makeChattingResponseDto...");
-
         // 메시지 정보를 db에 저장
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -80,7 +78,6 @@ public class ChattingService {
     @Transactional(readOnly = true)
     public void sendNotification(Long userId, Long chatRoomId,
         ChattingRequestDto chattingRequestDto) {
-        log.info("send notification");
 
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -91,6 +88,8 @@ public class ChattingService {
         ChatProperties chatProperties = chatPropertiesRepository.findByUserAndChatRoom(user,
             chatRoom);
 
+        Long targetUserId;
+
         if (!chatProperties.isAlarm()) {
             log.info("isAlarm is false");
             return;
@@ -99,12 +98,17 @@ public class ChattingService {
         String title;
         if (chatRoom.getUser().getUserId().equals(userId)) { // 내가 구매자
             title = chatRoom.getItem().getUser().getNickname();
+            targetUserId = chatRoom.getItem().getUser().getUserId();
         } else { // 내가 판매자
             title = chatRoom.getUser().getNickname();
+            targetUserId = chatRoom.getUser().getUserId();
         }
 
         String content = chattingRequestDto.getContent();
 
-        fcmService.sendFcmMessageWithChat(userId, chatRoomId, title, content);
+        log.info("send notification targetUserId : {} title : {} content : {}", targetUserId, title,
+            content);
+
+        fcmService.sendFcmMessageWithChat(targetUserId, chatRoomId, title, content);
     }
 }
