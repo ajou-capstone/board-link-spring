@@ -67,7 +67,7 @@ class KeywordServiceTest {
             User user = User.builder()
                 .userId((long) i + 1)
                 .nickname("user" + i)
-                .campus(i < 1 ? campuses.get(0) : campuses.get(1))
+                .campus(i < 2 ? campuses.get(0) : campuses.get(1))
                 .role(Role.USER)
                 .build();
             users.add(user);
@@ -79,33 +79,39 @@ class KeywordServiceTest {
             .user(users.get(0))
             .build();
         Keyword keyword2 = Keyword.builder()
+            .keywordId(1L)
+            .keywordName("camera")
+            .user(users.get(1))
+            .build();
+        Keyword keyword3 = Keyword.builder()
             .keywordId(2L)
             .keywordName("table")
             .user(users.get(0))
             .build();
-        Keyword keyword3 = Keyword.builder()
+        Keyword keyword4 = Keyword.builder()
             .keywordId(3L)
             .keywordName("camera")
-            .user(users.get(1))
+            .user(users.get(3))
             .build();
-        Keyword keyword4 = Keyword.builder()
+        Keyword keyword5 = Keyword.builder()
             .keywordId(4L)
             .keywordName("table")
-            .user(users.get(2))
+            .user(users.get(4))
             .build();
         keywords.add(keyword1);
         keywords.add(keyword2);
         keywords.add(keyword3);
         keywords.add(keyword4);
+        keywords.add(keyword5);
     }
 
     @Test
-    @DisplayName("등록한 아이템과 같은 캠퍼스를 가지며 아이템 제목에 키워드의 입부가 포함되어 있을 때, 테스트")
+    @DisplayName("작성자를 제외하고 등록한 아이템과 같은 캠퍼스를 가지며 아이템 제목에 키워드의 입부가 포함되어 있을 때, 테스트")
     public void findKeywordsWithSameItemCampusAndTitleTest() throws Exception {
         //given
         Item savedItem = Item.builder()
             .title("sony camera")
-            .user(users.get(0))
+            .user(users.get(1))
             .campus(campuses.get(0))
             .build();
         //when
