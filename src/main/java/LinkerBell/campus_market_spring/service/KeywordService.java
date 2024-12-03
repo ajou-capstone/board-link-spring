@@ -31,6 +31,8 @@ public class KeywordService {
         return keywordRepository.findKeywordsWithUserAndCampus()
             .stream()
             .filter(k -> k.getUser().getCampus() != null)
+            .filter(k -> !Objects.equals(k.getUser().getUserId(),
+                savedItem.getUser().getUserId()))
             .filter(k -> Objects.equals(k.getUser().getCampus().getCampusId(),
                 savedItem.getCampus().getCampusId()))
             .filter(k -> savedItem.getTitle().contains(k.getKeywordName()))
@@ -70,7 +72,7 @@ public class KeywordService {
     }
 
     private void validateUserAndKeywordUser(User user, Keyword keywordToDelete) {
-        if(isMatchedByUserAndKeywordUser(user, keywordToDelete)) {
+        if (isMatchedByUserAndKeywordUser(user, keywordToDelete)) {
             throw new CustomException(ErrorCode.NOT_MATCH_USER_AND_KEYWORD_USER);
         }
     }
