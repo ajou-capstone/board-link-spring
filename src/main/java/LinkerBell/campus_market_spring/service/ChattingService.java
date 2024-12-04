@@ -97,10 +97,10 @@ public class ChattingService {
 
         String title;
         if (chatRoom.getUser().getUserId().equals(userId)) { // 내가 구매자
-            title = chatRoom.getItem().getUser().getNickname();
+            title = chatRoom.getUser().getNickname();
             targetUserId = chatRoom.getItem().getUser().getUserId();
         } else { // 내가 판매자
-            title = chatRoom.getUser().getNickname();
+            title = chatRoom.getItem().getUser().getNickname();
             targetUserId = chatRoom.getUser().getUserId();
         }
 
