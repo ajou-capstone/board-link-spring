@@ -68,6 +68,7 @@ public class ChatRoomService {
         ChatRoomResponseDto chatRoomResponseDto = ChatRoomResponseDto.builder()
             .chatRoomId(chatRoom.getChatRoomId()).userId(chatRoom.getUser().getUserId())
             .itemId(chatRoom.getItem().getItemId()).title(chatRoom.getUser().getNickname())
+            .thumbnail(chatRoom.getItem().getThumbnail())
             .isAlarm(true).build();
 
         return chatRoomResponseDto;
