@@ -19,4 +19,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewRep
     int countReview(@Param("user") User user);
 
     boolean existsByUserAndItem(User user, Item item);
+
+    @Query("SELECT r FROM Review r WHERE (r.user != :user) AND (r.item.user = :user OR r.item.userBuyer = :user)")
+    Slice<Review> findReviewsToMe(@Param("user") User user, Pageable pageable);
 }

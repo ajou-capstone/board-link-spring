@@ -129,7 +129,7 @@ class ReviewControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/v1/users/{userId}/reviews - 리뷰 조회 성공")
+    @DisplayName("GET /api/v1/users/reviews - 리뷰 조회 성공")
     void getReviews_Success() throws Exception {
         // Given
         Long userId = 1L;
@@ -140,7 +140,7 @@ class ReviewControllerTest {
         Mockito.when(reviewService.getReviews(userId, pageable)).thenReturn(mockResponse);
 
         // When & Then
-        mockMvc.perform(get("/api/v1/users/{userId}/reviews", userId)
+        mockMvc.perform(get("/api/v1/users/reviews", userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .queryParam("page", "0")
                 .queryParam("size", "10"))

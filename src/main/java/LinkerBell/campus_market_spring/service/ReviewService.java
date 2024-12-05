@@ -60,4 +60,24 @@ public class ReviewService {
     public SliceResponse<ReviewResponseDto> getReviews(Long userId, Pageable pageable) {
         return reviewRepository.findAllByUserId(userId, pageable);
     }
+
+    // 나에게 작성된 리뷰 가져오기
+    @Transactional(readOnly = true)
+    public SliceResponse<ReviewResponseDto> getReviewsToMe(Long userId, Pageable pageable) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        Slice<ReviewResponseDto> reviewsToMe = reviewRepository.findReviewsToMe(user, pageable)
+            .map(review ->
+                ReviewResponseDto.builder()
+                    .reviewId(review.getReviewId())
+                    .nickname(review.getUser().getNickname())
+                    .profileImage(review.getUser().getProfileImage())
+                    .description(review.getDescription())
+                    .rating(review.getRating())
+                    .createdAt(review.getCreatedDate())
+                    .build());
+
+        return new SliceResponse<>(reviewsToMe);
+    }
 }
