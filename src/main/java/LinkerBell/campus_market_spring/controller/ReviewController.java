@@ -36,7 +36,7 @@ public class ReviewController {
     }
 
     // 내가 쓴 리뷰 가져오기
-    @GetMapping("/api/v1/users/{userId}/reviews")
+    @GetMapping("/api/v1/users/reviews")
     public ResponseEntity<SliceResponse<ReviewResponseDto>> getReviews(
         @Login AuthUserDto authUserDto,
         @PageableDefault(page = 0, size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
