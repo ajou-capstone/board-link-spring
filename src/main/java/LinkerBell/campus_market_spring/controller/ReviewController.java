@@ -35,7 +35,7 @@ public class ReviewController {
         return ResponseEntity.noContent().build();
     }
 
-    //리뷰 가져오기
+    // 내가 쓴 리뷰 가져오기
     @GetMapping("/api/v1/users/{userId}/reviews")
     public ResponseEntity<SliceResponse<ReviewResponseDto>> getReviews(
         @Login AuthUserDto authUserDto,
@@ -46,4 +46,14 @@ public class ReviewController {
         return ResponseEntity.ok(reviewResponse);
     }
 
+    // 나에게 작성된 리뷰 가져오기
+    @GetMapping("/api/v1/users/{userId}/reviews-to-me")
+    public ResponseEntity<SliceResponse<ReviewResponseDto>> getReviewsToMe(
+        @PathVariable(name = "userId") Long userId,
+        @PageableDefault(page = 0, size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
+        SliceResponse<ReviewResponseDto> reviewsToMeResponse = reviewService.getReviewsToMe(userId,
+            pageable);
+
+        return ResponseEntity.ok(reviewsToMeResponse);
+    }
 }
