@@ -1,11 +1,13 @@
 package LinkerBell.campus_market_spring.service;
 
+import LinkerBell.campus_market_spring.domain.ItemStatus;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.dto.DealHistoryResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.repository.ItemRepository;
+import LinkerBell.campus_market_spring.repository.ReviewRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ public class DealHistoryService {
 
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final ReviewRepository reviewRepository;
 
     public SliceResponse<DealHistoryResponseDto> getAllDealHistory(Long loginUserId,
         Long requestedUserId, Pageable pageable) {
@@ -37,13 +40,30 @@ public class DealHistoryService {
         }
 
         Slice<DealHistoryResponseDto> allDealHistory = itemRepository.findAllHistoryByUser(
-            requestedUser, pageable).map(item -> DealHistoryResponseDto.builder()
-            .itemId(item.getItemId())
-            .title(item.getTitle())
-            .price(item.getPrice())
-            .thumbnail(item.getThumbnail())
-            .itemStatus(item.getItemStatus())
-            .build()
+            requestedUser, pageable).map(item -> {
+                ItemStatus itemStatus = item.getItemStatus();
+
+                // isReviewed 결정하기
+                boolean isReviewed = false;
+
+                if (itemStatus == ItemStatus.SOLDOUT) { // 팔린 아이템일 때
+                    if (reviewRepository.existsByUserAndItem(requestedUser,
+                        item)) { // 그 아이템이랑 유저의 리뷰가 있으면
+                        isReviewed = true;
+                    }
+                }
+
+                return DealHistoryResponseDto.builder()
+                    .itemId(item.getItemId())
+                    .title(item.getTitle())
+                    .price(item.getPrice())
+                    .thumbnail(item.getThumbnail())
+                    .itemStatus(itemStatus)
+                    .createdAt(item.getCreatedDate())
+                    .modifiedAt(item.getLastModifiedDate())
+                    .isReviewed(isReviewed)
+                    .build();
+            }
         );
 
         return new SliceResponse<>(allDealHistory);
@@ -63,13 +83,30 @@ public class DealHistoryService {
         }
 
         Slice<DealHistoryResponseDto> purchaseHistory = itemRepository.findPurchaseHistoryByUser(
-            requestedUser, pageable).map(item -> DealHistoryResponseDto.builder()
-            .itemId(item.getItemId())
-            .title(item.getTitle())
-            .price(item.getPrice())
-            .thumbnail(item.getThumbnail())
-            .itemStatus(item.getItemStatus())
-            .build()
+            requestedUser, pageable).map(item -> {
+                ItemStatus itemStatus = item.getItemStatus();
+
+                // isReviewed 결정하기
+                boolean isReviewed = false;
+
+                if (itemStatus == ItemStatus.SOLDOUT) { // 팔린 아이템일 때
+                    if (reviewRepository.existsByUserAndItem(requestedUser,
+                        item)) { // 그 아이템이랑 유저의 리뷰가 있으면
+                        isReviewed = true;
+                    }
+                }
+
+                return DealHistoryResponseDto.builder()
+                    .itemId(item.getItemId())
+                    .title(item.getTitle())
+                    .price(item.getPrice())
+                    .thumbnail(item.getThumbnail())
+                    .itemStatus(itemStatus)
+                    .createdAt(item.getCreatedDate())
+                    .modifiedAt(item.getLastModifiedDate())
+                    .isReviewed(isReviewed)
+                    .build();
+            }
         );
 
         return new SliceResponse<>(purchaseHistory);
@@ -82,13 +119,30 @@ public class DealHistoryService {
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Slice<DealHistoryResponseDto> salesHistory = itemRepository.findSalesHistoryByUser(
-            requestedUser, pageable).map(item -> DealHistoryResponseDto.builder()
-            .itemId(item.getItemId())
-            .title(item.getTitle())
-            .price(item.getPrice())
-            .thumbnail(item.getThumbnail())
-            .itemStatus(item.getItemStatus())
-            .build()
+            requestedUser, pageable).map(item -> {
+                ItemStatus itemStatus = item.getItemStatus();
+
+                // isReviewed 결정하기
+                boolean isReviewed = false;
+
+                if (itemStatus == ItemStatus.SOLDOUT) { // 팔린 아이템일 때
+                    if (reviewRepository.existsByUserAndItem(requestedUser,
+                        item)) { // 그 아이템이랑 유저의 리뷰가 있으면
+                        isReviewed = true;
+                    }
+                }
+
+                return DealHistoryResponseDto.builder()
+                    .itemId(item.getItemId())
+                    .title(item.getTitle())
+                    .price(item.getPrice())
+                    .thumbnail(item.getThumbnail())
+                    .itemStatus(itemStatus)
+                    .createdAt(item.getCreatedDate())
+                    .modifiedAt(item.getLastModifiedDate())
+                    .isReviewed(isReviewed)
+                    .build();
+            }
         );
 
         return new SliceResponse<>(salesHistory);
