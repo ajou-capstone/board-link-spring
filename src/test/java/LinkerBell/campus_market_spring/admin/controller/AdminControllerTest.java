@@ -56,10 +56,13 @@ class AdminControllerTest {
     public void getItemReportListTest() throws Exception {
 
         // when & then
-        mockMvc.perform(get("/admin/api/v1/items/report"))
+        mockMvc.perform(get("/admin/api/v1/items/report")
+                .queryParam("status", "all"))
             .andDo(print());
 
-        then(adminService).should().getItemReports(assertArg(p -> {
+        then(adminService).should().getItemReports(assertArg(st -> {
+            assertThat(st).isNotNull();
+        }), assertArg(p -> {
             assertThat(p).isNotNull();
             assertThat(p.getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "createdDate")
                 .and(Sort.by(Sort.Direction.DESC, "itemReportId")));
@@ -71,10 +74,13 @@ class AdminControllerTest {
     public void getUserReportListTest() throws Exception {
 
         // when & then
-        mockMvc.perform(get("/admin/api/v1/users/report"))
+        mockMvc.perform(get("/admin/api/v1/users/report")
+                .queryParam("status", "all"))
             .andDo(print());
 
-        then(adminService).should().getUserReports(assertArg(p -> {
+        then(adminService).should().getUserReports(assertArg(st -> {
+            assertThat(st).isNotNull();
+        }), assertArg(p -> {
             assertThat(p).isNotNull();
             assertThat(p.getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "createdDate")
                 .and(Sort.by(Sort.Direction.DESC, "userReportId")));

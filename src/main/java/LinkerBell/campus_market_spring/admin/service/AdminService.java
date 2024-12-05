@@ -76,15 +76,28 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
-    public SliceResponse<ItemReportSearchResponseDto> getItemReports(Pageable pageable) {
-        Slice<ItemReport> itemReports = itemReportRepository.findItemReports(pageable);
+    public SliceResponse<ItemReportSearchResponseDto> getItemReports(String status, Pageable pageable) {
+        Slice<ItemReport> itemReports;
+        if (StringUtils.equals(status, "all")) {
+            itemReports = itemReportRepository.findItemReports(pageable);
+        } else {
+            Boolean itemReportStatus = StringUtils.equals(status, "done");
+            itemReports = itemReportRepository.findItemReportsByStatus(itemReportStatus, pageable);
+        }
 
         return new SliceResponse<>(itemReports.map(ItemReportSearchResponseDto::new));
     }
 
     @Transactional(readOnly = true)
-    public SliceResponse<UserReportSearchResponseDto> getUserReports(Pageable pageable) {
-        Slice<UserReport> userReports = userReportRepository.findUserReports(pageable);
+    public SliceResponse<UserReportSearchResponseDto> getUserReports(String status, Pageable pageable) {
+        Slice<UserReport> userReports;
+        if (StringUtils.equals(status, "all")) {
+            userReports = userReportRepository.findUserReports(pageable);
+        } else {
+            Boolean itemReportStatus = StringUtils.equals(status, "done");
+            userReports = userReportRepository.findUserReportsByStatus(itemReportStatus, pageable);
+        }
+
 
         return new SliceResponse<>(userReports.map(UserReportSearchResponseDto::new));
     }
@@ -141,9 +154,8 @@ public class AdminService {
         if (blacklist.getEndDate().isBefore(period)) {
             blacklist.setEndDate(period);
             blacklist.setReason(suspendReason);
-            target.setRefreshToken(null);
         }
-
+        target.setRefreshToken(null);
         blacklistRepository.save(blacklist);
     }
 

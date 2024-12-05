@@ -89,13 +89,54 @@ class UserReportRepositoryTest {
     }
 
     @Test
-    @DisplayName("사용자 신고 리스트 테스트")
-    public void getUserReportListTest() {
+    @DisplayName("전체 사용자 신고 리스트 테스트")
+    public void getAllUserReportListTest() {
         // given
-        Sort sort = Sort.by(Direction.DESC, "createdDate");
+        Sort sort = Sort.by(Direction.DESC, "createdDate")
+            .and(Sort.by(Direction.DESC, "userReportId"));
         Pageable pageable = PageRequest.of(0, 20, sort);
         // when
         Slice<UserReport> slice = userReportRepository.findUserReports(pageable);
+
+        // then
+        assertThat(slice).isNotNull();
+        assertThat(slice.getContent().size()).isEqualTo(20);
+        assertThat(slice.getContent().get(0).getCategory())
+            .isEqualTo(UserReportCategory.values()[0]);
+        assertThat(slice.getContent().get(0).getCreatedDate())
+            .isAfter(slice.getContent().get(1).getCreatedDate());
+    }
+
+    @Test
+    @DisplayName("처리된 사용자 신고 리스트 테스트")
+    public void getCompletedUserReportListTest() {
+        // given
+        Sort sort = Sort.by(Direction.DESC, "createdDate")
+            .and(Sort.by(Direction.DESC, "userReportId"));
+        Pageable pageable = PageRequest.of(0, 20, sort);
+        Boolean status = Boolean.TRUE;
+        // when
+        Slice<UserReport> slice = userReportRepository.findUserReportsByStatus(status, pageable);
+
+        // then
+        assertThat(slice).isNotNull();
+        assertThat(slice.getContent().size()).isEqualTo(10);
+        assertThat(slice.getContent().get(0).getCategory())
+            .isEqualTo(UserReportCategory.values()[1]);
+        assertThat(slice.getContent().get(0).getCreatedDate())
+            .isAfter(slice.getContent().get(1).getCreatedDate());
+    }
+
+    @Test
+    @DisplayName("처리되지 않은 사용자 신고 리스트 테스트")
+    public void getInProgressUserReportListTest() {
+        // given
+        Sort sort = Sort.by(Direction.DESC, "createdDate")
+            .and(Sort.by(Direction.DESC, "userReportId"));
+        Pageable pageable = PageRequest.of(0, 20, sort);
+        Boolean status = Boolean.FALSE;
+        // when
+        Slice<UserReport> slice = userReportRepository.findUserReportsByStatus(status, pageable);
 
         // then
         assertThat(slice).isNotNull();

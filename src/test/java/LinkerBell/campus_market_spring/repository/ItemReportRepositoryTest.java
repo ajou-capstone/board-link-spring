@@ -8,14 +8,12 @@ import LinkerBell.campus_market_spring.domain.ItemReport;
 import LinkerBell.campus_market_spring.domain.ItemReportCategory;
 import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
-import LinkerBell.campus_market_spring.domain.UserReport;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -98,7 +96,7 @@ class ItemReportRepositoryTest {
     }
 
     @Test
-    @DisplayName("상품 신고 리스트 테스트")
+    @DisplayName("전체 상품 신고 리스트 테스트")
     public void getItemReportListTest() {
         // given
         Sort sort = Sort.by(Direction.DESC, "createdDate")
@@ -106,6 +104,42 @@ class ItemReportRepositoryTest {
         Pageable pageable = PageRequest.of(0, 20, sort);
         // when
         Slice<ItemReport> slice = itemReportRepository.findItemReports(pageable);
+
+        // then
+        assertThat(slice).isNotNull();
+        assertThat(slice.getContent().size()).isEqualTo(20);
+        assertThat(slice.getContent().get(0).getCategory()).isEqualTo(ItemReportCategory.values()[0]);
+        assertThat(slice.getContent().get(0).getCreatedDate()).isAfter(slice.getContent().get(1).getCreatedDate());
+    }
+
+    @Test
+    @DisplayName("처리된 상품 신고 리스트 테스트")
+    public void getCompletedItemReportListTest() {
+        // given
+        Sort sort = Sort.by(Direction.DESC, "createdDate")
+            .and(Sort.by(Direction.DESC, "itemReportId"));
+        Pageable pageable = PageRequest.of(0, 20, sort);
+        Boolean status = true;
+        // when
+        Slice<ItemReport> slice = itemReportRepository.findItemReportsByStatus(status, pageable);
+
+        // then
+        assertThat(slice).isNotNull();
+        assertThat(slice.getContent().size()).isEqualTo(10);
+        assertThat(slice.getContent().get(0).getCategory()).isEqualTo(ItemReportCategory.values()[1]);
+        assertThat(slice.getContent().get(0).getCreatedDate()).isAfter(slice.getContent().get(1).getCreatedDate());
+    }
+
+    @Test
+    @DisplayName("처리가 되지 않은 상품 신고 리스트 테스트")
+    public void getInProgressItemReportListTest() {
+        // given
+        Sort sort = Sort.by(Direction.DESC, "createdDate")
+            .and(Sort.by(Direction.DESC, "itemReportId"));
+        Pageable pageable = PageRequest.of(0, 20, sort);
+        Boolean status = false;
+        // when
+        Slice<ItemReport> slice = itemReportRepository.findItemReportsByStatus(status, pageable);
 
         // then
         assertThat(slice).isNotNull();

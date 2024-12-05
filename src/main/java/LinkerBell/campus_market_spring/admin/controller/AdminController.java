@@ -69,21 +69,23 @@ public class AdminController {
 
     @GetMapping("/items/report")
     public ResponseEntity<SliceResponse<ItemReportSearchResponseDto>> getItemReports(
+        @RequestParam(defaultValue = "all", name = "status") String status,
         @PageableDefault(page = 0, size = 10)
         @SortDefaults({
             @SortDefault(sort = "createdDate", direction = Direction.DESC),
             @SortDefault(sort = "itemReportId", direction = Direction.DESC)}) Pageable pageable) {
-        SliceResponse<ItemReportSearchResponseDto> response = adminService.getItemReports(pageable);
+        SliceResponse<ItemReportSearchResponseDto> response = adminService.getItemReports(status, pageable);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/users/report")
     public ResponseEntity<SliceResponse<UserReportSearchResponseDto>> getUserReports(
+        @RequestParam(defaultValue = "all", name = "status") String status,
         @PageableDefault(page = 0, size = 10)
         @SortDefaults({
             @SortDefault(sort = "createdDate", direction = Direction.DESC),
             @SortDefault(sort = "userReportId", direction = Direction.DESC)}) Pageable pageable) {
-        SliceResponse<UserReportSearchResponseDto> response = adminService.getUserReports(pageable);
+        SliceResponse<UserReportSearchResponseDto> response = adminService.getUserReports(status, pageable);
         return ResponseEntity.ok(response);
     }
 
