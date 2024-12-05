@@ -1,6 +1,7 @@
 package LinkerBell.campus_market_spring.controller;
 
 import LinkerBell.campus_market_spring.domain.Category;
+import LinkerBell.campus_market_spring.domain.ItemStatus;
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
 import LinkerBell.campus_market_spring.dto.ItemCategoryResponseDto;
 import LinkerBell.campus_market_spring.dto.ItemDetailsViewResponseDto;
@@ -51,6 +52,7 @@ public class ItemController {
         @RequestParam(required = false) Category category,
         @RequestParam(required = false) Integer minPrice,
         @RequestParam(required = false) Integer maxPrice,
+        @RequestParam(required = false) ItemStatus itemStatus,
         @PageableDefault(page = 0, size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
 
         ItemSearchRequestDto itemSearchRequestDto = new ItemSearchRequestDto();
@@ -61,7 +63,7 @@ public class ItemController {
 
         itemSearchRequestDto.setMinPrice(minPrice);
         itemSearchRequestDto.setMaxPrice(maxPrice);
-
+        itemSearchRequestDto.setItemStatus(itemStatus);
         pageableValidate(pageable);
 
         itemSearchRequestDto.setPageable(pageable);

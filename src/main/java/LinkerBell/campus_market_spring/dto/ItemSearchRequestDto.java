@@ -1,6 +1,7 @@
 package LinkerBell.campus_market_spring.dto;
 
 import LinkerBell.campus_market_spring.domain.Category;
+import LinkerBell.campus_market_spring.domain.ItemStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,5 +18,6 @@ public class ItemSearchRequestDto {
     private Category category;
     private Integer minPrice;
     private Integer maxPrice;
+    private ItemStatus itemStatus;
     private Pageable pageable;
 }

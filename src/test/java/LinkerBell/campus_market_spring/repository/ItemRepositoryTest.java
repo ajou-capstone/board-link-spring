@@ -193,11 +193,12 @@ class ItemRepositoryTest {
         Category category = null;
         Integer minPrice = null;
         Integer maxPrice = null;
+        ItemStatus itemStatus = null;
         Sort sort = Sort.by("createdDate").descending();
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
         SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
-            userId, campusId, name, category, minPrice, maxPrice, pageRequest);
+            userId, campusId, name, category, minPrice, maxPrice, itemStatus, pageRequest);
 
         //then
         assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
@@ -243,11 +244,12 @@ class ItemRepositoryTest {
         Category category = null;
         Integer minPrice = null;
         Integer maxPrice = null;
+        ItemStatus itemStatus = null;
         Sort sort = Sort.by("createdDate").descending();
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
         SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
-            userId, campusId, name, category, minPrice, maxPrice, pageRequest);
+            userId, campusId, name, category, minPrice, maxPrice, itemStatus, pageRequest);
 
         //then
         assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
@@ -291,11 +293,12 @@ class ItemRepositoryTest {
         Category category = Category.BOOKS_EDUCATIONAL_MATERIALS;
         Integer minPrice = null;
         Integer maxPrice = null;
+        ItemStatus itemStatus = null;
         Sort sort = Sort.by("createdDate").descending();
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
         SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
-            userId, campusId, name, category, minPrice, maxPrice, pageRequest);
+            userId, campusId, name, category, minPrice, maxPrice, itemStatus, pageRequest);
 
         //then
         assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
@@ -339,11 +342,12 @@ class ItemRepositoryTest {
         Category category = null;
         Integer minPrice = null;
         Integer maxPrice = null;
+        ItemStatus itemStatus = null;
         Sort sort = Sort.by("price").ascending();
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
         SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
-            userId, campusId, name, category, minPrice, maxPrice, pageRequest);
+            userId, campusId, name, category, minPrice, maxPrice, itemStatus, pageRequest);
 
         //then
         assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
@@ -387,11 +391,12 @@ class ItemRepositoryTest {
         Category category = null;
         Integer minPrice = null;
         Integer maxPrice = null;
+        ItemStatus itemStatus = null;
         Sort sort = Sort.by("price").descending();
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
         SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
-            userId, campusId, name, category, minPrice, maxPrice, pageRequest);
+            userId, campusId, name, category, minPrice, maxPrice, itemStatus, pageRequest);
 
         //then
         assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
@@ -435,11 +440,12 @@ class ItemRepositoryTest {
         Category category = null;
         Integer minPrice = 6;
         Integer maxPrice = 7;
+        ItemStatus itemStatus = null;
         Sort sort = Sort.by("createdDate").descending();
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
         SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
-            userId, campusId, name, category, minPrice, maxPrice, pageRequest);
+            userId, campusId, name, category, minPrice, maxPrice, itemStatus, pageRequest);
 
         //then
         assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
@@ -483,11 +489,12 @@ class ItemRepositoryTest {
         Category category = null;
         Integer minPrice = null;
         Integer maxPrice = null;
+        ItemStatus itemStatus = null;
         Sort sort = Sort.by("createdDate").ascending();
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
         SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
-            userId, campusId, name, category, minPrice, maxPrice, pageRequest);
+            userId, campusId, name, category, minPrice, maxPrice, itemStatus, pageRequest);
 
         //then
         assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
@@ -524,6 +531,71 @@ class ItemRepositoryTest {
     }
 
     @Test
+    @DisplayName("item Search에서 판매완료 값이 잘 가져와 지는지 테스트")
+    public void itemSearchIsItemStatusForSaleTest() throws Exception {
+        //given
+        for (int i = 25; i < 30; i++) {
+            Item item = Item.builder()
+                .user(users.get(2))
+                .campus(users.get(2).getCampus())
+                .category(Category.OTHER)
+                .title("ForSale Item " + i)
+                .price(i)
+                .itemStatus(ItemStatus.FORSALE)
+                .build();
+            itemRepository.save(item);
+            items.add(item);
+        }
+
+        Long userId = users.get(2).getUserId();
+        Long campusId = users.get(2).getCampus().getCampusId();
+        String name = null;
+        Category category = null;
+        Integer minPrice = null;
+        Integer maxPrice = null;
+        ItemStatus itemStatus = ItemStatus.FORSALE;
+        Sort sort = Sort.by("createdDate").descending();
+        PageRequest pageRequest = PageRequest.of(0, 2, sort);
+        //when
+        SliceResponse<ItemSearchResponseDto> itemSearchResponseDtoSliceResponse = itemRepository.itemSearch(
+            userId, campusId, name, category, minPrice, maxPrice, itemStatus, pageRequest);
+
+        //then
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().size()).isEqualTo(2);
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(0).getTitle()).isEqualTo(
+            items.get(29).getTitle());
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(0).getLikeCount()).isEqualTo(
+            0);
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(0).getChatCount()).isEqualTo(
+            0);
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(0).getNickname()).isEqualTo(
+            users.get(2).getNickname());
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(0).getPrice()).isEqualTo(
+            items.get(29).getPrice());
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(0).isLiked()).isFalse();
+
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(1).getTitle()).isEqualTo(
+            items.get(28).getTitle());
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(1).getLikeCount()).isEqualTo(
+            0);
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(1).getChatCount()).isEqualTo(
+            0);
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(1).getNickname()).isEqualTo(
+            users.get(2).getNickname());
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(1).getPrice()).isEqualTo(
+            items.get(28).getPrice());
+        assertThat(itemSearchResponseDtoSliceResponse.getContent().get(1).isLiked()).isFalse();
+
+        assertThat(itemSearchResponseDtoSliceResponse.getCurrentPage()).isEqualTo(0);
+        assertThat(itemSearchResponseDtoSliceResponse.getSize()).isEqualTo(2);
+        assertThat(itemSearchResponseDtoSliceResponse.getSort()).isEqualTo(
+            Sort.by(Direction.DESC, "createdDate"));
+        assertThat(itemSearchResponseDtoSliceResponse.isHasPrevious()).isFalse();
+        assertThat(itemSearchResponseDtoSliceResponse.isHasNext()).isTrue();
+    }
+
+
+    @Test
     @DisplayName("아이템 저장 코드 테스트")
     public void saveItemTest() throws Exception {
         //given
@@ -540,6 +612,7 @@ class ItemRepositoryTest {
         //then
         assertThat(savedItem.getItemId()).isEqualTo(item.getItemId());
     }
+
 
     @Test
     @DisplayName("아이템 사진들 저장 코드 테스트")
@@ -907,7 +980,8 @@ class ItemRepositoryTest {
     @DisplayName("관리자 상품 검색 테스트")
     public void adminItemSearchTest() {
         // given
-        User user = User.builder().userId(999L).loginEmail("admin@example.com").role(Role.ADMIN).build();
+        User user = User.builder().userId(999L).loginEmail("admin@example.com").role(Role.ADMIN)
+            .build();
         user = userRepository.save(user);
         String name = null;
         Category category = null;

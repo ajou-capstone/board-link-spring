@@ -59,7 +59,6 @@ public class FcmService {
         userFcmTokenRepository.findByFcmToken(firebaseToken).ifPresentOrElse(userFcmToken -> {
                 log.info("already exist.");
                 userFcmToken.setLastModifiedDate(LocalDateTime.now());
-                userFcmTokenRepository.save(userFcmToken);
             },
             () -> {
                 log.info("not exist.");

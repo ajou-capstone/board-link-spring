@@ -25,7 +25,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResponse> handleException(CustomException exception) {
         ErrorCode errorCode = exception.getErrorCode();
-        ErrorResponse errorResponse = new ErrorResponse(exception.getMessage(), errorCode.getCode());
+        ErrorResponse errorResponse = new ErrorResponse(exception.getMessage(),
+            errorCode.getCode());
         log.error("Error : {}", errorResponse.getMessage());
         return new ResponseEntity<>(errorResponse, errorCode.getHttpStatus());
     }
@@ -66,6 +67,11 @@ public class GlobalExceptionHandler {
             log.error(ErrorCode.INVALID_KEYWORD_ID.getMessage());
             return new ResponseEntity<>(errorResponse,
                 ErrorCode.INVALID_KEYWORD_ID.getHttpStatus());
+        } else if (ex.getName().equals("itemStatus")) {
+            ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_STATUS);
+            log.error(ErrorCode.INVALID_ITEM_STATUS.getMessage());
+            return new ResponseEntity<>(errorResponse,
+                ErrorCode.INVALID_ITEM_STATUS.getHttpStatus());
         }
 
         throw ex;

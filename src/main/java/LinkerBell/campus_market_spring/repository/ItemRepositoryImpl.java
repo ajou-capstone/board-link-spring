@@ -5,6 +5,7 @@ import static LinkerBell.campus_market_spring.domain.QItem.item;
 import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
 import LinkerBell.campus_market_spring.domain.Category;
 import LinkerBell.campus_market_spring.domain.Item;
+import LinkerBell.campus_market_spring.domain.ItemStatus;
 import LinkerBell.campus_market_spring.domain.Like;
 import LinkerBell.campus_market_spring.domain.QCampus;
 import LinkerBell.campus_market_spring.domain.QChatRoom;
@@ -43,7 +44,8 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
 
     @Override
     public SliceResponse<ItemSearchResponseDto> itemSearch(Long userId, Long campusId, String name,
-        Category category, Integer minPrice, Integer maxPrice, Pageable pageable) {
+        Category category, Integer minPrice, Integer maxPrice, ItemStatus itemStatus,
+        Pageable pageable) {
         QItem item = QItem.item;
         QUser user = QUser.user;
         QChatRoom chatRoom = QChatRoom.chatRoom;
@@ -68,7 +70,9 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                             .exists()
                     ).then(true)
                     .otherwise(false)
-                    .as("isLiked")
+                    .as("isLiked"),
+                item.createdDate,
+                item.lastModifiedDate
             ))
             .from(item)
             .leftJoin(item.user, user)
@@ -79,6 +83,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                 itemCategoryEq(category),
                 itemPriceBetween(minPrice, maxPrice),
                 item.campus.campusId.eq(campusId),
+                itemStatusEq(itemStatus),
                 item.isDeleted.eq(false)
             )
             .groupBy(item.itemId)
@@ -217,6 +222,8 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
             .likeCount(likeCount)
             .isLiked(isLiked)
             .itemStatus(itemEntity.getItemStatus())
+            .createdDate(itemEntity.getCreatedDate())
+            .lastModifiedDate(itemEntity.getLastModifiedDate())
             .build();
     }
 
@@ -238,6 +245,10 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
             return item.price.loe(maxPrice);
         }
         return null;
+    }
+
+    private BooleanExpression itemStatusEq(ItemStatus itemStatus) {
+        return itemStatus != null ? item.itemStatus.eq(itemStatus) : null;
     }
 
     private OrderSpecifier<?>[] itemSearchSort(Pageable pageable) {

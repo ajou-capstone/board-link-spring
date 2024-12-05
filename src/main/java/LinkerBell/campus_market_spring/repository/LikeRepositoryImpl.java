@@ -32,7 +32,6 @@ public class LikeRepositoryImpl implements LikeRepositoryCustom {
         QUser user = QUser.user;
         QChatRoom chatRoom = QChatRoom.chatRoom;
 
-
         JPAQuery<LikeSearchResponseDto> query = queryFactory
             .select(Projections.constructor(LikeSearchResponseDto.class,
                 like.likeId,
@@ -46,7 +45,8 @@ public class LikeRepositoryImpl implements LikeRepositoryCustom {
                     chatRoom.countDistinct().intValue(),
                     like.count().intValue(),
                     like.item.itemStatus,
-                    Expressions.TRUE)))
+                    Expressions.TRUE, like.item.createdDate, like.item.lastModifiedDate)
+            ))
             .from(like)
             .leftJoin(like.item, item)
             .leftJoin(item.user, user)
@@ -78,6 +78,7 @@ public class LikeRepositoryImpl implements LikeRepositoryCustom {
             content.remove(content.size() - 1);
             hasNext = true;
         }
-        return new SliceResponse<LikeSearchResponseDto>(new SliceImpl<>(content, pageable, hasNext));
+        return new SliceResponse<LikeSearchResponseDto>(
+            new SliceImpl<>(content, pageable, hasNext));
     }
 }
