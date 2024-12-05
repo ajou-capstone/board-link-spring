@@ -105,6 +105,25 @@ class AdminControllerTest {
         }));
     }
 
+    @Test
+    @DisplayName("문의 목록 리스트 테스트")
+    public void getQaListTest() throws Exception {
+
+        // when & then
+        mockMvc.perform(get("/admin/api/v1/qa")
+                .queryParam("status", "done"))
+            .andDo(print());
+
+        then(adminService).should().getQuestions(assertArg(st -> {
+            assertThat(st).isNotNull();
+            assertThat(st).isEqualTo("done");
+        }), assertArg(p -> {
+            assertThat(p).isNotNull();
+            assertThat(p.getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "createdDate")
+                .and(Sort.by(Sort.Direction.DESC, "qaId")));
+        }));
+    }
+
 
     static class MockLoginArgumentResolver implements HandlerMethodArgumentResolver {
 

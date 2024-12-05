@@ -120,7 +120,7 @@ public class AdminController {
 
     @GetMapping("/qa")
     public ResponseEntity<SliceResponse<AdminQaSearchResponseDto>> getQuestions(
-        @RequestParam(defaultValue = "all") String status,
+        @RequestParam(defaultValue = "all", name = "status") String status,
         @PageableDefault(page = 0, size = 10)
         @SortDefaults({
             @SortDefault(sort = "createdDate", direction = Direction.DESC),
