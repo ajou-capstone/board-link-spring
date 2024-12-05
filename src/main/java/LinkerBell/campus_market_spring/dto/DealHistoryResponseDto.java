@@ -1,6 +1,9 @@
 package LinkerBell.campus_market_spring.dto;
 
 import LinkerBell.campus_market_spring.domain.ItemStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,4 +22,10 @@ public class DealHistoryResponseDto {
     private int price;
     private String thumbnail;
     private ItemStatus itemStatus;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime createdAt;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime modifiedAt;
+    @JsonProperty(value = "isReviewed")
+    private Boolean isReviewed;
 }

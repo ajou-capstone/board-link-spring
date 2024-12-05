@@ -1,5 +1,6 @@
 package LinkerBell.campus_market_spring.repository;
 
+import LinkerBell.campus_market_spring.domain.Item;
 import LinkerBell.campus_market_spring.domain.Review;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.dto.ReviewResponseDto;
@@ -16,4 +17,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewRep
 
     @Query("SELECT COUNT(r) FROM Review r WHERE r.item.user = :user")
     int countReview(@Param("user") User user);
+
+    boolean existsByUserAndItem(User user, Item item);
 }
