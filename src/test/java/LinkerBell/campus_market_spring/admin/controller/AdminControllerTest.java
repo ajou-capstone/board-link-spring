@@ -70,6 +70,24 @@ class AdminControllerTest {
     }
 
     @Test
+    @DisplayName("상품 신고 목록 리스트 테스트")
+    public void getItemReportListWithNullStatusTest() throws Exception {
+
+        // when & then
+        mockMvc.perform(get("/admin/api/v1/items/report"))
+            .andDo(print());
+
+        then(adminService).should().getItemReports(assertArg(st -> {
+            assertThat(st).isNotNull();
+            assertThat(st).isEqualTo("all");
+        }), assertArg(p -> {
+            assertThat(p).isNotNull();
+            assertThat(p.getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "createdDate")
+                .and(Sort.by(Sort.Direction.DESC, "itemReportId")));
+        }));
+    }
+
+    @Test
     @DisplayName("사용자 신고 목록 리스트 테스트")
     public void getUserReportListTest() throws Exception {
 

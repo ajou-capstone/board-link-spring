@@ -94,10 +94,9 @@ public class AdminService {
         if (StringUtils.equals(status, "all")) {
             userReports = userReportRepository.findUserReports(pageable);
         } else {
-            Boolean itemReportStatus = StringUtils.equals(status, "done");
-            userReports = userReportRepository.findUserReportsByStatus(itemReportStatus, pageable);
+            Boolean userReportStatus = StringUtils.equals(status, "done");
+            userReports = userReportRepository.findUserReportsByStatus(userReportStatus, pageable);
         }
-
 
         return new SliceResponse<>(userReports.map(UserReportSearchResponseDto::new));
     }
