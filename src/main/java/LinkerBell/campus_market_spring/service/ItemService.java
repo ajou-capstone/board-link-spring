@@ -50,7 +50,8 @@ public class ItemService {
         return itemRepository.itemSearch(userId, user.getCampus().getCampusId(),
             itemSearchRequestDto.getName(),
             itemSearchRequestDto.getCategory(), itemSearchRequestDto.getMinPrice(),
-            itemSearchRequestDto.getMaxPrice(), itemSearchRequestDto.getPageable());
+            itemSearchRequestDto.getMaxPrice(), itemSearchRequestDto.getItemStatus(),
+            itemSearchRequestDto.getPageable());
     }
 
     public ItemRegisterResponseDto itemRegister(Long userId,
