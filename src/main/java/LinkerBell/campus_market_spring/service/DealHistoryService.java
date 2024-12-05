@@ -98,6 +98,7 @@ public class DealHistoryService {
                 return DealHistoryResponseDto.builder()
                     .itemId(item.getItemId())
                     .title(item.getTitle())
+                    .nickname(item.getUser().getNickname())
                     .price(item.getPrice())
                     .thumbnail(item.getThumbnail())
                     .itemStatus(itemStatus)
