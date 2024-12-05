@@ -67,11 +67,6 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<String> test(@Login AuthUserDto user) {
-        return ResponseEntity.ok("Hello Admin! " + user.getLoginEmail());
-    }
-
     @GetMapping("/items/report")
     public ResponseEntity<SliceResponse<ItemReportSearchResponseDto>> getItemReports(
         @PageableDefault(page = 0, size = 10)
@@ -123,11 +118,12 @@ public class AdminController {
 
     @GetMapping("/qa")
     public ResponseEntity<SliceResponse<AdminQaSearchResponseDto>> getQuestions(
+        @RequestParam(defaultValue = "all") String status,
         @PageableDefault(page = 0, size = 10)
         @SortDefaults({
             @SortDefault(sort = "createdDate", direction = Direction.DESC),
             @SortDefault(sort = "qaId", direction = Direction.DESC)}) Pageable pageable) {
-        SliceResponse<AdminQaSearchResponseDto> response = adminService.getQuestions(pageable);
+        SliceResponse<AdminQaSearchResponseDto> response = adminService.getQuestions(status, pageable);
         return ResponseEntity.ok(response);
     }
 

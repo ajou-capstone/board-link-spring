@@ -90,17 +90,52 @@ class QaRepositoryTest {
     }
 
     @Test
-    @DisplayName("관리자용 문의 목록 가져오기 테스트")
-    public void getQuestionsForAdminTest() {
+    @DisplayName("관리자용 처리가 되지 않은 문의 목록 가져오기 테스트")
+    public void getInProgressQuestionsForAdminTest() {
         // given
         Sort sort = Sort.by(Direction.DESC, "createdDate")
             .and(Sort.by(Direction.DESC, "qaId"));
         Pageable pageable = PageRequest.of(0, 20, sort);
+        Boolean status = false;
+        // when
+        Slice<QA> slice = qaRepository.findQAsByStatus(status, pageable);
+        // then
+        assertThat(slice).isNotNull();
+        assertThat(slice.getContent().size()).isEqualTo(10);
+        assertThat(slice.getContent().get(0).getCategory()).isEqualTo(QaCategory.values()[0]);
+        assertThat(slice.getContent().get(0).getCreatedDate()).isAfter(slice.getContent().get(1).getCreatedDate());
+    }
+
+    @Test
+    @DisplayName("관리자용 처리가 된 문의 목록 가져오기 테스트")
+    public void getCompletedQuestionsForAdminTest() {
+        // given
+        Sort sort = Sort.by(Direction.DESC, "createdDate")
+            .and(Sort.by(Direction.DESC, "qaId"));
+        Pageable pageable = PageRequest.of(0, 20, sort);
+        Boolean status = true;
+        // when
+        Slice<QA> slice = qaRepository.findQAsByStatus(status, pageable);
+        // then
+        assertThat(slice).isNotNull();
+        assertThat(slice.getContent().size()).isEqualTo(10);
+        assertThat(slice.getContent().get(0).getCategory()).isEqualTo(QaCategory.values()[1]);
+        assertThat(slice.getContent().get(1).getCreatedDate()).isAfter(slice.getContent().get(2).getCreatedDate());
+    }
+
+    @Test
+    @DisplayName("관리자용 모든 문의 목록 가져오기 테스트")
+    public void getQuestionAllForAdminTest() {
+        // given
+        Sort sort = Sort.by(Direction.DESC, "createdDate")
+            .and(Sort.by(Direction.DESC, "qaId"));
+        Pageable pageable = PageRequest.of(0, 20, sort);
+
         // when
         Slice<QA> slice = qaRepository.findQAs(pageable);
         // then
         assertThat(slice).isNotNull();
-        assertThat(slice.getContent().size()).isEqualTo(10);
+        assertThat(slice.getContent().size()).isEqualTo(20);
         assertThat(slice.getContent().get(0).getCategory()).isEqualTo(QaCategory.values()[0]);
         assertThat(slice.getContent().get(0).getCreatedDate()).isAfter(slice.getContent().get(1).getCreatedDate());
     }

@@ -32,6 +32,7 @@ import LinkerBell.campus_market_spring.service.GoogleAuthService;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -147,9 +148,14 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
-    public SliceResponse<AdminQaSearchResponseDto> getQuestions(Pageable pageable) {
-        Slice<QA> qas = qaRepository.findQAs(pageable);
-
+    public SliceResponse<AdminQaSearchResponseDto> getQuestions(String status, Pageable pageable) {
+        Slice<QA> qas;
+        if (StringUtils.equals(status, "all")) {
+            qas = qaRepository.findQAs(pageable);
+        } else {
+            Boolean qaStatus = StringUtils.equals(status, "done");
+            qas = qaRepository.findQAsByStatus(qaStatus, pageable);
+        }
         return new SliceResponse<>(qas.map(AdminQaSearchResponseDto::new));
     }
 
