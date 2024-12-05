@@ -19,6 +19,7 @@ public class DealHistoryResponseDto {
 
     private Long itemId;
     private String title;
+    private Long userId;
     private String nickname;
     private int price;
     private String thumbnail;
