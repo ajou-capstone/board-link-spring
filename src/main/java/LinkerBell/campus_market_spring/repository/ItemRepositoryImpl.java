@@ -68,7 +68,9 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                             .exists()
                     ).then(true)
                     .otherwise(false)
-                    .as("isLiked")
+                    .as("isLiked"),
+                item.createdDate,
+                item.lastModifiedDate
             ))
             .from(item)
             .leftJoin(item.user, user)
@@ -217,6 +219,8 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
             .likeCount(likeCount)
             .isLiked(isLiked)
             .itemStatus(itemEntity.getItemStatus())
+            .createdDate(itemEntity.getCreatedDate())
+            .lastModifiedDate(itemEntity.getLastModifiedDate())
             .build();
     }
 
