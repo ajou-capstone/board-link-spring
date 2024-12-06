@@ -56,10 +56,31 @@ class AdminControllerTest {
     public void getItemReportListTest() throws Exception {
 
         // when & then
+        mockMvc.perform(get("/admin/api/v1/items/report")
+                .queryParam("status", "all"))
+            .andDo(print());
+
+        then(adminService).should().getItemReports(assertArg(st -> {
+            assertThat(st).isNotNull();
+        }), assertArg(p -> {
+            assertThat(p).isNotNull();
+            assertThat(p.getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "createdDate")
+                .and(Sort.by(Sort.Direction.DESC, "itemReportId")));
+        }));
+    }
+
+    @Test
+    @DisplayName("상품 신고 목록 리스트 테스트")
+    public void getItemReportListWithNullStatusTest() throws Exception {
+
+        // when & then
         mockMvc.perform(get("/admin/api/v1/items/report"))
             .andDo(print());
 
-        then(adminService).should().getItemReports(assertArg(p -> {
+        then(adminService).should().getItemReports(assertArg(st -> {
+            assertThat(st).isNotNull();
+            assertThat(st).isEqualTo("all");
+        }), assertArg(p -> {
             assertThat(p).isNotNull();
             assertThat(p.getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "createdDate")
                 .and(Sort.by(Sort.Direction.DESC, "itemReportId")));
@@ -71,13 +92,35 @@ class AdminControllerTest {
     public void getUserReportListTest() throws Exception {
 
         // when & then
-        mockMvc.perform(get("/admin/api/v1/users/report"))
+        mockMvc.perform(get("/admin/api/v1/users/report")
+                .queryParam("status", "all"))
             .andDo(print());
 
-        then(adminService).should().getUserReports(assertArg(p -> {
+        then(adminService).should().getUserReports(assertArg(st -> {
+            assertThat(st).isNotNull();
+        }), assertArg(p -> {
             assertThat(p).isNotNull();
             assertThat(p.getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "createdDate")
                 .and(Sort.by(Sort.Direction.DESC, "userReportId")));
+        }));
+    }
+
+    @Test
+    @DisplayName("문의 목록 리스트 테스트")
+    public void getQaListTest() throws Exception {
+
+        // when & then
+        mockMvc.perform(get("/admin/api/v1/qa")
+                .queryParam("status", "done"))
+            .andDo(print());
+
+        then(adminService).should().getQuestions(assertArg(st -> {
+            assertThat(st).isNotNull();
+            assertThat(st).isEqualTo("done");
+        }), assertArg(p -> {
+            assertThat(p).isNotNull();
+            assertThat(p.getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "createdDate")
+                .and(Sort.by(Sort.Direction.DESC, "qaId")));
         }));
     }
 

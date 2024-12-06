@@ -67,28 +67,25 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<String> test(@Login AuthUserDto user) {
-        return ResponseEntity.ok("Hello Admin! " + user.getLoginEmail());
-    }
-
     @GetMapping("/items/report")
     public ResponseEntity<SliceResponse<ItemReportSearchResponseDto>> getItemReports(
+        @RequestParam(defaultValue = "all", name = "status") String status,
         @PageableDefault(page = 0, size = 10)
         @SortDefaults({
             @SortDefault(sort = "createdDate", direction = Direction.DESC),
             @SortDefault(sort = "itemReportId", direction = Direction.DESC)}) Pageable pageable) {
-        SliceResponse<ItemReportSearchResponseDto> response = adminService.getItemReports(pageable);
+        SliceResponse<ItemReportSearchResponseDto> response = adminService.getItemReports(status, pageable);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/users/report")
     public ResponseEntity<SliceResponse<UserReportSearchResponseDto>> getUserReports(
+        @RequestParam(defaultValue = "all", name = "status") String status,
         @PageableDefault(page = 0, size = 10)
         @SortDefaults({
             @SortDefault(sort = "createdDate", direction = Direction.DESC),
             @SortDefault(sort = "userReportId", direction = Direction.DESC)}) Pageable pageable) {
-        SliceResponse<UserReportSearchResponseDto> response = adminService.getUserReports(pageable);
+        SliceResponse<UserReportSearchResponseDto> response = adminService.getUserReports(status, pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -123,11 +120,12 @@ public class AdminController {
 
     @GetMapping("/qa")
     public ResponseEntity<SliceResponse<AdminQaSearchResponseDto>> getQuestions(
+        @RequestParam(defaultValue = "all", name = "status") String status,
         @PageableDefault(page = 0, size = 10)
         @SortDefaults({
             @SortDefault(sort = "createdDate", direction = Direction.DESC),
             @SortDefault(sort = "qaId", direction = Direction.DESC)}) Pageable pageable) {
-        SliceResponse<AdminQaSearchResponseDto> response = adminService.getQuestions(pageable);
+        SliceResponse<AdminQaSearchResponseDto> response = adminService.getQuestions(status, pageable);
         return ResponseEntity.ok(response);
     }
 

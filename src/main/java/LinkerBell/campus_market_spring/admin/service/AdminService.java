@@ -32,6 +32,7 @@ import LinkerBell.campus_market_spring.service.GoogleAuthService;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -75,15 +76,27 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
-    public SliceResponse<ItemReportSearchResponseDto> getItemReports(Pageable pageable) {
-        Slice<ItemReport> itemReports = itemReportRepository.findItemReports(pageable);
+    public SliceResponse<ItemReportSearchResponseDto> getItemReports(String status, Pageable pageable) {
+        Slice<ItemReport> itemReports;
+        if (StringUtils.equals(status, "all")) {
+            itemReports = itemReportRepository.findItemReports(pageable);
+        } else {
+            Boolean itemReportStatus = StringUtils.equals(status, "done");
+            itemReports = itemReportRepository.findItemReportsByStatus(itemReportStatus, pageable);
+        }
 
         return new SliceResponse<>(itemReports.map(ItemReportSearchResponseDto::new));
     }
 
     @Transactional(readOnly = true)
-    public SliceResponse<UserReportSearchResponseDto> getUserReports(Pageable pageable) {
-        Slice<UserReport> userReports = userReportRepository.findUserReports(pageable);
+    public SliceResponse<UserReportSearchResponseDto> getUserReports(String status, Pageable pageable) {
+        Slice<UserReport> userReports;
+        if (StringUtils.equals(status, "all")) {
+            userReports = userReportRepository.findUserReports(pageable);
+        } else {
+            Boolean userReportStatus = StringUtils.equals(status, "done");
+            userReports = userReportRepository.findUserReportsByStatus(userReportStatus, pageable);
+        }
 
         return new SliceResponse<>(userReports.map(UserReportSearchResponseDto::new));
     }
@@ -140,16 +153,20 @@ public class AdminService {
         if (blacklist.getEndDate().isBefore(period)) {
             blacklist.setEndDate(period);
             blacklist.setReason(suspendReason);
-            target.setRefreshToken(null);
         }
-
+        target.setRefreshToken(null);
         blacklistRepository.save(blacklist);
     }
 
     @Transactional(readOnly = true)
-    public SliceResponse<AdminQaSearchResponseDto> getQuestions(Pageable pageable) {
-        Slice<QA> qas = qaRepository.findQAs(pageable);
-
+    public SliceResponse<AdminQaSearchResponseDto> getQuestions(String status, Pageable pageable) {
+        Slice<QA> qas;
+        if (StringUtils.equals(status, "all")) {
+            qas = qaRepository.findQAs(pageable);
+        } else {
+            Boolean qaStatus = StringUtils.equals(status, "done");
+            qas = qaRepository.findQAsByStatus(qaStatus, pageable);
+        }
         return new SliceResponse<>(qas.map(AdminQaSearchResponseDto::new));
     }
 

@@ -3,6 +3,8 @@ package LinkerBell.campus_market_spring.admin.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import LinkerBell.campus_market_spring.domain.ItemReport;
+import LinkerBell.campus_market_spring.domain.QA;
 import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.domain.UserReport;
@@ -11,17 +13,30 @@ import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
 import LinkerBell.campus_market_spring.repository.BlacklistRepository;
+import LinkerBell.campus_market_spring.repository.ItemReportRepository;
+import LinkerBell.campus_market_spring.repository.QaRepository;
 import LinkerBell.campus_market_spring.repository.UserReportRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import LinkerBell.campus_market_spring.service.GoogleAuthService;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import org.assertj.core.internal.Lists;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.mock.web.MockPageContext;
 
 @ExtendWith(MockitoExtension.class)
 class AdminServiceTest {
@@ -40,6 +55,12 @@ class AdminServiceTest {
 
     @Mock
     private BlacklistRepository blacklistRepository;
+
+    @Mock
+    private QaRepository qaRepository;
+
+    @Mock
+    private ItemReportRepository itemReportRepository;
 
     @Mock
     private JwtUtils jwtUtils;
@@ -99,6 +120,193 @@ class AdminServiceTest {
             assertThat(b).isNotNull();
             assertThat(b.getEndDate()).isAfter(LocalDateTime.now());
         }));
+    }
+
+    @Test
+    @DisplayName("문의 전체 목록 가져오기 테스트")
+    public void getAllQuestionsTest() {
+        // given
+        Sort sort = Sort.by(Direction.DESC, "createdDate")
+            .and(Sort.by(Direction.DESC, "qaId"));
+        Pageable pageable = PageRequest.of(0, 20, sort);
+        String status = "all";
+        Page<QA> pageResponse = new PageImpl<>(List.of(), pageable, 0);
+
+        given(qaRepository.findQAs(any(Pageable.class))).willReturn(pageResponse);
+        // when
+        adminService.getQuestions(status, pageable);
+        // then
+        then(qaRepository).should(times(1)).findQAs(assertArg((page) -> {
+            assertThat(page).isNotNull();
+            assertThat(page).isInstanceOf(Pageable.class);
+        }));
+        then(qaRepository).should(times(0)).findQAsByStatus(any(), any());
+    }
+
+    @Test
+    @DisplayName("처리된 문의 목록 가져오기 테스트")
+    public void getCompletedQuestionsTest() {
+        // given
+        Sort sort = Sort.by(Direction.DESC, "createdDate")
+            .and(Sort.by(Direction.DESC, "qaId"));
+        Pageable pageable = PageRequest.of(0, 20, sort);
+        String status = "done";
+
+        Page<QA> pageResponse = new PageImpl<>(List.of(), pageable, 0);
+        given(qaRepository.findQAsByStatus(anyBoolean(), any(Pageable.class))).willReturn(pageResponse);
+        // when
+        adminService.getQuestions(status, pageable);
+        // then
+        then(qaRepository).should(times(0)).findQAs(any());
+        then(qaRepository).should(times(1)).findQAsByStatus(assertArg(qaStatus -> {
+            assertThat(qaStatus).isNotNull();
+            assertThat(qaStatus).isTrue();
+        }), assertArg(page -> {
+            assertThat(page).isNotNull();
+            assertThat(page).isInstanceOf(Pageable.class);
+        }));
+    }
+
+    @Test
+    @DisplayName("처리가 되지 않은 문의 목록 가져오기 테스트")
+    public void getInProgressQuestionsTest() {
+        // given
+        Sort sort = Sort.by(Direction.DESC, "createdDate")
+            .and(Sort.by(Direction.DESC, "qaId"));
+        Pageable pageable = PageRequest.of(0, 20, sort);
+        String status = "inprogress";
+
+        Page<QA> pageResponse = new PageImpl<>(List.of(), pageable, 0);
+        given(qaRepository.findQAsByStatus(anyBoolean(), any(Pageable.class))).willReturn(pageResponse);
+        // when
+        adminService.getQuestions(status, pageable);
+        // then
+        then(qaRepository).should(times(0)).findQAs(any());
+        then(qaRepository).should(times(1)).findQAsByStatus(assertArg(qaStatus -> {
+            assertThat(qaStatus).isNotNull();
+            assertThat(qaStatus).isFalse();
+        }), assertArg(page -> {
+            assertThat(page).isNotNull();
+            assertThat(page).isInstanceOf(Pageable.class);
+        }));
+    }
+
+    @Test
+    @DisplayName("전체 상품 신고 목록 가져오기 테스트")
+    public void getAllItemReportsTest() {
+        // given
+        Sort sort = Sort.by(Direction.DESC, "createdDate")
+            .and(Sort.by(Direction.DESC, "itemReportId"));
+        Pageable pageable = PageRequest.of(0, 20, sort);
+        String status = "all";
+        Page<ItemReport> pageResponse = new PageImpl<>(List.of(), pageable, 0);
+        given(itemReportRepository.findItemReports(any(Pageable.class))).willReturn(pageResponse);
+        // when
+        adminService.getItemReports(status, pageable);
+        // then
+        then(itemReportRepository).should(times(1)).findItemReports(assertArg(p -> {
+            assertThat(p).isNotNull();
+        }));
+        then(itemReportRepository).should(times(0)).findItemReportsByStatus(any(), any());
+    }
+
+    @Test
+    @DisplayName("처리된 상품 신고 목록 가져오기 테스트")
+    public void getCompletedItemReportsTest() {
+        // given
+        Sort sort = Sort.by(Direction.DESC, "createdDate")
+            .and(Sort.by(Direction.DESC, "itemReportId"));
+        Pageable pageable = PageRequest.of(0, 20, sort);
+        String status = "done";
+        Page<ItemReport> pageResponse = new PageImpl<>(List.of(), pageable, 0);
+        given(itemReportRepository.findItemReportsByStatus(anyBoolean(), any(Pageable.class))).willReturn(pageResponse);
+        // when
+        adminService.getItemReports(status, pageable);
+        // then
+        then(itemReportRepository).should(times(0)).findItemReports(any());
+        then(itemReportRepository).should(times(1)).findItemReportsByStatus(assertArg(st -> {
+            assertThat(st).isNotNull();
+            assertThat(st).isTrue();
+        }), any());
+    }
+
+    @Test
+    @DisplayName("처리되지 않은 상품 신고 목록 가져오기 테스트")
+    public void getInProgressItemReportsTest() {
+        // given
+        Sort sort = Sort.by(Direction.DESC, "createdDate")
+            .and(Sort.by(Direction.DESC, "itemReportId"));
+        Pageable pageable = PageRequest.of(0, 20, sort);
+        String status = "inprogress";
+        Page<ItemReport> pageResponse = new PageImpl<>(List.of(), pageable, 0);
+        given(itemReportRepository.findItemReportsByStatus(anyBoolean(), any(Pageable.class))).willReturn(pageResponse);
+        // when
+        adminService.getItemReports(status, pageable);
+        // then
+        then(itemReportRepository).should(times(0)).findItemReports(any());
+        then(itemReportRepository).should(times(1)).findItemReportsByStatus(assertArg(st -> {
+            assertThat(st).isNotNull();
+            assertThat(st).isFalse();
+        }), any());
+    }
+
+    @Test
+    @DisplayName("전체 사용자 신고 목록 가져오기 테스트")
+    public void getAllUserReportsTest() {
+        // given
+        Sort sort = Sort.by(Direction.DESC, "createdDate")
+            .and(Sort.by(Direction.DESC, "userReportId"));
+        Pageable pageable = PageRequest.of(0, 20, sort);
+        String status = "all";
+        Page<UserReport> pageResponse = new PageImpl<>(List.of(), pageable, 0);
+        given(userReportRepository.findUserReports(any(Pageable.class))).willReturn(pageResponse);
+        // when
+        adminService.getUserReports(status, pageable);
+        // then
+        then(userReportRepository).should(times(1)).findUserReports(assertArg(p -> {
+            assertThat(p).isNotNull();
+        }));
+        then(userReportRepository).should(times(0)).findUserReportsByStatus(any(), any());
+    }
+
+    @Test
+    @DisplayName("처리되지 않은 사용자 신고 목록 가져오기 테스트")
+    public void getInProgressUserReportsTest() {
+        // given
+        Sort sort = Sort.by(Direction.DESC, "createdDate")
+            .and(Sort.by(Direction.DESC, "userReportId"));
+        Pageable pageable = PageRequest.of(0, 20, sort);
+        String status = "inprogress";
+        Page<UserReport> pageResponse = new PageImpl<>(List.of(), pageable, 0);
+        given(userReportRepository.findUserReportsByStatus(anyBoolean(), any(Pageable.class))).willReturn(pageResponse);
+        // when
+        adminService.getUserReports(status, pageable);
+        // then
+        then(userReportRepository).should(times(0)).findUserReports(any());
+        then(userReportRepository).should(times(1)).findUserReportsByStatus(assertArg(st -> {
+            assertThat(st).isNotNull();
+            assertThat(st).isFalse();
+        }), any());
+    }
+
+    @Test
+    @DisplayName("처리된 사용자 신고 목록 가져오기 테스트")
+    public void getCompletedUserReportsTest() {
+        // given
+        Sort sort = Sort.by(Direction.DESC, "createdDate")
+            .and(Sort.by(Direction.DESC, "userReportId"));
+        Pageable pageable = PageRequest.of(0, 20, sort);
+        String status = "done";
+        Page<UserReport> pageResponse = new PageImpl<>(List.of(), pageable, 0);
+        given(userReportRepository.findUserReportsByStatus(anyBoolean(), any(Pageable.class))).willReturn(pageResponse);
+        // when
+        adminService.getUserReports(status, pageable);
+        // then
+        then(userReportRepository).should(times(0)).findUserReports(any());
+        then(userReportRepository).should(times(1)).findUserReportsByStatus(assertArg(st -> {
+            assertThat(st).isNotNull();
+            assertThat(st).isTrue();
+        }), any());
     }
 
     private User createAdmin() {
