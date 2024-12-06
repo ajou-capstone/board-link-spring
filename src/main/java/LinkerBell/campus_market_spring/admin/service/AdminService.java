@@ -1,11 +1,14 @@
 package LinkerBell.campus_market_spring.admin.service;
 
+import LinkerBell.campus_market_spring.admin.dto.AdminCampusResponseDto;
+import LinkerBell.campus_market_spring.admin.dto.AdminCampusesResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminQaResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminQaSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.UserReportSearchResponseDto;
 import LinkerBell.campus_market_spring.domain.Blacklist;
+import LinkerBell.campus_market_spring.domain.Campus;
 import LinkerBell.campus_market_spring.domain.Category;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.UserReportResponseDto;
@@ -23,6 +26,7 @@ import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
 import LinkerBell.campus_market_spring.repository.BlacklistRepository;
+import LinkerBell.campus_market_spring.repository.CampusRepository;
 import LinkerBell.campus_market_spring.repository.ItemReportRepository;
 import LinkerBell.campus_market_spring.repository.ItemRepository;
 import LinkerBell.campus_market_spring.repository.QaRepository;
@@ -30,6 +34,7 @@ import LinkerBell.campus_market_spring.repository.UserReportRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import LinkerBell.campus_market_spring.service.GoogleAuthService;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -52,6 +57,7 @@ public class AdminService {
     private final ItemRepository itemRepository;
     private final BlacklistRepository blacklistRepository;
     private final QaRepository qaRepository;
+    private final CampusRepository campusRepository;
 
     public AuthResponseDto adminLogin(String idToken) {
         String email = googleAuthService.getEmailWithVerifyIdToken(idToken);
@@ -76,7 +82,8 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
-    public SliceResponse<ItemReportSearchResponseDto> getItemReports(String status, Pageable pageable) {
+    public SliceResponse<ItemReportSearchResponseDto> getItemReports(String status,
+        Pageable pageable) {
         Slice<ItemReport> itemReports;
         if (StringUtils.equals(status, "all")) {
             itemReports = itemReportRepository.findItemReports(pageable);
@@ -89,7 +96,8 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
-    public SliceResponse<UserReportSearchResponseDto> getUserReports(String status, Pageable pageable) {
+    public SliceResponse<UserReportSearchResponseDto> getUserReports(String status,
+        Pageable pageable) {
         Slice<UserReport> userReports;
         if (StringUtils.equals(status, "all")) {
             userReports = userReportRepository.findUserReports(pageable);
@@ -103,8 +111,10 @@ public class AdminService {
 
     @Transactional(readOnly = true)
     public SliceResponse<AdminItemSearchResponseDto> getAllItems(Long userId, String name,
-        Category category, Integer minPrice, Integer maxPrice, Pageable pageable) {
-        return itemRepository.adminItemSearch(userId, name, category, minPrice, maxPrice, pageable);
+        Category category, Integer minPrice, Integer maxPrice, Boolean isDeleted, Long campusId,
+        Pageable pageable) {
+        return itemRepository.adminItemSearch(userId, name, category, minPrice, maxPrice, isDeleted,
+            campusId, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -213,5 +223,13 @@ public class AdminService {
             .profileImage(user.getProfileImage())
             .rating(user.getRating())
             .isDeleted(user.isDeleted()).build();
+    }
+
+    @Transactional(readOnly = true)
+    public AdminCampusesResponseDto getCampuses() {
+        List<Campus> campus = campusRepository.findAll();
+        List<AdminCampusResponseDto> campuses = campus.stream()
+            .map(AdminCampusResponseDto::new).toList();
+        return AdminCampusesResponseDto.builder().campuses(campuses).build();
     }
 }

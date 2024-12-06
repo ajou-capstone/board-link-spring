@@ -149,7 +149,8 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
 
     @Override
     public SliceResponse<AdminItemSearchResponseDto> adminItemSearch(Long userId, String name,
-        Category category, Integer minPrice, Integer maxPrice, Pageable pageable) {
+        Category category, Integer minPrice, Integer maxPrice, Boolean isDeleted, Long campusId,
+        Pageable pageable) {
         QItem item = QItem.item;
         QUser user = QUser.user;
         QChatRoom chatRoom = QChatRoom.chatRoom;
@@ -177,7 +178,10 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                     .as("isLiked"),
                 item.campus.universityName,
                 item.campus.region,
-                item.campus.campusId
+                item.campus.campusId,
+                item.createdDate,
+                item.lastModifiedDate,
+                item.isDeleted
             ))
             .from(item)
             .leftJoin(item.user, user)
@@ -186,7 +190,9 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
             .where(
                 itemNameContains(name),
                 itemCategoryEq(category),
-                itemPriceBetween(minPrice, maxPrice)
+                itemPriceBetween(minPrice, maxPrice),
+                itemCampusEq(campusId),
+                itemIsDeletedEq(isDeleted)
             )
             .groupBy(item.itemId)
             .offset(pageable.getOffset())
@@ -249,6 +255,14 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
 
     private BooleanExpression itemStatusEq(ItemStatus itemStatus) {
         return itemStatus != null ? item.itemStatus.eq(itemStatus) : null;
+    }
+
+    private BooleanExpression itemIsDeletedEq(Boolean isDeleted) {
+        return isDeleted != null ? item.isDeleted.eq(isDeleted) : null;
+    }
+
+    private BooleanExpression itemCampusEq(Long campusId) {
+        return campusId != null ? item.campus.campusId.eq(campusId) : null;
     }
 
     private OrderSpecifier<?>[] itemSearchSort(Pageable pageable) {

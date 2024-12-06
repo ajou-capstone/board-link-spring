@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 @DataJpaTest
 class CampusRepositoryTest {
+
     @Autowired
     CampusRepository campusRepository;
 
@@ -43,6 +44,17 @@ class CampusRepositoryTest {
         List<Campus> campusList = campusRepository.findByEmail(email);
         // then
         assertThat(campusList.size()).isEqualTo(0);
+        System.out.println(campusList);
+    }
+
+    @Test
+    @DisplayName("모든 캠퍼스 가져오는 테스트")
+    public void getAllCampusTest() {
+        // given
+        List<Campus> campusList = campusRepository.findAll();
+        // when & then
+        assertThat(campusList).isNotNull();
+        assertThat(campusList.size()).isEqualTo(2);
         System.out.println(campusList);
     }
 

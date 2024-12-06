@@ -17,5 +17,6 @@ public interface ItemRepositoryCustom {
     ItemDetailsViewResponseDto findByItemDetails(Long userId, Long itemId);
 
     SliceResponse<AdminItemSearchResponseDto> adminItemSearch(Long userId, String name,
-        Category category, Integer minPrice, Integer maxPrice, Pageable pageable);
+        Category category, Integer minPrice, Integer maxPrice, Boolean isDeleted, Long campusId,
+        Pageable pageable);
 }
