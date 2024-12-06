@@ -1,7 +1,9 @@
 package LinkerBell.campus_market_spring.admin.dto;
 
 import LinkerBell.campus_market_spring.domain.ItemStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDateTime;
 
 public record AdminItemSearchResponseDto(
     Long itemId,
@@ -16,7 +18,12 @@ public record AdminItemSearchResponseDto(
     @JsonProperty(value = "isLiked") Boolean isLiked,
     String universityName,
     String campusRegion,
-    Long campusId
+    Long campusId,
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    LocalDateTime createdDate,
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    LocalDateTime lastModifiedDate,
+    @JsonProperty(value = "isDeleted") Boolean isDeleted
 ) {
 
 }

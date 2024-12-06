@@ -1,15 +1,19 @@
 package LinkerBell.campus_market_spring.admin.controller;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.BDDMockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.BDDMockito.assertArg;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import LinkerBell.campus_market_spring.admin.service.AdminService;
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
-import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.global.error.GlobalExceptionHandler;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,9 +22,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.MethodParameter;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -122,6 +126,53 @@ class AdminControllerTest {
             assertThat(p.getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "createdDate")
                 .and(Sort.by(Sort.Direction.DESC, "qaId")));
         }));
+    }
+
+    @Test
+    @DisplayName("모든 아이템 가져오는 컨트롤러 테스트")
+    public void getAllItemDefaultTest() throws Exception {
+        // when & then
+        mockMvc.perform(get("/admin/api/v1/items")
+                .param("name", "exampleItem")
+                .param("category", "ELECTRONICS_IT")
+                .param("minPrice", "100")
+                .param("maxPrice", "1000")
+                .param("isDeleted", "true")
+                .param("campusId", "2")
+                .param("page", "1")
+                .param("size", "5")
+                .param("sort", "price,asc")
+                .contentType(MediaType.APPLICATION_JSON))
+            .andDo(print())
+            .andExpect(status().isOk());
+
+        verify(adminService).getAllItems(
+            anyLong(),
+            argThat(name -> name.equals("exampleItem")),
+            argThat(category -> category != null && category.name().equals("ELECTRONICS_IT")),
+            argThat(minPrice -> minPrice != null && minPrice == 100),
+            argThat(maxPrice -> maxPrice != null && maxPrice == 1000),
+            argThat(isDeleted -> isDeleted != null && isDeleted),
+            argThat(campusId -> campusId != null && campusId == 2),
+            argThat(pageable -> {
+                assertThat(pageable).isNotNull();
+                assertThat(pageable.getPageNumber()).isEqualTo(1);
+                assertThat(pageable.getPageSize()).isEqualTo(5);
+                assertThat(pageable.getSort()).isEqualTo(Sort.by(Sort.Direction.ASC, "price"));
+                return true;
+            })
+        );
+    }
+
+    @Test
+    @DisplayName("캠퍼스 목록 리스트 테스트")
+    public void getCampusListTest() throws Exception {
+
+        // when & then
+        mockMvc.perform(get("/admin/api/v1/campuses"))
+            .andDo(print())
+            .andExpect(status().isOk());
+        verify(adminService, times(1)).getCampuses();
     }
 
 

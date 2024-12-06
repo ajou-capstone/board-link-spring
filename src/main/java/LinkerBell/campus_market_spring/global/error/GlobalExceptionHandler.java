@@ -72,6 +72,16 @@ public class GlobalExceptionHandler {
             log.error(ErrorCode.INVALID_ITEM_STATUS.getMessage());
             return new ResponseEntity<>(errorResponse,
                 ErrorCode.INVALID_ITEM_STATUS.getHttpStatus());
+        } else if (ex.getName().equals("isDeleted")) {
+            ErrorResponse errorResponse = new ErrorResponse(ErrorCode.REQUIRE_DELETE_OR_NOT);
+            log.error(ErrorCode.REQUIRE_DELETE_OR_NOT.getMessage());
+            return new ResponseEntity<>(errorResponse,
+                ErrorCode.REQUIRE_DELETE_OR_NOT.getHttpStatus());
+        } else if (ex.getName().equals("campusId")) {
+            ErrorResponse errorResponse = new ErrorResponse(ErrorCode.CAMPUS_NOT_FOUND);
+            log.error(ErrorCode.CAMPUS_NOT_FOUND.getMessage());
+            return new ResponseEntity<>(errorResponse,
+                ErrorCode.CAMPUS_NOT_FOUND.getHttpStatus());
         }
 
         throw ex;

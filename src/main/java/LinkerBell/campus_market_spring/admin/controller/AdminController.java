@@ -1,5 +1,6 @@
 package LinkerBell.campus_market_spring.admin.controller;
 
+import LinkerBell.campus_market_spring.admin.dto.AdminCampusesResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminItemReportRequestDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminItemSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminLoginRequestDto;
@@ -59,10 +60,12 @@ public class AdminController {
         @RequestParam(required = false) Category category,
         @RequestParam(required = false) Integer minPrice,
         @RequestParam(required = false) Integer maxPrice,
+        @RequestParam(required = false) Boolean isDeleted,
+        @RequestParam(required = false) Long campusId,
         @PageableDefault(page = 0, size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
         SliceResponse<AdminItemSearchResponseDto> response =
             adminService.getAllItems(user.getUserId(), name, category, minPrice, maxPrice,
-                pageable);
+                isDeleted, campusId, pageable);
 
         return ResponseEntity.ok(response);
     }
@@ -74,7 +77,8 @@ public class AdminController {
         @SortDefaults({
             @SortDefault(sort = "createdDate", direction = Direction.DESC),
             @SortDefault(sort = "itemReportId", direction = Direction.DESC)}) Pageable pageable) {
-        SliceResponse<ItemReportSearchResponseDto> response = adminService.getItemReports(status, pageable);
+        SliceResponse<ItemReportSearchResponseDto> response = adminService.getItemReports(status,
+            pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -85,7 +89,8 @@ public class AdminController {
         @SortDefaults({
             @SortDefault(sort = "createdDate", direction = Direction.DESC),
             @SortDefault(sort = "userReportId", direction = Direction.DESC)}) Pageable pageable) {
-        SliceResponse<UserReportSearchResponseDto> response = adminService.getUserReports(status, pageable);
+        SliceResponse<UserReportSearchResponseDto> response = adminService.getUserReports(status,
+            pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -125,7 +130,8 @@ public class AdminController {
         @SortDefaults({
             @SortDefault(sort = "createdDate", direction = Direction.DESC),
             @SortDefault(sort = "qaId", direction = Direction.DESC)}) Pageable pageable) {
-        SliceResponse<AdminQaSearchResponseDto> response = adminService.getQuestions(status, pageable);
+        SliceResponse<AdminQaSearchResponseDto> response = adminService.getQuestions(status,
+            pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -160,5 +166,10 @@ public class AdminController {
         @PathVariable("userId") Long userId) {
         OtherProfileResponseDto response = adminService.getUserProfile(userId);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/campuses")
+    public ResponseEntity<AdminCampusesResponseDto> getCampuses() {
+        return ResponseEntity.ok(adminService.getCampuses());
     }
 }

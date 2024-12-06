@@ -539,9 +539,9 @@ class ItemRepositoryTest {
                 .user(users.get(2))
                 .campus(users.get(2).getCampus())
                 .category(Category.OTHER)
-                .title("ForSale Item " + i)
+                .title("Sold out Item " + i)
                 .price(i)
-                .itemStatus(ItemStatus.FORSALE)
+                .itemStatus(ItemStatus.SOLDOUT)
                 .build();
             itemRepository.save(item);
             items.add(item);
@@ -553,7 +553,7 @@ class ItemRepositoryTest {
         Category category = null;
         Integer minPrice = null;
         Integer maxPrice = null;
-        ItemStatus itemStatus = ItemStatus.FORSALE;
+        ItemStatus itemStatus = ItemStatus.SOLDOUT;
         Sort sort = Sort.by("createdDate").descending();
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         //when
@@ -987,11 +987,13 @@ class ItemRepositoryTest {
         Category category = null;
         Integer minPrice = null;
         Integer maxPrice = null;
+        Boolean isDeleted = null;
+        Long campusId = null;
         Sort sort = Sort.by("createdDate").descending();
         PageRequest pageRequest = PageRequest.of(0, 100, sort);
         //when
         SliceResponse<AdminItemSearchResponseDto> response = itemRepository.adminItemSearch(
-            user.getUserId(), name, category, minPrice, maxPrice, pageRequest);
+            user.getUserId(), name, category, minPrice, maxPrice, isDeleted, campusId, pageRequest);
         // then
         assertThat(response).isNotNull();
         assertThat(response.getContent().size()).isEqualTo(items.size());
@@ -999,6 +1001,83 @@ class ItemRepositoryTest {
             .isEqualTo(items.get(items.size() - 1).getItemId());
         assertThat(response.getContent().get(0).universityName())
             .isEqualTo(items.get(items.size() - 1).getCampus().getUniversityName());
+    }
+
+    @Test
+    @DisplayName("관리자 캠퍼스 필터링 건 상품 검색 테스트")
+    public void adminItemSearchByCampusTest() {
+        // given
+        User user = User.builder().userId(999L).loginEmail("admin@example.com").role(Role.ADMIN)
+            .build();
+        user = userRepository.save(user);
+        String name = null;
+        Category category = null;
+        Integer minPrice = null;
+        Integer maxPrice = null;
+        Boolean isDeleted = null;
+        Long campusId = campuses.get(0).getCampusId();
+        Sort sort = Sort.by("createdDate").descending();
+        PageRequest pageRequest = PageRequest.of(0, 100, sort);
+        //when
+        SliceResponse<AdminItemSearchResponseDto> response = itemRepository.adminItemSearch(
+            user.getUserId(), name, category, minPrice, maxPrice, isDeleted, campusId, pageRequest);
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getContent().size()).isEqualTo(5);
+
+        assertThat(response.getContent().get(0).itemId())
+            .isEqualTo(items.get(4).getItemId());
+        assertThat(response.getContent().get(0).universityName())
+            .isEqualTo(items.get(4).getCampus().getUniversityName());
+
+        assertThat(response.getContent().get(1).itemId())
+            .isEqualTo(items.get(3).getItemId());
+        assertThat(response.getContent().get(1).universityName())
+            .isEqualTo(items.get(3).getCampus().getUniversityName());
+    }
+
+    @Test
+    @DisplayName("관리자 삭제된 아이템만 가져오는 상품 검색 테스트")
+    public void adminItemSearchByDeletedItemTest() {
+        // given
+        User user = User.builder().userId(999L).loginEmail("admin@example.com").role(Role.ADMIN)
+            .build();
+        //given
+        for (int i = 25; i < 30; i++) {
+            Item item = Item.builder()
+                .user(users.get(2))
+                .campus(users.get(2).getCampus())
+                .category(Category.OTHER)
+                .title("Sold out Item " + i)
+                .price(i)
+                .isDeleted(true)
+                .build();
+            itemRepository.save(item);
+            items.add(item);
+        }
+        user = userRepository.save(user);
+        String name = null;
+        Category category = null;
+        Integer minPrice = null;
+        Integer maxPrice = null;
+        Boolean isDeleted = true;
+        Long campusId = null;
+        Sort sort = Sort.by("createdDate").descending();
+        PageRequest pageRequest = PageRequest.of(0, 100, sort);
+        //when
+        SliceResponse<AdminItemSearchResponseDto> response = itemRepository.adminItemSearch(
+            user.getUserId(), name, category, minPrice, maxPrice, isDeleted, campusId, pageRequest);
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getContent().size()).isEqualTo(5);
+
+        assertThat(response.getContent().get(0).itemId())
+            .isEqualTo(items.get(29).getItemId());
+        assertThat(response.getContent().get(0).isDeleted()).isTrue();
+
+        assertThat(response.getContent().get(1).itemId())
+            .isEqualTo(items.get(28).getItemId());
+        assertThat(response.getContent().get(1).isDeleted()).isTrue();
     }
 
     private void updateItemPhotos(List<ItemPhotos> existingItemPhotos,

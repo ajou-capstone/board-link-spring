@@ -1,8 +1,18 @@
 package LinkerBell.campus_market_spring.admin.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.BDDMockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.anyBoolean;
+import static org.mockito.BDDMockito.anyLong;
+import static org.mockito.BDDMockito.anyString;
+import static org.mockito.BDDMockito.assertArg;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.times;
 
+import LinkerBell.campus_market_spring.admin.dto.AdminCampusesResponseDto;
+import LinkerBell.campus_market_spring.domain.Campus;
 import LinkerBell.campus_market_spring.domain.ItemReport;
 import LinkerBell.campus_market_spring.domain.QA;
 import LinkerBell.campus_market_spring.domain.Role;
@@ -13,6 +23,7 @@ import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
 import LinkerBell.campus_market_spring.repository.BlacklistRepository;
+import LinkerBell.campus_market_spring.repository.CampusRepository;
 import LinkerBell.campus_market_spring.repository.ItemReportRepository;
 import LinkerBell.campus_market_spring.repository.QaRepository;
 import LinkerBell.campus_market_spring.repository.UserReportRepository;
@@ -21,7 +32,6 @@ import LinkerBell.campus_market_spring.service.GoogleAuthService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import org.assertj.core.internal.Lists;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,11 +42,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.mock.web.MockPageContext;
 
 @ExtendWith(MockitoExtension.class)
 class AdminServiceTest {
@@ -63,6 +70,9 @@ class AdminServiceTest {
     private ItemReportRepository itemReportRepository;
 
     @Mock
+    private CampusRepository campusRepository;
+
+    @Mock
     private JwtUtils jwtUtils;
 
     @Test
@@ -74,7 +84,8 @@ class AdminServiceTest {
         String refreshToken = "testRefreshToken";
         given(googleAuthService.getEmailWithVerifyIdToken(anyString()))
             .willReturn("test@example.com");
-        given(userRepository.findByLoginEmail("test@example.com")).willReturn(Optional.ofNullable(admin));
+        given(userRepository.findByLoginEmail("test@example.com")).willReturn(
+            Optional.ofNullable(admin));
         given(jwtUtils.generateAccessToken(anyLong(), anyString(), any(Role.class)))
             .willReturn(accessToken);
         given(jwtUtils.generateRefreshToken(anyLong(), anyString(), any(Role.class)))
@@ -94,7 +105,8 @@ class AdminServiceTest {
         User user = createUser(100L);
         given(googleAuthService.getEmailWithVerifyIdToken(anyString()))
             .willReturn("test@example.com");
-        given(userRepository.findByLoginEmail("test@example.com")).willReturn(Optional.ofNullable(user));
+        given(userRepository.findByLoginEmail("test@example.com")).willReturn(
+            Optional.ofNullable(user));
         // when & then
         assertThatThrownBy(() -> adminService.adminLogin("testIdToken"))
             .isInstanceOf(CustomException.class)
@@ -153,7 +165,8 @@ class AdminServiceTest {
         String status = "done";
 
         Page<QA> pageResponse = new PageImpl<>(List.of(), pageable, 0);
-        given(qaRepository.findQAsByStatus(anyBoolean(), any(Pageable.class))).willReturn(pageResponse);
+        given(qaRepository.findQAsByStatus(anyBoolean(), any(Pageable.class))).willReturn(
+            pageResponse);
         // when
         adminService.getQuestions(status, pageable);
         // then
@@ -177,7 +190,8 @@ class AdminServiceTest {
         String status = "inprogress";
 
         Page<QA> pageResponse = new PageImpl<>(List.of(), pageable, 0);
-        given(qaRepository.findQAsByStatus(anyBoolean(), any(Pageable.class))).willReturn(pageResponse);
+        given(qaRepository.findQAsByStatus(anyBoolean(), any(Pageable.class))).willReturn(
+            pageResponse);
         // when
         adminService.getQuestions(status, pageable);
         // then
@@ -219,7 +233,8 @@ class AdminServiceTest {
         Pageable pageable = PageRequest.of(0, 20, sort);
         String status = "done";
         Page<ItemReport> pageResponse = new PageImpl<>(List.of(), pageable, 0);
-        given(itemReportRepository.findItemReportsByStatus(anyBoolean(), any(Pageable.class))).willReturn(pageResponse);
+        given(itemReportRepository.findItemReportsByStatus(anyBoolean(),
+            any(Pageable.class))).willReturn(pageResponse);
         // when
         adminService.getItemReports(status, pageable);
         // then
@@ -239,7 +254,8 @@ class AdminServiceTest {
         Pageable pageable = PageRequest.of(0, 20, sort);
         String status = "inprogress";
         Page<ItemReport> pageResponse = new PageImpl<>(List.of(), pageable, 0);
-        given(itemReportRepository.findItemReportsByStatus(anyBoolean(), any(Pageable.class))).willReturn(pageResponse);
+        given(itemReportRepository.findItemReportsByStatus(anyBoolean(),
+            any(Pageable.class))).willReturn(pageResponse);
         // when
         adminService.getItemReports(status, pageable);
         // then
@@ -278,7 +294,8 @@ class AdminServiceTest {
         Pageable pageable = PageRequest.of(0, 20, sort);
         String status = "inprogress";
         Page<UserReport> pageResponse = new PageImpl<>(List.of(), pageable, 0);
-        given(userReportRepository.findUserReportsByStatus(anyBoolean(), any(Pageable.class))).willReturn(pageResponse);
+        given(userReportRepository.findUserReportsByStatus(anyBoolean(),
+            any(Pageable.class))).willReturn(pageResponse);
         // when
         adminService.getUserReports(status, pageable);
         // then
@@ -298,7 +315,8 @@ class AdminServiceTest {
         Pageable pageable = PageRequest.of(0, 20, sort);
         String status = "done";
         Page<UserReport> pageResponse = new PageImpl<>(List.of(), pageable, 0);
-        given(userReportRepository.findUserReportsByStatus(anyBoolean(), any(Pageable.class))).willReturn(pageResponse);
+        given(userReportRepository.findUserReportsByStatus(anyBoolean(),
+            any(Pageable.class))).willReturn(pageResponse);
         // when
         adminService.getUserReports(status, pageable);
         // then
@@ -307,6 +325,44 @@ class AdminServiceTest {
             assertThat(st).isNotNull();
             assertThat(st).isTrue();
         }), any());
+    }
+
+    @Test
+    @DisplayName("캠퍼스 목록 가져오기 테스트")
+    public void getCampusesTest() {
+        // given
+        Campus campus1 = Campus.builder()
+            .campusId(1L)
+            .universityName("Seoul National University")
+            .region("Seoul")
+            .build();
+
+        Campus campus2 = Campus.builder()
+            .campusId(2L)
+            .universityName("Korea University")
+            .region("Seoul")
+            .build();
+
+        List<Campus> campusList = List.of(campus1, campus2);
+        given(campusRepository.findAll()).willReturn(campusList);
+
+        // when
+        AdminCampusesResponseDto responseDto = adminService.getCampuses();
+
+        // then
+        assertThat(responseDto).isNotNull();
+        assertThat(responseDto.getCampuses()).isNotNull();
+        assertThat(responseDto.getCampuses()).hasSize(2);
+
+        assertThat(responseDto.getCampuses().get(0).getCampusId()).isEqualTo(1L);
+        assertThat(responseDto.getCampuses().get(0).getCampusName())
+            .isEqualTo("Seoul National University Seoul");
+
+        assertThat(responseDto.getCampuses().get(1).getCampusId()).isEqualTo(2L);
+        assertThat(responseDto.getCampuses().get(1).getCampusName())
+            .isEqualTo("Korea University Seoul");
+
+        then(campusRepository).should(times(1)).findAll();
     }
 
     private User createAdmin() {
