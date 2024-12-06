@@ -12,11 +12,13 @@ import LinkerBell.campus_market_spring.repository.ItemRepository;
 import LinkerBell.campus_market_spring.repository.ReviewRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -38,6 +40,7 @@ public class ReviewService {
             .orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
 
         int reviewCount = reviewRepository.countReview(user);
+        log.info("Review count: {}", reviewCount);
 
         Review review = Review.builder()
             .user(writer)
@@ -52,7 +55,14 @@ public class ReviewService {
         double userRating = user.getRating();
         double newUserRating =
             ((userRating * reviewCount) + (reviewRequestDto.getRating())) / (reviewCount + 1);
+
+        log.info(
+            "((userRating {} * reviewCount {}) + (reviewRequestDto.getRating() {} )) / (reviewCount + 1)",
+            userRating, reviewCount, reviewRequestDto.getRating());
+        
         user.setRating(newUserRating);
+
+        log.info("new user rating: {}", newUserRating);
     }
 
     // 리뷰 가져오기

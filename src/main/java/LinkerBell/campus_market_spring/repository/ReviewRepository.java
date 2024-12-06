@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewRepositoryCustom {
 
-    @Query("SELECT COUNT(r) FROM Review r WHERE r.item.user = :user")
+    @Query("SELECT COUNT(r) FROM Review r WHERE (r.user != :user) AND (r.item.user = :user OR r.item.userBuyer = :user)")
     int countReview(@Param("user") User user);
 
     boolean existsByUserAndItem(User user, Item item);
