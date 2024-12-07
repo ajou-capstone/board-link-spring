@@ -123,7 +123,8 @@ public class ItemService {
             newImageAddresses = new ArrayList<>();
         }
 
-        updateItemPhotos(existingItemPhotos, newImageAddresses, item);
+        updateItemPhotos(existingItemPhotos, newImageAddresses,
+            itemRegisterRequestDto.getThumbnail(), item);
 
         updateItemProperties(itemRegisterRequestDto, item);
 
@@ -206,7 +207,7 @@ public class ItemService {
     }
 
     private void updateItemPhotos(List<ItemPhotos> existingItemPhotos,
-        List<String> newImageAddresses,
+        List<String> newImageAddresses, String thumbnail,
         Item item) {
 
         List<String> existingAddresses = existingItemPhotos.stream()
@@ -225,7 +226,9 @@ public class ItemService {
             .filter(photo -> !newImageAddresses.contains(photo.getImageAddress()))
             .forEach(photo -> {
                 itemPhotosRepository.delete(photo);
-                s3Service.deleteS3File(photo.getImageAddress());
+                if (!thumbnail.equals(photo.getImageAddress())) {
+                    s3Service.deleteS3File(photo.getImageAddress());
+                }
             });
     }
 
