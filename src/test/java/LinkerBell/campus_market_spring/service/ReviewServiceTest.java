@@ -55,15 +55,16 @@ class ReviewServiceTest {
     void postReview_ShouldSaveReviewAndUpdateUserRating() {
         // given
         Long userId = 1L;
-        Long writerId = 2L;
+        Long targetId = 2L;
         Long itemId = 3L;
 
         User user = User.builder()
             .userId(userId)
             .rating(4.5)
             .build();
-        User writer = User.builder()
-            .userId(writerId)
+        User targetUser = User.builder()
+            .userId(targetId)
+            .rating(4.5)
             .build();
         Item item = Item.builder()
             .itemId(itemId)
@@ -77,16 +78,16 @@ class ReviewServiceTest {
             .build();
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userRepository.findById(writerId)).thenReturn(Optional.of(writer));
+        when(userRepository.findById(targetId)).thenReturn(Optional.of(targetUser));
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-        when(reviewRepository.countReview(user)).thenReturn(2); // 기존 리뷰 개수
+        when(reviewRepository.countReview(targetUser)).thenReturn(2); // 기존 리뷰 개수
 
         // when
-        reviewService.postReview(userId, writerId, reviewRequestDto);
+        reviewService.postReview(userId, targetId, reviewRequestDto);
 
         // then
         verify(reviewRepository, times(1)).save(any(Review.class));
-        assertThat(user.getRating()).isCloseTo((4.5 * 2 + 5) / 3, within(0.0001));
+        assertThat(targetUser.getRating()).isCloseTo((4.5 * 2 + 5) / 3, within(0.0001));
     }
 
     @Test
