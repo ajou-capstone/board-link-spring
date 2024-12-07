@@ -989,11 +989,13 @@ class ItemRepositoryTest {
         Integer maxPrice = null;
         Boolean isDeleted = null;
         Long campusId = null;
+        ItemStatus itemStatus = null;
         Sort sort = Sort.by("createdDate").descending();
         PageRequest pageRequest = PageRequest.of(0, 100, sort);
         //when
         SliceResponse<AdminItemSearchResponseDto> response = itemRepository.adminItemSearch(
-            user.getUserId(), name, category, minPrice, maxPrice, isDeleted, campusId, pageRequest);
+            user.getUserId(), name, category, minPrice, maxPrice, isDeleted, campusId, itemStatus,
+            pageRequest);
         // then
         assertThat(response).isNotNull();
         assertThat(response.getContent().size()).isEqualTo(items.size());
@@ -1015,12 +1017,14 @@ class ItemRepositoryTest {
         Integer minPrice = null;
         Integer maxPrice = null;
         Boolean isDeleted = null;
+        ItemStatus itemStatus = null;
         Long campusId = campuses.get(0).getCampusId();
         Sort sort = Sort.by("createdDate").descending();
         PageRequest pageRequest = PageRequest.of(0, 100, sort);
         //when
         SliceResponse<AdminItemSearchResponseDto> response = itemRepository.adminItemSearch(
-            user.getUserId(), name, category, minPrice, maxPrice, isDeleted, campusId, pageRequest);
+            user.getUserId(), name, category, minPrice, maxPrice, isDeleted, campusId, itemStatus,
+            pageRequest);
         // then
         assertThat(response).isNotNull();
         assertThat(response.getContent().size()).isEqualTo(5);
@@ -1062,11 +1066,13 @@ class ItemRepositoryTest {
         Integer maxPrice = null;
         Boolean isDeleted = true;
         Long campusId = null;
+        ItemStatus itemStatus = null;
         Sort sort = Sort.by("createdDate").descending();
         PageRequest pageRequest = PageRequest.of(0, 100, sort);
         //when
         SliceResponse<AdminItemSearchResponseDto> response = itemRepository.adminItemSearch(
-            user.getUserId(), name, category, minPrice, maxPrice, isDeleted, campusId, pageRequest);
+            user.getUserId(), name, category, minPrice, maxPrice, isDeleted, campusId, itemStatus,
+            pageRequest);
         // then
         assertThat(response).isNotNull();
         assertThat(response.getContent().size()).isEqualTo(5);

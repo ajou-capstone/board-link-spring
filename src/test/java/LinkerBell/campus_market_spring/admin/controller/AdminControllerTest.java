@@ -154,6 +154,7 @@ class AdminControllerTest {
             argThat(maxPrice -> maxPrice != null && maxPrice == 1000),
             argThat(isDeleted -> isDeleted != null && isDeleted),
             argThat(campusId -> campusId != null && campusId == 2),
+            argThat(itemStatus -> itemStatus == null),
             argThat(pageable -> {
                 assertThat(pageable).isNotNull();
                 assertThat(pageable.getPageNumber()).isEqualTo(1);
