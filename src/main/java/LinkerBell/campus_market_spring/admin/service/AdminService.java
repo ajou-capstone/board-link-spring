@@ -214,16 +214,11 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
-    public OtherProfileResponseDto getUserProfile(Long userId) {
-        User user = userRepository.findById(userId)
+    public UserInfoDto getUserProfile(Long userId) {
+        UserInfoDto userInfo = userRepository.findUserInfoByUserId(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        return OtherProfileResponseDto.builder()
-            .id(user.getUserId())
-            .nickname(user.getNickname())
-            .profileImage(user.getProfileImage())
-            .rating(user.getRating())
-            .isDeleted(user.isDeleted()).build();
+        return userInfo;
     }
 
     @Transactional(readOnly = true)
@@ -236,7 +231,7 @@ public class AdminService {
 
     @Transactional(readOnly = true)
     public SliceResponse<UserInfoDto> getUsers(Pageable pageable) {
-        Slice<UserInfoDto> users = userRepository.findUserInfo(pageable);
+        Slice<UserInfoDto> users = userRepository.findUserInfoAll(pageable);
         return new SliceResponse<>(users);
     }
 }

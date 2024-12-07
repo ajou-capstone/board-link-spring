@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -25,5 +26,17 @@ public interface UserRepository extends JpaRepository<User, Long>{
     LEFT JOIN Blacklist b ON u = b.user
     LEFT JOIN Campus c ON c = u.campus
     """)
-    Slice<UserInfoDto> findUserInfo(Pageable pageable);
+    Slice<UserInfoDto> findUserInfoAll(Pageable pageable);
+
+    @Query(value = """
+    SELECT new LinkerBell.campus_market_spring.dto.UserInfoDto(
+        u.userId, u.nickname, u.profileImage, u.rating, u.isDeleted,
+        b.reason, c.universityName, c.region, b.endDate
+    )
+    FROM User u
+    LEFT JOIN Blacklist b ON u = b.user
+    LEFT JOIN Campus c ON c = u.campus
+    WHERE u.userId=:userId
+    """)
+    Optional<UserInfoDto> findUserInfoByUserId(@Param("userId") Long userId);
 }
