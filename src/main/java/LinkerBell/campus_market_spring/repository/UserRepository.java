@@ -1,5 +1,6 @@
 package LinkerBell.campus_market_spring.repository;
 
+import LinkerBell.campus_market_spring.domain.Role;
 import LinkerBell.campus_market_spring.domain.User;
 import LinkerBell.campus_market_spring.dto.UserInfoDto;
 import org.springframework.data.domain.Pageable;
@@ -25,8 +26,9 @@ public interface UserRepository extends JpaRepository<User, Long>{
     FROM User u
     LEFT JOIN Blacklist b ON u = b.user
     LEFT JOIN Campus c ON c = u.campus
+    WHERE u.role = :role
     """)
-    Slice<UserInfoDto> findUserInfoAll(Pageable pageable);
+    Slice<UserInfoDto> findUserInfoAll(@Param("role") Role role, Pageable pageable);
 
     @Query(value = """
     SELECT new LinkerBell.campus_market_spring.dto.UserInfoDto(
