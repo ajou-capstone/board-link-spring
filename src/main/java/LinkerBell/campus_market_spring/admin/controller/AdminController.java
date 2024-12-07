@@ -163,9 +163,9 @@ public class AdminController {
     }
 
     @GetMapping("/profile/{userId}")
-    public ResponseEntity<OtherProfileResponseDto> getUserProfile(
+    public ResponseEntity<UserInfoDto> getUserProfile(
         @PathVariable("userId") Long userId) {
-        OtherProfileResponseDto response = adminService.getUserProfile(userId);
+        UserInfoDto response = adminService.getUserProfile(userId);
         return ResponseEntity.ok(response);
     }
 
