@@ -20,10 +20,22 @@ public class UserReportResponseDto {
     private String description;
     private UserReportCategory category;
     @JsonProperty(value = "isCompleted") private Boolean isCompleted;
+    @JsonProperty(value = "isSuspended") private Boolean isSuspended;
+    private String suspendReason;
+    private Integer suspendPeriod;
 
     public UserReportResponseDto(UserReport userReport) {
-        this(userReport.getUserReportId(), userReport.getUser().getUserId(),
-            userReport.getTarget().getUserId(), userReport.getDescription(),
-            userReport.getCategory(), userReport.isCompleted());
+        this.userReportId = userReport.getUserReportId();
+        this.userId = userReport.getUser().getUserId();
+        this.targetId = userReport.getTarget().getUserId();
+        this.description = userReport.getDescription();
+        this.category = userReport.getCategory();
+        this.isCompleted = userReport.isCompleted();
+        this.isSuspended = userReport.isSuspended();
+
+        if (this.isSuspended) {
+            this.suspendReason = userReport.getSuspendReason();
+            this.suspendPeriod = userReport.getSuspendPeriod();
+        }
     }
 }

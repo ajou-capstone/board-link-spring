@@ -50,7 +50,7 @@ public class AdminController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> adminLogin(
         @RequestBody AdminLoginRequestDto requestDto) {
-        AuthResponseDto authResponseDto = adminService.adminLogin(requestDto.idToken());
+        AuthResponseDto authResponseDto = adminService.adminLogin(requestDto.getIdToken());
         return ResponseEntity.ok(authResponseDto);
     }
 
@@ -113,15 +113,15 @@ public class AdminController {
     @PatchMapping("/items/report/{itemReportId}")
     public ResponseEntity<?> receiveItemReport(@PathVariable("itemReportId") Long itemReportId,
         @Valid @RequestBody AdminItemReportRequestDto requestDto) {
-        adminService.receiveItemReport(itemReportId, requestDto.isDeleted());
+        adminService.receiveItemReport(itemReportId, requestDto.getIsDeleted());
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/users/report/{userReportId}")
     public ResponseEntity<?> receiveUserReport(@PathVariable("userReportId") Long userReportId,
         @Valid @RequestBody AdminUserReportRequestDto requestDto) {
-        adminService.receiveUserReport(userReportId, requestDto.isSuspended(),
-            requestDto.suspendReason(), requestDto.suspendPeriod());
+        adminService.receiveUserReport(userReportId, requestDto.getIsSuspended(),
+            requestDto.getSuspendReason(), requestDto.getSuspendPeriod());
         return ResponseEntity.noContent().build();
     }
 
@@ -146,7 +146,7 @@ public class AdminController {
     @PatchMapping("/qa/{qaId}")
     public ResponseEntity<?> answerQuestion(@PathVariable("qaId") Long qaId,
         @Valid @RequestBody AdminQaRequestDto requestDto) {
-        adminService.answerQuestion(qaId, requestDto.answerDescription());
+        adminService.answerQuestion(qaId, requestDto.getAnswerDescription());
         return ResponseEntity.noContent().build();
     }
 

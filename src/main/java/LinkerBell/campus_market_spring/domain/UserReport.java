@@ -41,4 +41,8 @@ public class UserReport extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserReportCategory category;
     private boolean isCompleted;
+    private boolean isSuspended;
+    @Column(length = 1000)
+    private String suspendReason;
+    private Integer suspendPeriod;
 }
