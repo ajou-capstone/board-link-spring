@@ -19,6 +19,7 @@ import LinkerBell.campus_market_spring.dto.AuthUserDto;
 import LinkerBell.campus_market_spring.dto.ItemDetailsViewResponseDto;
 import LinkerBell.campus_market_spring.dto.OtherProfileResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
+import LinkerBell.campus_market_spring.dto.UserInfoDto;
 import LinkerBell.campus_market_spring.global.auth.Login;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -171,5 +172,15 @@ public class AdminController {
     @GetMapping("/campuses")
     public ResponseEntity<AdminCampusesResponseDto> getCampuses() {
         return ResponseEntity.ok(adminService.getCampuses());
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<SliceResponse<UserInfoDto>> getUsers(
+        @PageableDefault(page = 0, size = 10)
+        @SortDefaults({
+            @SortDefault(sort = "createdDate", direction = Direction.ASC),
+            @SortDefault(sort = "userId", direction = Direction.ASC)}) Pageable pageable) {
+        SliceResponse<UserInfoDto> response = adminService.getUsers(pageable);
+        return ResponseEntity.ok(response);
     }
 }

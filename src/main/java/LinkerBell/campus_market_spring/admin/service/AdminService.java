@@ -22,6 +22,7 @@ import LinkerBell.campus_market_spring.dto.AuthResponseDto;
 import LinkerBell.campus_market_spring.dto.ItemDetailsViewResponseDto;
 import LinkerBell.campus_market_spring.dto.OtherProfileResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
+import LinkerBell.campus_market_spring.dto.UserInfoDto;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
@@ -231,5 +232,11 @@ public class AdminService {
         List<AdminCampusResponseDto> campuses = campus.stream()
             .map(AdminCampusResponseDto::new).toList();
         return AdminCampusesResponseDto.builder().campuses(campuses).build();
+    }
+
+    @Transactional(readOnly = true)
+    public SliceResponse<UserInfoDto> getUsers(Pageable pageable) {
+        Slice<UserInfoDto> users = userRepository.findUserInfo(pageable);
+        return new SliceResponse<>(users);
     }
 }
