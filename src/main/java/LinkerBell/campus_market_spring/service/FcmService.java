@@ -83,4 +83,8 @@ public class FcmService {
         }
     }
 
+    public void deleteFcmTokenAllByUserId(Long userId) {
+        userFcmTokenRepository.deleteByUser_UserId(userId);
+    }
+
 }

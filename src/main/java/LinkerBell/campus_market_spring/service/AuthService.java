@@ -36,7 +36,7 @@ public class AuthService {
         User user = userRepository.findByLoginEmail(email)
             .orElseGet(() -> createNewUser(email));
 
-        checkBlacklist(user);
+        checkBlacklist(user.getUserId());
 
         String accessToken = jwtUtils.generateAccessToken(user.getUserId(), user.getLoginEmail(), user.getRole());
         String refreshToken = jwtUtils.generateRefreshToken(user.getUserId(), user.getLoginEmail(), user.getRole());
@@ -51,8 +51,8 @@ public class AuthService {
             .refreshToken(refreshToken).build();
     }
 
-    private void checkBlacklist(User user) {
-        blacklistRepository.findByUser(user).ifPresent(blacklist -> {
+    private void checkBlacklist(Long userId) {
+        blacklistRepository.findByUser_UserId(userId).ifPresent(blacklist -> {
             String formattedDate = blacklist.getEndDate()
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             String message = String.format("이용 제한 사유: %s\n 기간: %s까지",
@@ -74,6 +74,7 @@ public class AuthService {
         String email = jwtUtils.getEmail(token);
         Long userId = jwtUtils.getUserId(token);
 
+        checkBlacklist(userId);
         return AuthUserDto.builder()
             .userId(userId)
             .loginEmail(email)
@@ -93,7 +94,6 @@ public class AuthService {
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if (!refreshToken.equals(user.getRefreshToken())) {
-            log.error("Not matched with db");
             throw new CustomException(ErrorCode.INVALID_JWT);
         }
 
@@ -128,5 +128,27 @@ public class AuthService {
 
         user.setRefreshToken(null);
         redisService.setLogout(accessToken);
+
+        fcmService.deleteFcmTokenAllByUserId(user.getUserId());
+    }
+
+    public void withdraw(Long userId, HttpServletRequest request) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        if (user.isDeleted()) {
+            throw new CustomException(ErrorCode.ALREADY_WITHDRAW_USER);
+        }
+        user.setDeleted(true);
+        user.setRefreshToken(null);
+
+        String accessToken = jwtUtils.resolveToken(request);
+
+        if (!jwtUtils.validateToken(accessToken)) {
+            throw new CustomException(ErrorCode.INVALID_JWT);
+        }
+
+        redisService.setLogout(accessToken);
+        fcmService.deleteFcmTokenAllByUserId(user.getUserId());
+
     }
 }

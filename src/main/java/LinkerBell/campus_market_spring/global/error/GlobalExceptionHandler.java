@@ -2,9 +2,13 @@ package LinkerBell.campus_market_spring.global.error;
 
 import LinkerBell.campus_market_spring.admin.dto.AdminUserReportRequestDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminQaRequestDto;
+import LinkerBell.campus_market_spring.dto.CampusRequestDto;
+import LinkerBell.campus_market_spring.dto.MailRequestDto;
+import LinkerBell.campus_market_spring.dto.ProfileRequestDto;
 import LinkerBell.campus_market_spring.dto.QaRequestDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminItemReportRequestDto;
 import LinkerBell.campus_market_spring.dto.ReviewRequestDto;
+import LinkerBell.campus_market_spring.dto.VerificationCodeRequestDto;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Objects;
@@ -148,6 +152,42 @@ public class GlobalExceptionHandler {
                 ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_QA_ANSWER);
                 return new ResponseEntity<>(errorResponse,
                     ErrorCode.INVALID_QA_ANSWER.getHttpStatus());
+            }
+        } else if (fieldName.equals("email")) {
+            if (ex.getBindingResult().getTarget() instanceof MailRequestDto) {
+                ErrorResponse response = new ErrorResponse(ErrorCode.INVALID_SCHOOL_EMAIL);
+                return new ResponseEntity<>(response,
+                    ErrorCode.INVALID_SCHOOL_EMAIL.getHttpStatus());
+            }
+        } else if (fieldName.equals("token")) {
+            if (ex.getBindingResult().getTarget() instanceof VerificationCodeRequestDto) {
+                ErrorResponse response = new ErrorResponse(ErrorCode.INVALID_VERIFICATION_TOKEN);
+                return new ResponseEntity<>(response,
+                    ErrorCode.INVALID_SCHOOL_EMAIL.getHttpStatus());
+            }
+        } else if (fieldName.equals("verifyCode")) {
+            if (ex.getBindingResult().getTarget() instanceof VerificationCodeRequestDto) {
+                ErrorResponse response = new ErrorResponse(ErrorCode.INVALID_VERIFICATION_CODE);
+                return new ResponseEntity<>(response,
+                    ErrorCode.INVALID_SCHOOL_EMAIL.getHttpStatus());
+            }
+        } else if (fieldName.equals("nickname")) {
+            if (ex.getBindingResult().getTarget() instanceof ProfileRequestDto) {
+                ErrorResponse response = new ErrorResponse(ErrorCode.INVALID_NICKNAME);
+                return new ResponseEntity<>(response,
+                    ErrorCode.INVALID_NICKNAME.getHttpStatus());
+            }
+        } else if (fieldName.equals("profileImage")) {
+            if (ex.getBindingResult().getTarget() instanceof ProfileRequestDto) {
+                ErrorResponse response = new ErrorResponse(ErrorCode.INVALID_IMAGE_URL);
+                return new ResponseEntity<>(response,
+                    ErrorCode.INVALID_IMAGE_URL.getHttpStatus());
+            }
+        } else if (fieldName.equals("campusId")) {
+            if (ex.getBindingResult().getTarget() instanceof CampusRequestDto) {
+                ErrorResponse response = new ErrorResponse(ErrorCode.CAMPUS_ID_NOT_NULL);
+                return new ResponseEntity<>(response,
+                    ErrorCode.CAMPUS_ID_NOT_NULL.getHttpStatus());
             }
         }
 

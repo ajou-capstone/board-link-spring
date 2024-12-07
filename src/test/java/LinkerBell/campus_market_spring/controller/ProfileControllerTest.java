@@ -4,7 +4,6 @@ import static org.mockito.BDDMockito.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -74,7 +73,6 @@ class ProfileControllerTest {
         // then
         MvcResult mvcResult = resultActions.andExpect(status().isOk())
             .andExpect(jsonPath("$.userId").value(1L)).andDo(print()).andReturn();
-        System.out.println("mvcResult : " + mvcResult.getResponse().getContentAsString());
     }
 
     @Test
@@ -118,11 +116,8 @@ class ProfileControllerTest {
     @DisplayName("캠퍼스 정보 저장하기 테스트")
     public void saveCampusTest() throws Exception {
         // given
-        ProfileResponseDto profileResponseDto = ProfileResponseDto.builder().userId(1L).campusId(1L)
-            .build();
         CampusRequestDto campusRequestDto = CampusRequestDto.builder().campusId(1L).build();
-        given(profileService.saveCampus(Mockito.anyLong(), Mockito.anyLong()))
-            .willReturn(profileResponseDto);
+
         // when
         ResultActions resultActions = mockMvc.perform(
             post("/api/v1/profile/campus").contentType(MediaType.APPLICATION_JSON)

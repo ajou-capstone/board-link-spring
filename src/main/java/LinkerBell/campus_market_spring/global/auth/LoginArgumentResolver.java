@@ -4,6 +4,7 @@ import LinkerBell.campus_market_spring.dto.AuthUserDto;
 import LinkerBell.campus_market_spring.global.error.ErrorCode;
 import LinkerBell.campus_market_spring.global.error.exception.CustomException;
 import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
+import LinkerBell.campus_market_spring.repository.BlacklistRepository;
 import LinkerBell.campus_market_spring.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtUtils jwtUtils;
     private final AuthService authService;
+    private final BlacklistRepository blacklistRepository;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {

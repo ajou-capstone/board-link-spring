@@ -10,9 +10,11 @@ import LinkerBell.campus_market_spring.global.auth.Login;
 import LinkerBell.campus_market_spring.service.AuthService;
 import LinkerBell.campus_market_spring.service.SesService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,14 +43,14 @@ public class AuthController {
     }
 
     @PostMapping("/emails/send")
-    public ResponseEntity<MailResponseDto> sendEmail(@RequestBody MailRequestDto mailRequestDto) {
+    public ResponseEntity<MailResponseDto> sendEmail(@Valid @RequestBody MailRequestDto mailRequestDto) {
         MailResponseDto mailResponseDto = sesService.processEmail(mailRequestDto.getEmail());
         return ResponseEntity.ok(mailResponseDto);
     }
 
     @PostMapping("/emails/verify")
     public ResponseEntity<?> verifyCode(@Login AuthUserDto user,
-        @RequestBody VerificationCodeRequestDto requestDto) {
+        @Valid @RequestBody VerificationCodeRequestDto requestDto) {
         String email = sesService.verifyTokenAndCode(requestDto.getToken(), requestDto.getVerifyCode());
         authService.saveSchoolEmail(user.getUserId(), email);
         return ResponseEntity.noContent().build();
@@ -57,6 +59,12 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@Login AuthUserDto user, HttpServletRequest request) {
         authService.logout(user.getUserId(), request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<?> withdraw(@Login AuthUserDto user, HttpServletRequest request) {
+        authService.withdraw(user.getUserId(), request);
         return ResponseEntity.noContent().build();
     }
 }

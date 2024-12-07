@@ -33,6 +33,7 @@ import LinkerBell.campus_market_spring.repository.ItemRepository;
 import LinkerBell.campus_market_spring.repository.QaRepository;
 import LinkerBell.campus_market_spring.repository.UserReportRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
+import LinkerBell.campus_market_spring.service.FcmService;
 import LinkerBell.campus_market_spring.service.GoogleAuthService;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -59,6 +60,7 @@ public class AdminService {
     private final BlacklistRepository blacklistRepository;
     private final QaRepository qaRepository;
     private final CampusRepository campusRepository;
+    private final FcmService fcmService;
 
     public AuthResponseDto adminLogin(String idToken) {
         String email = googleAuthService.getEmailWithVerifyIdToken(idToken);
@@ -157,7 +159,10 @@ public class AdminService {
         }
         LocalDateTime period = LocalDateTime.now().plusDays(suspendPeriod);
         User target = userReport.getTarget();
-        Blacklist blacklist = blacklistRepository.findByUser(target)
+        if(target == null) {
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        }
+        Blacklist blacklist = blacklistRepository.findByUser_UserId(target.getUserId())
             .orElseGet(() -> Blacklist.builder().reason(suspendReason)
                 .user(target).endDate(period).build());
 
@@ -167,6 +172,7 @@ public class AdminService {
         }
         target.setRefreshToken(null);
         blacklistRepository.save(blacklist);
+        fcmService.deleteFcmTokenAllByUserId(target.getUserId());
     }
 
     @Transactional(readOnly = true)
