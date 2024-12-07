@@ -99,6 +99,7 @@ public class DealHistoryService {
                     .itemId(item.getItemId())
                     .title(item.getTitle())
                     .userId(item.getUser().getUserId())
+                    .buyerId(item.getUserBuyer().getUserId())
                     .nickname(item.getUser().getNickname())
                     .price(item.getPrice())
                     .thumbnail(item.getThumbnail())
