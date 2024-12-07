@@ -29,21 +29,21 @@ public class ReviewService {
     private final ItemRepository itemRepository;
 
     // 리뷰 작성하기
-    public void postReview(Long userId, Long writerId, ReviewRequestDto reviewRequestDto) {
-        User user = userRepository.findById(userId)
+    public void postReview(Long loginUserId, Long targetId, ReviewRequestDto reviewRequestDto) {
+        User user = userRepository.findById(loginUserId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        User writer = userRepository.findById(writerId)
+        User targetUser = userRepository.findById(targetId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Item item = itemRepository.findById(reviewRequestDto.getItemId())
             .orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
 
-        int reviewCount = reviewRepository.countReview(user);
+        int reviewCount = reviewRepository.countReview(targetUser);
         log.info("Review count: {}", reviewCount);
 
         Review review = Review.builder()
-            .user(writer)
+            .user(user)
             .item(item)
             .description(reviewRequestDto.getDescription())
             .rating(reviewRequestDto.getRating())
@@ -52,15 +52,15 @@ public class ReviewService {
         reviewRepository.save(review);
 
         // 리뷰 저장 이후 유저 평균 별점을 다시 계산
-        double userRating = user.getRating();
+        double targetUserRating = targetUser.getRating();
         double newUserRating =
-            ((userRating * reviewCount) + (reviewRequestDto.getRating())) / (reviewCount + 1);
+            ((targetUserRating * reviewCount) + (reviewRequestDto.getRating())) / (reviewCount + 1);
 
         log.info(
             "((userRating {} * reviewCount {}) + (reviewRequestDto.getRating() {} )) / (reviewCount + 1)",
-            userRating, reviewCount, reviewRequestDto.getRating());
-        
-        user.setRating(newUserRating);
+            targetUserRating, reviewCount, reviewRequestDto.getRating());
+
+        targetUser.setRating(newUserRating);
 
         log.info("new user rating: {}", newUserRating);
     }
