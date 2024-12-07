@@ -24,6 +24,8 @@ public class UserInfoDto {
         this.rating = rating;
         this.isDeleted = isDeleted;
         this.suspendedReason = suspendedReason;
+        universityName = universityName == null ? "" : universityName;
+        region = region == null ? "" : region;
         this.campusName = universityName.concat(" ").concat(region);
         this.suspendedDate = suspendedDate;
     }

@@ -166,7 +166,18 @@ class UserRepositoryTest {
                 blacklists.add(blacklist);
             }
 
+            User admin = User.builder()
+                .userId(9L)
+                .loginEmail(String.format("admin@example.com"))
+                .nickname(String.format("admin11"))
+                .isDeleted(false)
+                .rating(5.5)
+                .role(Role.ADMIN)
+                .profileImage(String.format("testImage"))
+                .build();
 
+            admin = userRepository.save(admin);
+            users.add(admin);
         }
 
         @Test
@@ -178,14 +189,14 @@ class UserRepositoryTest {
 
             Pageable pageable = PageRequest.of(0, 20, sort);
             // when
-            Slice<UserInfoDto> slice = userRepository.findUserInfoAll(pageable);
+            Slice<UserInfoDto> slice = userRepository.findUserInfoAll(Role.USER, pageable);
 
             // then
             assertThat(slice).isNotNull();
             assertThat(slice.getContent()).isNotEmpty();
 
             List<UserInfoDto> userInfoDtoList = slice.getContent();
-            assertThat(userInfoDtoList.size()).isEqualTo(users.size());
+            assertThat(userInfoDtoList.size()).isEqualTo(users.size() - 1);
             assertThat(userInfoDtoList.get(0).getSuspendedReason()).isNotNull();
             assertThat(userInfoDtoList.get(0).getSuspendedReason())
                 .isEqualTo(blacklists.get(0).getReason());

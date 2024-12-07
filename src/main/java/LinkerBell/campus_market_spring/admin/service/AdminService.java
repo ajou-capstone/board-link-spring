@@ -231,7 +231,7 @@ public class AdminService {
 
     @Transactional(readOnly = true)
     public SliceResponse<UserInfoDto> getUsers(Pageable pageable) {
-        Slice<UserInfoDto> users = userRepository.findUserInfoAll(pageable);
+        Slice<UserInfoDto> users = userRepository.findUserInfoAll(Role.USER, pageable);
         return new SliceResponse<>(users);
     }
 }
