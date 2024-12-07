@@ -84,8 +84,9 @@ public class DealHistoryService {
         User requestedUser) {
         Slice<DealHistoryResponseDto> dealHistory = itemRepository.map(item -> {
                 ItemStatus itemStatus = item.getItemStatus();
+                Long buyerId;
 
-                // isReviewed 결정하기
+                // isReviewed, buyerId 결정하기
                 boolean isReviewed = false;
 
                 if (itemStatus == ItemStatus.SOLDOUT) { // 팔린 아이템일 때
@@ -93,13 +94,16 @@ public class DealHistoryService {
                         item)) { // 그 아이템이랑 유저의 리뷰가 있으면
                         isReviewed = true;
                     }
+                    buyerId = item.getUserBuyer().getUserId();
+                } else { // 안팔렸으면
+                    buyerId = -1L; // 구매자가 없으므로
                 }
 
                 return DealHistoryResponseDto.builder()
                     .itemId(item.getItemId())
                     .title(item.getTitle())
                     .userId(item.getUser().getUserId())
-                    .buyerId(item.getUserBuyer().getUserId())
+                    .buyerId(buyerId)
                     .nickname(item.getUser().getNickname())
                     .price(item.getPrice())
                     .thumbnail(item.getThumbnail())
