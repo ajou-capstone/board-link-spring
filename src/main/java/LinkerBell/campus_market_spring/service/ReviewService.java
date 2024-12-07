@@ -40,7 +40,8 @@ public class ReviewService {
             .orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
 
         int reviewCount = reviewRepository.countReview(targetUser);
-        log.info("Review count: {}", reviewCount);
+        log.info("login user : {}, target user : {} , target user Review count: {}",
+            user.getNickname(), targetUser.getNickname(), reviewCount);
 
         Review review = Review.builder()
             .user(user)
