@@ -76,6 +76,7 @@ public enum ErrorCode {
     NOT_MATCH_QA_USER(HttpStatus.BAD_REQUEST, 4065, "해당 문의 작성자가 아닙니다."),
     INVALID_DEAL_TYPE(HttpStatus.BAD_REQUEST, 4066, "거래 타입은 ALL, PURCHASE, SALES 중 하나여야 합니다."),
     NOT_MATCH_LOGIN_USER_AND_REQUESTED_USER(HttpStatus.BAD_REQUEST, 4067, "구매 내역은 본인만 확인할 수 있습니다."),
+    CHAT_PROPERTIES_NOT_FOUND(HttpStatus.NOT_FOUND, 4068, "채팅방 설정이 존재하지 않습니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다."),
 

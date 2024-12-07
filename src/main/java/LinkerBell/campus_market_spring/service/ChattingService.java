@@ -85,23 +85,31 @@ public class ChattingService {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
             .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
 
-        ChatProperties chatProperties = chatPropertiesRepository.findByUserAndChatRoom(user,
-            chatRoom);
-
+        String title;
         Long targetUserId;
 
-        if (!chatProperties.isAlarm()) {
-            log.info("isAlarm is false");
-            return;
-        }
-
-        String title;
         if (chatRoom.getUser().getUserId().equals(userId)) { // 내가 구매자
             title = chatRoom.getUser().getNickname();
             targetUserId = chatRoom.getItem().getUser().getUserId();
         } else { // 내가 판매자
             title = chatRoom.getItem().getUser().getNickname();
             targetUserId = chatRoom.getUser().getUserId();
+        }
+
+        User targetUser = userRepository.findById(targetUserId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        ChatProperties chatProperties = chatPropertiesRepository.findByUserAndChatRoom(targetUser,
+            chatRoom);
+
+        if (chatProperties == null) {
+            log.error("sendNotification: chatProperties is null");
+            throw new CustomException(ErrorCode.CHAT_PROPERTIES_NOT_FOUND);
+        }
+
+        if (!chatProperties.isAlarm()) {
+            log.info("isAlarm is false");
+            return;
         }
 
         String content = chattingRequestDto.getContent();
