@@ -150,7 +150,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
     @Override
     public SliceResponse<AdminItemSearchResponseDto> adminItemSearch(Long userId, String name,
         Category category, Integer minPrice, Integer maxPrice, Boolean isDeleted, Long campusId,
-        Pageable pageable) {
+        ItemStatus itemStatus, Pageable pageable) {
         QItem item = QItem.item;
         QUser user = QUser.user;
         QChatRoom chatRoom = QChatRoom.chatRoom;
@@ -192,7 +192,8 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                 itemCategoryEq(category),
                 itemPriceBetween(minPrice, maxPrice),
                 itemCampusEq(campusId),
-                itemIsDeletedEq(isDeleted)
+                itemIsDeletedEq(isDeleted),
+                itemStatusEq(itemStatus)
             )
             .groupBy(item.itemId)
             .offset(pageable.getOffset())

@@ -82,6 +82,11 @@ public class GlobalExceptionHandler {
             log.error(ErrorCode.CAMPUS_NOT_FOUND.getMessage());
             return new ResponseEntity<>(errorResponse,
                 ErrorCode.CAMPUS_NOT_FOUND.getHttpStatus());
+        } else if (ex.getName().equals("itemStatus")) {
+            ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ITEM_STATUS);
+            log.error(ErrorCode.INVALID_ITEM_STATUS.getMessage());
+            return new ResponseEntity<>(errorResponse,
+                ErrorCode.INVALID_ITEM_STATUS.getHttpStatus());
         }
 
         throw ex;

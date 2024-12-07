@@ -10,14 +10,14 @@ import LinkerBell.campus_market_spring.admin.dto.AdminQaSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminUserReportRequestDto;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.ItemReportSearchResponseDto;
-import LinkerBell.campus_market_spring.admin.dto.UserReportSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.dto.UserReportResponseDto;
+import LinkerBell.campus_market_spring.admin.dto.UserReportSearchResponseDto;
 import LinkerBell.campus_market_spring.admin.service.AdminService;
 import LinkerBell.campus_market_spring.domain.Category;
+import LinkerBell.campus_market_spring.domain.ItemStatus;
 import LinkerBell.campus_market_spring.dto.AuthResponseDto;
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
 import LinkerBell.campus_market_spring.dto.ItemDetailsViewResponseDto;
-import LinkerBell.campus_market_spring.dto.OtherProfileResponseDto;
 import LinkerBell.campus_market_spring.dto.SliceResponse;
 import LinkerBell.campus_market_spring.dto.UserInfoDto;
 import LinkerBell.campus_market_spring.global.auth.Login;
@@ -63,10 +63,11 @@ public class AdminController {
         @RequestParam(required = false) Integer maxPrice,
         @RequestParam(required = false) Boolean isDeleted,
         @RequestParam(required = false) Long campusId,
+        @RequestParam(required = false) ItemStatus itemStatus,
         @PageableDefault(page = 0, size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
         SliceResponse<AdminItemSearchResponseDto> response =
             adminService.getAllItems(user.getUserId(), name, category, minPrice, maxPrice,
-                isDeleted, campusId, pageable);
+                isDeleted, campusId, itemStatus, pageable);
 
         return ResponseEntity.ok(response);
     }
