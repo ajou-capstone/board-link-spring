@@ -1,11 +1,13 @@
 package LinkerBell.campus_market_spring.admin.dto;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
 
-public record AdminUserReportRequestDto(
-    @NotNull Boolean isSuspended,
-    String suspendReason,
-    Integer suspendPeriod
-) {
+@Getter
+public class AdminUserReportRequestDto {
 
+    @NotNull
+    private Boolean isSuspended;
+    private String suspendReason;
+    private Integer suspendPeriod;
 }
