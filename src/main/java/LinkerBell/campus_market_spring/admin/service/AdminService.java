@@ -153,12 +153,11 @@ public class AdminService {
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         userReport.setCompleted(true);
-
+        userReport.setSuspended(isSuspended);
         if (!isSuspended) {
-            userReport.setSuspended(false);
             return;
         }
-
+        
         userReport.setSuspendReason(suspendReason);
         userReport.setSuspendPeriod(suspendPeriod);
 
