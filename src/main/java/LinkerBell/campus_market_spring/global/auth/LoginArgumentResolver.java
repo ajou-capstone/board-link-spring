@@ -23,7 +23,6 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtUtils jwtUtils;
     private final AuthService authService;
-    private final BlacklistRepository blacklistRepository;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {

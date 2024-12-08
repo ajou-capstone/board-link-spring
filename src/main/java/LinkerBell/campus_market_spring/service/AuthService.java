@@ -37,6 +37,7 @@ public class AuthService {
             .orElseGet(() -> createNewUser(email));
 
         checkBlacklist(user.getUserId());
+        checkWithdrawUser(user);
 
         String accessToken = jwtUtils.generateAccessToken(user.getUserId(), user.getLoginEmail(), user.getRole());
         String refreshToken = jwtUtils.generateRefreshToken(user.getUserId(), user.getLoginEmail(), user.getRole());
@@ -49,6 +50,12 @@ public class AuthService {
         return AuthResponseDto.builder()
             .accessToken(accessToken)
             .refreshToken(refreshToken).build();
+    }
+
+    private void checkWithdrawUser(User user) {
+        if (user.isDeleted()) {
+            throw new CustomException(ErrorCode.ALREADY_WITHDRAW_USER);
+        }
     }
 
     private void checkBlacklist(Long userId) {
