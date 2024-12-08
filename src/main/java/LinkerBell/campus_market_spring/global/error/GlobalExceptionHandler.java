@@ -2,6 +2,7 @@ package LinkerBell.campus_market_spring.global.error;
 
 import LinkerBell.campus_market_spring.admin.dto.AdminUserReportRequestDto;
 import LinkerBell.campus_market_spring.admin.dto.AdminQaRequestDto;
+import LinkerBell.campus_market_spring.dto.AuthRequestDto;
 import LinkerBell.campus_market_spring.dto.CampusRequestDto;
 import LinkerBell.campus_market_spring.dto.MailRequestDto;
 import LinkerBell.campus_market_spring.dto.ProfileRequestDto;
@@ -188,6 +189,18 @@ public class GlobalExceptionHandler {
                 ErrorResponse response = new ErrorResponse(ErrorCode.CAMPUS_ID_NOT_NULL);
                 return new ResponseEntity<>(response,
                     ErrorCode.CAMPUS_ID_NOT_NULL.getHttpStatus());
+            }
+        } else if (fieldName.equals("idToken")) {
+            if (ex.getBindingResult().getTarget() instanceof AuthRequestDto) {
+                ErrorResponse response = new ErrorResponse(ErrorCode.INVALID_GOOGLE_TOKEN);
+                return new ResponseEntity<>(response,
+                    ErrorCode.INVALID_GOOGLE_TOKEN.getHttpStatus());
+            }
+        } else if (fieldName.equals("firebaseToken")) {
+            if (ex.getBindingResult().getTarget() instanceof AuthRequestDto) {
+                ErrorResponse response = new ErrorResponse(ErrorCode.INVALID_FIREBASE_TOKEN);
+                return new ResponseEntity<>(response,
+                    ErrorCode.INVALID_FIREBASE_TOKEN.getHttpStatus());
             }
         }
 

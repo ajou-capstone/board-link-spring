@@ -30,7 +30,7 @@ public class AuthController {
     private final SesService sesService;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody AuthRequestDto authRequestDto) {
+    public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody AuthRequestDto authRequestDto) {
         AuthResponseDto authResponseDto =
             authService.userLogin(authRequestDto.getIdToken(), authRequestDto.getFirebaseToken());
         return ResponseEntity.ok(authResponseDto);
