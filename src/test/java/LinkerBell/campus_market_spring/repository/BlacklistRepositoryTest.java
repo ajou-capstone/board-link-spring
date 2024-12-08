@@ -54,7 +54,7 @@ class BlacklistRepositoryTest {
         Blacklist savedBlacklist = blacklistRepository.save(blacklist);
 
         // when
-        Blacklist findBlacklist = blacklistRepository.findByUser(user).orElse(null);
+        Blacklist findBlacklist = blacklistRepository.findByUser_UserId(user.getUserId()).orElse(null);
 
         // then
         assertThat(findBlacklist).isNotNull();

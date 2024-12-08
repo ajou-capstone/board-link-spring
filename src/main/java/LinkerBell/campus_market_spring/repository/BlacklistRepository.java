@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BlacklistRepository extends JpaRepository<Blacklist, Long> {
 
-    Optional<Blacklist> findByUser(User user);
+    Optional<Blacklist> findByUser_UserId(Long userId);
 }

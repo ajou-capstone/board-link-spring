@@ -10,6 +10,7 @@ import LinkerBell.campus_market_spring.dto.AuthResponseDto;
 import LinkerBell.campus_market_spring.dto.AuthUserDto;
 import LinkerBell.campus_market_spring.global.jwt.JwtUtils;
 import LinkerBell.campus_market_spring.global.redis.RedisService;
+import LinkerBell.campus_market_spring.repository.BlacklistRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
@@ -40,6 +41,12 @@ class AuthServiceTest {
     @Mock
     RedisService redisService;
 
+    @Mock
+    FcmService fcmService;
+
+    @Mock
+    BlacklistRepository blacklistRepository;
+
     private User user;
 
     private String jwtToken;
@@ -59,6 +66,8 @@ class AuthServiceTest {
     @Test
     @DisplayName("사용자 정보 찾기 테스트")
     public void getUserByLoginEmailTest() {
+        given(blacklistRepository.findByUser_UserId(anyLong())).willReturn(Optional.empty());
+
         AuthUserDto userDto = authService.getUserByJwt(jwtToken);
 
         assertThat(userDto.getUserId()).isEqualTo(1L);
@@ -102,6 +111,36 @@ class AuthServiceTest {
         then(redisService).should(times(1)).setLogout(assertArg(token -> {
             assertThat(token).isNotNull();
             assertThat(token).isEqualTo(accessToken);
+        }));
+        then(fcmService).should(times(1)).deleteFcmTokenAllByUserId(assertArg(u -> {
+            assertThat(u).isNotNull();
+            assertThat(u).isEqualTo(user.getUserId());
+        }));
+    }
+
+    @Test
+    @DisplayName("회원탈퇴 테스트")
+    public void withdrawTest() {
+        // given
+        String accessToken = jwtUtils.generateAccessToken(user.getUserId(),
+            user.getLoginEmail(), user.getRole());
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+        mockRequest.addHeader("Authorization", "Bearer " + accessToken);
+
+        given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(user));
+        // when
+        authService.withdraw(user.getUserId(), mockRequest);
+        // then
+        assertThat(user).isNotNull();
+        assertThat(user.getRefreshToken()).isNull();
+        assertThat(user.isDeleted()).isTrue();
+        then(redisService).should(times(1)).setLogout(assertArg(token -> {
+            assertThat(token).isNotNull();
+            assertThat(token).isEqualTo(accessToken);
+        }));
+        then(fcmService).should(times(1)).deleteFcmTokenAllByUserId(assertArg(u -> {
+            assertThat(u).isNotNull();
+            assertThat(u).isEqualTo(user.getUserId());
         }));
     }
 

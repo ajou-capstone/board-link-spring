@@ -77,6 +77,11 @@ public enum ErrorCode {
     INVALID_DEAL_TYPE(HttpStatus.BAD_REQUEST, 4066, "거래 타입은 ALL, PURCHASE, SALES 중 하나여야 합니다."),
     NOT_MATCH_LOGIN_USER_AND_REQUESTED_USER(HttpStatus.BAD_REQUEST, 4067, "구매 내역은 본인만 확인할 수 있습니다."),
     CHAT_PROPERTIES_NOT_FOUND(HttpStatus.NOT_FOUND, 4068, "채팅방 설정이 존재하지 않습니다."),
+    ALREADY_WITHDRAW_USER(HttpStatus.BAD_REQUEST, 4069, "이미 탈퇴한 사용자입니다."),
+    INVALID_VERIFICATION_TOKEN(HttpStatus.BAD_REQUEST, 4070, "인증 토큰의 값이 필요합니다."),
+    INVALID_IMAGE_URL(HttpStatus.BAD_REQUEST, 4071, "잘못된 이미지 url 입니다."),
+    INVALID_NICKNAME(HttpStatus.BAD_REQUEST, 4072, "닉네임은 2자이상 10자 이하입니다."),
+    CAMPUS_ID_NOT_NULL(HttpStatus.BAD_REQUEST, 4073, "캠퍼스 id가 필요합니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부 오류입니다."),
 

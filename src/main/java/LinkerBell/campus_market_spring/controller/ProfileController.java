@@ -9,6 +9,7 @@ import LinkerBell.campus_market_spring.dto.ProfileRequestDto;
 import LinkerBell.campus_market_spring.dto.ProfileResponseDto;
 import LinkerBell.campus_market_spring.global.auth.Login;
 import LinkerBell.campus_market_spring.service.ProfileService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +52,7 @@ public class ProfileController {
 
     @PostMapping("/campus")
     public ResponseEntity<ProfileResponseDto> saveCampus(@Login AuthUserDto user,
-        @RequestBody CampusRequestDto campusRequestDto) {
+        @Valid @RequestBody CampusRequestDto campusRequestDto) {
         ProfileResponseDto profileResponseDto = profileService.saveCampus(user.getUserId(),
             campusRequestDto.getCampusId());
         return ResponseEntity.noContent().build();

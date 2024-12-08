@@ -28,6 +28,7 @@ import LinkerBell.campus_market_spring.repository.ItemReportRepository;
 import LinkerBell.campus_market_spring.repository.QaRepository;
 import LinkerBell.campus_market_spring.repository.UserReportRepository;
 import LinkerBell.campus_market_spring.repository.UserRepository;
+import LinkerBell.campus_market_spring.service.FcmService;
 import LinkerBell.campus_market_spring.service.GoogleAuthService;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -71,6 +72,9 @@ class AdminServiceTest {
 
     @Mock
     private CampusRepository campusRepository;
+
+    @Mock
+    private FcmService fcmService;
 
     @Mock
     private JwtUtils jwtUtils;
@@ -122,8 +126,7 @@ class AdminServiceTest {
         UserReport userReport = createUserReport(user, target, 1L);
 
         given(userReportRepository.findById(anyLong())).willReturn(Optional.ofNullable(userReport));
-        given(blacklistRepository.findByUser(any(User.class))).willReturn(Optional.empty());
-
+        given(blacklistRepository.findByUser_UserId(anyLong())).willReturn(Optional.empty());
         // when
         adminService.receiveUserReport(userReport.getUserReportId(), true, "test Reason", 5);
 
@@ -131,6 +134,10 @@ class AdminServiceTest {
         then(blacklistRepository).should(times(1)).save(assertArg(b -> {
             assertThat(b).isNotNull();
             assertThat(b.getEndDate()).isAfter(LocalDateTime.now());
+        }));
+        then(fcmService).should(times(1)).deleteFcmTokenAllByUserId(assertArg(u -> {
+            assertThat(u).isNotNull();
+            assertThat(u).isEqualTo(target.getUserId());
         }));
     }
 
