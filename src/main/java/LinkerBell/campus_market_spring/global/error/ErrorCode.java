@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
-    INVALID_GOOGLE_TOKEN(HttpStatus.UNAUTHORIZED, 4001, "Invalid Google idToken"),
+    INVALID_GOOGLE_TOKEN(HttpStatus.BAD_REQUEST, 4001, "Invalid Google idToken"),
     INVALID_JWT(HttpStatus.UNAUTHORIZED, 4002, "Invalid JWT"),
     EXPIRED_JWT(HttpStatus.UNAUTHORIZED, 4003, "JWT가 만료되었습니다."),
     LOGOUT_JWT(HttpStatus.UNAUTHORIZED, 4004, "Logout한 JWT"),
@@ -15,6 +15,7 @@ public enum ErrorCode {
     NOT_VERIFIED_EMAIL(HttpStatus.UNAUTHORIZED, 4006, "Google email is not verified"),
     JWT_IS_NULL(HttpStatus.UNAUTHORIZED, 4007, "jwt의 값이 null입니다."),
     BLACKLIST_USER(HttpStatus.FORBIDDEN, 4008, "정지된 사용자입니다."),
+    INVALID_FIREBASE_TOKEN(HttpStatus.BAD_REQUEST, 4009, "잘못된 firebase토큰입니다."),
 
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, 4011, "사용자가 존재하지 않습니다."),
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, 4012, "아이템이 존재하지 않습니다."),
