@@ -3,19 +3,39 @@ package LinkerBell.campus_market_spring.admin.dto;
 import LinkerBell.campus_market_spring.domain.UserReport;
 import LinkerBell.campus_market_spring.domain.UserReportCategory;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public record UserReportResponseDto(
-    Long userReportId,
-    Long userId,
-    Long targetId,
-    String description,
-    UserReportCategory category,
-    @JsonProperty(value = "isCompleted") Boolean isCompleted
-) {
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserReportResponseDto {
+
+    private Long userReportId;
+    private Long userId;
+    private Long targetId;
+    private String description;
+    private UserReportCategory category;
+    @JsonProperty(value = "isCompleted") private Boolean isCompleted;
+    @JsonProperty(value = "isSuspended") private Boolean isSuspended;
+    private String suspendReason;
+    private Integer suspendPeriod;
 
     public UserReportResponseDto(UserReport userReport) {
-        this(userReport.getUserReportId(), userReport.getUser().getUserId(),
-            userReport.getTarget().getUserId(), userReport.getDescription(),
-            userReport.getCategory(), userReport.isCompleted());
+        this.userReportId = userReport.getUserReportId();
+        this.userId = userReport.getUser().getUserId();
+        this.targetId = userReport.getTarget().getUserId();
+        this.description = userReport.getDescription();
+        this.category = userReport.getCategory();
+        this.isCompleted = userReport.isCompleted();
+        this.isSuspended = userReport.isSuspended();
+
+        if (this.isSuspended) {
+            this.suspendReason = userReport.getSuspendReason();
+            this.suspendPeriod = userReport.getSuspendPeriod();
+        }
     }
 }

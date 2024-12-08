@@ -39,8 +39,8 @@ public class QaController {
     @PostMapping("/questions")
     public ResponseEntity<?> postQuestion(@Login AuthUserDto user,
         @Valid @RequestBody QaRequestDto requestDto) {
-        qaService.postQuestion(user.getUserId(), requestDto.title(), requestDto.description(),
-            requestDto.category());
+        qaService.postQuestion(user.getUserId(), requestDto.getTitle(), requestDto.getDescription(),
+            requestDto.getCategory());
         return ResponseEntity.noContent().build();
     }
 

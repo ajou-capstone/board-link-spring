@@ -999,9 +999,9 @@ class ItemRepositoryTest {
         // then
         assertThat(response).isNotNull();
         assertThat(response.getContent().size()).isEqualTo(items.size());
-        assertThat(response.getContent().get(0).itemId())
+        assertThat(response.getContent().get(0).getItemId())
             .isEqualTo(items.get(items.size() - 1).getItemId());
-        assertThat(response.getContent().get(0).universityName())
+        assertThat(response.getContent().get(0).getUniversityName())
             .isEqualTo(items.get(items.size() - 1).getCampus().getUniversityName());
     }
 
@@ -1029,14 +1029,14 @@ class ItemRepositoryTest {
         assertThat(response).isNotNull();
         assertThat(response.getContent().size()).isEqualTo(5);
 
-        assertThat(response.getContent().get(0).itemId())
+        assertThat(response.getContent().get(0).getItemId())
             .isEqualTo(items.get(4).getItemId());
-        assertThat(response.getContent().get(0).universityName())
+        assertThat(response.getContent().get(0).getUniversityName())
             .isEqualTo(items.get(4).getCampus().getUniversityName());
 
-        assertThat(response.getContent().get(1).itemId())
+        assertThat(response.getContent().get(1).getItemId())
             .isEqualTo(items.get(3).getItemId());
-        assertThat(response.getContent().get(1).universityName())
+        assertThat(response.getContent().get(1).getUniversityName())
             .isEqualTo(items.get(3).getCampus().getUniversityName());
     }
 
@@ -1077,13 +1077,13 @@ class ItemRepositoryTest {
         assertThat(response).isNotNull();
         assertThat(response.getContent().size()).isEqualTo(5);
 
-        assertThat(response.getContent().get(0).itemId())
+        assertThat(response.getContent().get(0).getItemId())
             .isEqualTo(items.get(29).getItemId());
-        assertThat(response.getContent().get(0).isDeleted()).isTrue();
+        assertThat(response.getContent().get(0).getIsDeleted()).isTrue();
 
-        assertThat(response.getContent().get(1).itemId())
+        assertThat(response.getContent().get(1).getItemId())
             .isEqualTo(items.get(28).getItemId());
-        assertThat(response.getContent().get(1).isDeleted()).isTrue();
+        assertThat(response.getContent().get(1).getIsDeleted()).isTrue();
     }
 
     private void updateItemPhotos(List<ItemPhotos> existingItemPhotos,

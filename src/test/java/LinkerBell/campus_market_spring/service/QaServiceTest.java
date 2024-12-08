@@ -69,8 +69,8 @@ class QaServiceTest {
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.userId()).isEqualTo(qa.getQaId());
-        assertThat(response.answerDescription()).isEqualTo(qa.getAnswerDescription());
+        assertThat(response.getUserId()).isEqualTo(qa.getQaId());
+        assertThat(response.getAnswerDescription()).isEqualTo(qa.getAnswerDescription());
     }
 
     @Test

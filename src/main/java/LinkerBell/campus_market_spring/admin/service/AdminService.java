@@ -155,8 +155,13 @@ public class AdminService {
         userReport.setCompleted(true);
 
         if (!isSuspended) {
+            userReport.setSuspended(false);
             return;
         }
+
+        userReport.setSuspendReason(suspendReason);
+        userReport.setSuspendPeriod(suspendPeriod);
+
         LocalDateTime period = LocalDateTime.now().plusDays(suspendPeriod);
         User target = userReport.getTarget();
         if(target == null) {

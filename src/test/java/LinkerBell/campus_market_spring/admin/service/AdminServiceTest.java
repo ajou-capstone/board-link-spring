@@ -124,16 +124,20 @@ class AdminServiceTest {
         User user = createUser(100L);
         User target = createUser(101L);
         UserReport userReport = createUserReport(user, target, 1L);
+        boolean isSuspended = true;
+        int suspendPeriod = 5;
+        String suspendReason = "test Reason";
 
         given(userReportRepository.findById(anyLong())).willReturn(Optional.ofNullable(userReport));
         given(blacklistRepository.findByUser_UserId(anyLong())).willReturn(Optional.empty());
         // when
-        adminService.receiveUserReport(userReport.getUserReportId(), true, "test Reason", 5);
+        adminService.receiveUserReport(userReport.getUserReportId(), isSuspended, suspendReason, suspendPeriod);
 
         // then
         then(blacklistRepository).should(times(1)).save(assertArg(b -> {
             assertThat(b).isNotNull();
             assertThat(b.getEndDate()).isAfter(LocalDateTime.now());
+            assertThat(b.getReason()).isEqualTo(suspendReason);
         }));
         then(fcmService).should(times(1)).deleteFcmTokenAllByUserId(assertArg(u -> {
             assertThat(u).isNotNull();
