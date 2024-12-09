@@ -1,10 +1,10 @@
 ## 팀원
 
-| 이름 | 이메일 | 깃허브 주소 | 역할 |
-| --- | --- | --- | --- |
-| 김동권 | dafeg3@ajou.ac.kr | https://github.com/kwon204 | 백엔드 |
+| 이름  | 이메일                    | 깃허브 주소                      | 역할  |
+|-----|------------------------|-----------------------------|-----|
+| 김동권 | dafeg3@ajou.ac.kr      | https://github.com/kwon204  | 백엔드 |
 | 신지항 | tlswlgkd565@ajou.ac.kr | https://github.com/zihang98 | 백엔드 |
-| 이정태 | sms3025@ajou.ac.kr | https://github.com/sms3025 | 백엔드 |
+| 이정태 | sms3025@ajou.ac.kr     | https://github.com/sms3025  | 백엔드 |
 
 ## 기술 스택
 
@@ -20,6 +20,7 @@
 ![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
 
 ## 패키지 구조
+
 ```
 ├── admin
 │   ├── controller
@@ -60,3 +61,5 @@ https://github.com/spring-projects/spring-framework/wiki/Code-Style
 ## 깃 컨벤션
 
 <img width="1098" alt="gitflow" src="https://github.com/user-attachments/assets/05b57047-01a2-4cc5-aabc-07a34fdb8946">
+
+## PR test
